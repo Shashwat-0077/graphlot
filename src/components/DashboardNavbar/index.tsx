@@ -27,12 +27,12 @@ const data = {
     navMain: [
         {
             title: "Projects",
-            url: "/dashboard",
+            url: "/dashboard/projects",
             icon: <MousePointer2 className="text-primary" />,
         },
         {
             title: "Settings",
-            url: "/settings",
+            url: "/dashboard/settings",
             icon: <Settings2 className="text-primary" />,
         },
     ],

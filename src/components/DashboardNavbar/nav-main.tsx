@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import {
     SidebarGroup,
     SidebarMenu,
@@ -16,6 +18,8 @@ export function NavMain({
         icon?: React.ReactNode;
     }[];
 }) {
+    const router = useRouter();
+
     return (
         <SidebarGroup>
             <SidebarMenu>
@@ -24,6 +28,7 @@ export function NavMain({
                         <SidebarMenuButton
                             tooltip={item.title}
                             className="py-5"
+                            onClick={() => router.push(item.url)}
                         >
                             {item.icon}
                             <span className="text-lg">{item.title}</span>

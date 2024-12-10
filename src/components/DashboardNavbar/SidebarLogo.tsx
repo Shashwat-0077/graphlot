@@ -18,7 +18,7 @@ export function SidebarLogo() {
             <SidebarMenuItem
                 className={cn(
                     "grid place-content-center transition-all duration-300",
-                    open ? "my-7" : "mb-5"
+                    open ? "my-7" : "mb-5 mt-1"
                 )}
             >
                 <Image width={75} height={75} src={"/logo.png"} alt="logo" />

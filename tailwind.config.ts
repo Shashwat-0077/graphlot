@@ -9,6 +9,10 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            screens: {
+                break1200: "1200px",
+                break900: "900px",
+            },
             colors: {
                 background: {
                     DEFAULT: "#191919",
