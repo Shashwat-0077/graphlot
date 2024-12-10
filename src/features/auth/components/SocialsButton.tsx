@@ -31,7 +31,7 @@ export default function SocialsButton() {
     };
 
     return (
-        <div className="mt-5 flex gap-5">
+        <div className="z-50 mt-5 flex gap-5">
             <Button
                 className="w-full bg-primary text-foreground hover:bg-primary"
                 onClick={handleGoogleSignIn}

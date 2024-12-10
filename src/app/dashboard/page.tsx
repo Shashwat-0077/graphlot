@@ -7,5 +7,5 @@ export default async function Dashboard() {
 
     const user = await supabase.auth.getUser();
 
-    return <div>{JSON.stringify(user)}</div>;
+    return <div>{JSON.stringify(user.data.user?.id)}</div>;
 }
