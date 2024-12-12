@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { AreaChartCardHeader } from "./HeaderCharts/AreaChart";
@@ -20,14 +22,16 @@ export function ChartCard({
     }[type];
 
     return (
-        <Card>
-            <CardHeader className="p-0">
-                <ChartType />
-            </CardHeader>
-            <CardContent className="pt-10">
-                <h1 className="text-2xl text-primary">Database Name</h1>
-                <span className="text-[#686868]">{type} chart</span>
-            </CardContent>
-        </Card>
+        <Link href={"/chart"}>
+            <Card>
+                <CardHeader className="p-0">
+                    <ChartType />
+                </CardHeader>
+                <CardContent className="pt-10">
+                    <h1 className="text-2xl text-primary">Database Name</h1>
+                    <span className="text-[#686868]">{type} chart</span>
+                </CardContent>
+            </Card>
+        </Link>
     );
 }
