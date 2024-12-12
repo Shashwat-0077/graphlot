@@ -17,7 +17,9 @@ const app = new Hono().get("/callback", async (c) => {
             if (isLocalEnv) {
                 // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
                 return c.redirect(
-                    `${env.NEXT_PUBLIC_APP_URL}${next ?? DEFAULT_AUTH_REDIRECT_PATH}`
+                    `${
+                        env.NEXT_PUBLIC_APP_URL
+                    }${next ?? DEFAULT_AUTH_REDIRECT_PATH}`
                 );
             } else if (forwardedHost) {
                 return c.redirect(
@@ -25,7 +27,9 @@ const app = new Hono().get("/callback", async (c) => {
                 );
             } else {
                 return c.redirect(
-                    `${env.NEXT_PUBLIC_APP_URL}${next ?? DEFAULT_AUTH_REDIRECT_PATH}`
+                    `${
+                        env.NEXT_PUBLIC_APP_URL
+                    }${next ?? DEFAULT_AUTH_REDIRECT_PATH}`
                 );
             }
         }

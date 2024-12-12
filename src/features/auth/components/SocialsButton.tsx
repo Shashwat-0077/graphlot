@@ -39,7 +39,7 @@ export default function SocialsButton() {
                 Sign in with <FcGoogle />
             </Button>
             <Button
-                className="hover:bg-foreground-dark w-full bg-foreground text-background"
+                className="w-full bg-foreground text-background hover:bg-foreground-dark"
                 onClick={handleNotionSignIn}
             >
                 Sign in with <SiNotion />

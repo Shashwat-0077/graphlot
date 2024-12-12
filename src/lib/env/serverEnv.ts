@@ -1,9 +1,7 @@
 import { z } from "zod";
 
 // Define server-only environment variables
-const serverEnvSchema = z.object({
-    NODE_ENV: z.string(),
-});
+const serverEnvSchema = z.object({});
 
 // Parse and validate server environment variables
 const parsedServerEnv = serverEnvSchema.safeParse(process.env);

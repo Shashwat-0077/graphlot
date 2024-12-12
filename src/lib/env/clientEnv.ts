@@ -2,6 +2,7 @@ import { z } from "zod";
 
 // Define client-accessible environment variables
 const clientEnvSchema = z.object({
+    NODE_ENV: z.string(),
     NEXT_PUBLIC_PORT: z.string(),
     NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -10,6 +11,7 @@ const clientEnvSchema = z.object({
 
 // Parse and validate client environment variables
 const parsedClientEnv = clientEnvSchema.safeParse({
+    NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

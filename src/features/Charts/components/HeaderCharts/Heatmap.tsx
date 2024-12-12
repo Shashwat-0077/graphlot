@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "motion/react";
 import { useMeasure } from "react-use";
+import React from "react";
 
 import { heatMapData } from "./config/data";
 
@@ -17,8 +18,7 @@ export const HeatmapChartCardHeader = () => {
     return (
         <div
             className="mx-1 grid min-h-[270px] place-content-center overflow-hidden"
-            // BUG : This is giving Type error, solve this
-            ref={ref}
+            ref={ref as React.Ref<HTMLDivElement>}
         >
             <div
                 className="flex"
