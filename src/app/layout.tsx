@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+
 import "./globals.scss";
+import { QueryProvider } from "@/components/providers/query-providers";
+import { ChartConfigStoreProvider } from "@/components/providers/ChartConfigStoreProvider";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -28,7 +31,9 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                {children}
+                <ChartConfigStoreProvider>
+                    <QueryProvider>{children}</QueryProvider>
+                </ChartConfigStoreProvider>
             </body>
         </html>
     );

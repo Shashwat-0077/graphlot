@@ -1,7 +1,7 @@
 import React from "react";
 
 import Heatmap from "@/components/ui/Heatmap";
-import { heatMapData } from "@/features/Charts/components/HeaderCharts/config/data";
+import { heatMapData } from "@/features/charts/components/HeaderCharts/config/data";
 
 export default function Settings() {
     return (
