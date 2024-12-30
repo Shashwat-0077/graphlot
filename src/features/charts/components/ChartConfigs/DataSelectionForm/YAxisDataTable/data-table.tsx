@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -23,16 +23,28 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 
-interface DataTableProps<TData, TValue> {
+interface RowData {
+    name: string;
+    active: boolean;
+    id: string;
+    type: string;
+}
+
+interface DataTableProps<TData extends RowData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends RowData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const { YAxis, activateYAxis, setYAxis } = useChartConfigStore(
+        (state) => state
+    );
+
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
@@ -60,6 +72,47 @@ export function DataTable<TData, TValue>({
             rowSelection,
         },
     });
+
+    useEffect(() => {
+        // Initialize row selection based on the `active` field
+        const initialRowSelection = table.getRowModel().rows.reduce(
+            (acc, row) => {
+                if (row.original.active) {
+                    acc[row.id] = true;
+                }
+                return acc;
+            },
+            {} as Record<string, boolean>
+        );
+
+        setRowSelection(initialRowSelection);
+
+        // Prepare YAxis data based on active rows
+        const stateData = table.getRowModel().rows.map((row) => ({
+            name: row.original.name,
+            active: row.original.active,
+            aggregation: "count" as
+                | "count"
+                | "sum"
+                | "average"
+                | "cumulative_sum",
+            sort: "asc" as "asc" | "desc",
+        }));
+
+        setYAxis(stateData);
+    }, [table, setYAxis]);
+
+    useEffect(() => {
+        const selectedRows = table.getFilteredSelectedRowModel().rows;
+        const selectedData = selectedRows.map(
+            (row) => row.getValue("name") as string
+        );
+
+        activateYAxis(selectedData);
+        console.log(YAxis);
+
+        // eslint-disable-next-line
+    }, [rowSelection, activateYAxis]);
 
     return (
         <div>

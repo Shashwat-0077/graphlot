@@ -12,7 +12,7 @@ type RequestType = InferRequestType<
 
 export const useGetAllDatabases = () => {
     const query = useQuery<ResponseType, Error, RequestType>({
-        queryKey: ["all-databases"],
+        queryKey: ["table-data"],
         queryFn: async () => {
             const response = await client.api.charts[":id"]["get-table-data"][
                 "$get"

@@ -1,13 +1,18 @@
-// src/stores/counter-store.ts
 import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
-type ChartType = "Area" | "Bar" | "Donut" | "Radar" | "Heatmap" | null;
-type colorType = {
+export type ChartType = "Area" | "Bar" | "Donut" | "Radar" | "Heatmap" | null;
+export type ColorType = {
     r: number;
     g: number;
     b: number;
     a: number;
+};
+export type YAxisType = {
+    active: boolean;
+    name: string;
+    aggregation: "sum" | "average" | "count" | "cumulative_sum";
+    sort: "asc" | "desc";
 };
 
 export type ChartConfigState = {
@@ -16,16 +21,10 @@ export type ChartConfigState = {
     label: string;
     showLegends: boolean;
     data_labels: "value" | "percentage" | "None";
-    colors: colorType[];
-    bg_color: colorType;
-    data: {
-        x: string;
-        y: string[];
-    };
-    sortby: {
-        key: string;
-        order: "asc" | "desc";
-    };
+    colors: ColorType[];
+    bg_color: ColorType;
+    XAxis: string;
+    YAxis: YAxisType[];
     filters: {
         key: string;
         value: string;
@@ -36,15 +35,22 @@ export type ChartConfigActions = {
     changeChartType: (type: NonNullable<ChartType>) => void;
     toggleLabel: () => void;
     dataLabels: (value: "value" | "percentage" | "None") => void;
-    changeSortBy: (key: string, order: "asc" | "desc") => void;
-    setColor: (color: colorType, index: number) => void;
+    setColor: (color: ColorType, index: number) => void;
     addColor: () => void;
     removeColor: (index: number) => void;
-    setBGColor: (color: colorType) => void;
+    setBGColor: (color: ColorType) => void;
     toggleLegends: () => void;
     setLabel: (label: string) => void;
     setXAxis: (key: string) => void;
-    setYAxis: (newYAxis: string[]) => void;
+    setYAxis: (yAxis: YAxisType[]) => void;
+    activateYAxis: (keys: string[]) => void;
+    getAggregationByKey: (
+        key: string
+    ) => "sum" | "average" | "count" | "cumulative_sum";
+    setAggregationByKey: (
+        key: string,
+        value: "sum" | "average" | "count" | "cumulative_sum"
+    ) => void;
 };
 
 export type ChartConfigStore = ChartConfigState & ChartConfigActions;
@@ -57,14 +63,8 @@ export const defaultInitState: ChartConfigState = {
     data_labels: "value",
     colors: [],
     bg_color: { r: 25, g: 25, b: 25, a: 1 },
-    data: {
-        x: "",
-        y: [],
-    },
-    sortby: {
-        key: "",
-        order: "asc",
-    },
+    XAxis: "",
+    YAxis: [],
     filters: [],
 };
 
@@ -76,7 +76,7 @@ export const createChartConfigStore = (
     initState: ChartConfigState = defaultInitState
 ) => {
     return createStore<ChartConfigStore>()(
-        immer((set) => ({
+        immer((set, get) => ({
             ...initState,
             changeChartType: (type) =>
                 set((state) => {
@@ -89,13 +89,6 @@ export const createChartConfigStore = (
             dataLabels: (value) =>
                 set((state) => {
                     state.data_labels = value;
-                }),
-            changeSortBy: (key, order) =>
-                set((state) => {
-                    state.sortby = {
-                        key,
-                        order,
-                    };
                 }),
             setColor: (color, index) =>
                 set((state) => {
@@ -123,11 +116,33 @@ export const createChartConfigStore = (
                 }),
             setXAxis: (key) =>
                 set((state) => {
-                    state.data.x = key;
+                    state.XAxis = key;
                 }),
-            setYAxis: (newYAxis) =>
+            setYAxis: (yAxis) =>
                 set((state) => {
-                    state.data.y = newYAxis;
+                    state.YAxis = yAxis;
+                }),
+            activateYAxis: (keys) =>
+                set((state) => {
+                    state.YAxis = state.YAxis.map((yAxis) => {
+                        if (keys.includes(yAxis.name)) {
+                            yAxis.active = true;
+                        } else {
+                            yAxis.active = false;
+                        }
+                        return yAxis;
+                    });
+                }),
+            getAggregationByKey: (key) => {
+                const yAxis = get().YAxis.find((y) => y.name === key);
+                return yAxis?.aggregation ?? "count";
+            },
+            setAggregationByKey: (key, value) =>
+                set((state) => {
+                    const yAxis = state.YAxis.find((y) => y.name === key);
+                    if (yAxis) {
+                        yAxis.aggregation = value;
+                    }
                 }),
         }))
     );

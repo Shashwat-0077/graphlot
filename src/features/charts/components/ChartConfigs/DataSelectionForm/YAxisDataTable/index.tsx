@@ -8,6 +8,7 @@ import { Columns, columns } from "./columns";
 import YAxisDataTableSkeleton from "./loader";
 
 export default function YAxisDataTable() {
+    // TODO : Fetch from the database as well as notion (as the notion is unlimited) and update the database according to the notion
     const { data: schema, isLoading } = useGetDatabaseSchema();
 
     if (isLoading) {
@@ -27,6 +28,7 @@ export default function YAxisDataTable() {
     for (const columns in schema) {
         data.push({
             name: columns,
+            active: true,
             id: schema[columns].id as string,
             type: schema[columns].type as string,
         });

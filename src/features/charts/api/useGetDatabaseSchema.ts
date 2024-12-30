@@ -4,7 +4,7 @@ import { client } from "@/lib/rpc";
 
 export const useGetDatabaseSchema = () => {
     const query = useQuery({
-        queryKey: ["all-databases"],
+        queryKey: ["database-schema"],
         queryFn: async () => {
             const response = await client.api.charts[":id"]["get-table-schema"][
                 "$get"
