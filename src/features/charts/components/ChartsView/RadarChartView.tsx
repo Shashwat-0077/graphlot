@@ -2,6 +2,7 @@
 
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
+import { data } from "@/coverage/data";
 import {
     ChartContainer,
     ChartLegend,
@@ -19,10 +20,20 @@ export const RadarChartData = [
     { month: "May", desktop: 209, mobile: 130 },
     { month: "June", desktop: 214, mobile: 140 },
 ];
-const configData: string[] = ["desktop", "mobile"];
+// const configData: string[] = ["desktop", "mobile"];
 
 export const RadarChartView = () => {
-    const { colors, showLegends } = useChartConfigStore((state) => state);
+    const { colors, showLegends, YAxis } = useChartConfigStore(
+        (state) => state
+    );
+
+    const selectedData = YAxis.filter((data) => data.active);
+
+    const configData =
+        selectedData.length > 0
+            ? selectedData.map((data) => data.name)
+            : // HACK : This is a hack to make the radar chart work
+              ["desktop", "mobile"];
 
     let colorIndex = 0;
     const RadarChartConfig: {

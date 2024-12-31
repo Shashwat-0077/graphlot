@@ -26,7 +26,7 @@ export function NewProjectForm() {
         },
     });
 
-    function onSubmit(data: z.infer<typeof projectSchema>) {}
+    function onSubmit(_data: z.infer<typeof projectSchema>) {}
 
     return (
         <Form {...form}>

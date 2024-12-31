@@ -11,7 +11,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export const RadarChartConfig = {
+const RadarChartConfig = {
     desktop: {
         label: "Desktop",
         color: "rgba(0, 123, 255 , 0.5)",
@@ -22,7 +22,7 @@ export const RadarChartConfig = {
     },
 } satisfies ChartConfig;
 
-export const RadarChartData = [
+const RadarChartData = [
     { month: "January", desktop: 1, mobile: 2 },
     { month: "February", desktop: 1, mobile: 2 },
     { month: "March", desktop: 1, mobile: 2 },
@@ -31,14 +31,16 @@ export const RadarChartData = [
     { month: "June", desktop: 1, mobile: 2 },
 ];
 
-export default function ChartView({
-    _params,
-}: {
-    _params: {
-        id: string;
-        chartID: string;
-    };
-}) {
+export default function ChartView() {
+    // {
+    //     params,
+    // }: {
+    //     params: {
+    //         id: string;
+    //         chartID: string;
+    //     };
+    // }
+
     return (
         <div className="grid h-svh w-svw place-content-center overflow-hidden">
             <ChartContainer

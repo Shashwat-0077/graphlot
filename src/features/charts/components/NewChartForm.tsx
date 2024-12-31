@@ -38,7 +38,6 @@ export function NewChartForm() {
         data.databaseTitle = databases?.find(
             ({ id }) => id === data.databaseID
         )?.title;
-        console.log(data);
     }
 
     if (isLoading) {

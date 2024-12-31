@@ -41,9 +41,7 @@ export function DataTable<TData extends RowData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const { YAxis, activateYAxis, setYAxis } = useChartConfigStore(
-        (state) => state
-    );
+    const { activateYAxis, setYAxis } = useChartConfigStore((state) => state);
 
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
@@ -109,14 +107,13 @@ export function DataTable<TData extends RowData, TValue>({
         );
 
         activateYAxis(selectedData);
-        console.log(YAxis);
 
         // eslint-disable-next-line
     }, [rowSelection, activateYAxis]);
 
     return (
         <div>
-            <div className="flex items-center py-4">
+            <div className="flex items-center pb-4">
                 <Input
                     placeholder="Filter columns..."
                     value={

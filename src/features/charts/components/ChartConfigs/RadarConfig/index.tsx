@@ -7,7 +7,7 @@ import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProv
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import YAxisDataTable from "../DataSelectionForm/YAxisDataTable";
+import DataSelectionForm from "../DataSelectionForm";
 
 export default function RadarConfig() {
     const {
@@ -109,7 +109,7 @@ export default function RadarConfig() {
             </section>
 
             {/* Data */}
-            <YAxisDataTable />
+            <DataSelectionForm />
         </div>
     );
 }

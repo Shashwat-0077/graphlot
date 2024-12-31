@@ -24,8 +24,7 @@ export default function SocialsButton() {
         supabase.auth.signInWithOAuth({
             provider: "notion",
             options: {
-                redirectTo:
-                    envClient.NEXT_PUBLIC_APP_URL + "/api/auth/callback",
+                redirectTo: "/api/auth/callback",
             },
         });
     };

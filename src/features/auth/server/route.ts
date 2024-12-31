@@ -6,6 +6,7 @@ import { DEFAULT_AUTH_REDIRECT_PATH } from "@/routes";
 
 const app = new Hono().get("/callback", async (c) => {
     const { code, next } = c.req.query();
+    console.log("HIT!!" + code + next);
 
     if (code) {
         const supabase = await createClient();
