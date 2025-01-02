@@ -9,6 +9,9 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                "play-write": "var(--playwrite-hr-lijeva)",
+            },
             screens: {
                 break1200: "1200px",
                 break900: "900px",
@@ -70,9 +73,7 @@ const config: Config = {
                     ring: "hsl(var(--sidebar-ring))",
                 },
             },
-            fontFamily: {
-                "play-write": ["Playwrite HR Lijeva", "cursive"],
-            },
+
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
