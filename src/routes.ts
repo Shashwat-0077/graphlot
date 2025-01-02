@@ -1,1 +1,1 @@
-export const DEFAULT_AUTH_REDIRECT_PATH = "/dashboard";
+export const DEFAULT_AUTH_REDIRECT_PATH = "/dashboard/projects";

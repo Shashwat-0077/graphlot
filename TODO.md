@@ -3,3 +3,4 @@
 - create all by myself
 - multi view table
 - Add loading components
+- Make use of the data-table and make the charts show multi-column data

@@ -10,12 +10,13 @@ import { envClient } from "@/lib/env/clientEnv";
 export default function SocialsButton() {
     const supabase = createClient();
 
+    const redirectUrl = envClient.NEXT_PUBLIC_APP_URL + "/api/auth/callback/";
+
     const handleGoogleSignIn = () => {
         supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo:
-                    envClient.NEXT_PUBLIC_APP_URL + "/api/auth/callback",
+                redirectTo: redirectUrl,
             },
         });
     };
@@ -24,7 +25,7 @@ export default function SocialsButton() {
         supabase.auth.signInWithOAuth({
             provider: "notion",
             options: {
-                redirectTo: "/api/auth/callback",
+                redirectTo: redirectUrl,
             },
         });
     };
