@@ -2,7 +2,6 @@
 
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
-import { data } from "@/coverage/data";
 import {
     ChartContainer,
     ChartLegend,
