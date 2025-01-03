@@ -16,7 +16,6 @@ import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 import ClearAll from "../ClearAll";
 
@@ -195,7 +194,11 @@ export default function ChartConfigs() {
                     <span>Filters</span>
                     <ClearAll clearFn={clearFilters} />
                 </Label>
-                <ScrollArea className={cn(`h-[${filterSectionHeight}px]`)}>
+                <ScrollArea
+                    style={{
+                        height: `${filterSectionHeight}px`,
+                    }}
+                >
                     <div className="flex flex-col gap-5 p-1 pr-5">
                         {filters.map((filter, index) => (
                             <div className="flex gap-5" key={index}>
@@ -297,9 +300,9 @@ export default function ChartConfigs() {
                         <ClearAll clearFn={clearColors} />
                     </Label>
                     <ScrollArea
-                        className={cn(
-                            `h-[${colorSectionHeight}px] w-full pl-3 pt-3`
-                        )}
+                        style={{
+                            height: `${colorSectionHeight}px`,
+                        }}
                     >
                         <div className="flex flex-wrap items-center gap-2">
                             {colors.map((color, index) => (
