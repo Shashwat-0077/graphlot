@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
+// import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 
 interface RowData {
     name: string;
@@ -41,7 +41,7 @@ export function DataTable<TData extends RowData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const { activateYAxis, setYAxis } = useChartConfigStore((state) => state);
+    // const { activateYAxis, setYAxis } = useChartConfigStore((state) => state);
 
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
@@ -71,45 +71,45 @@ export function DataTable<TData extends RowData, TValue>({
         },
     });
 
-    useEffect(() => {
-        // Initialize row selection based on the `active` field
-        const initialRowSelection = table.getRowModel().rows.reduce(
-            (acc, row) => {
-                if (row.original.active) {
-                    acc[row.id] = true;
-                }
-                return acc;
-            },
-            {} as Record<string, boolean>
-        );
+    // useEffect(() => {
+    //     // Initialize row selection based on the `active` field
+    //     const initialRowSelection = table.getRowModel().rows.reduce(
+    //         (acc, row) => {
+    //             if (row.original.active) {
+    //                 acc[row.id] = true;
+    //             }
+    //             return acc;
+    //         },
+    //         {} as Record<string, boolean>
+    //     );
 
-        setRowSelection(initialRowSelection);
+    //     setRowSelection(initialRowSelection);
 
-        // Prepare YAxis data based on active rows
-        const stateData = table.getRowModel().rows.map((row) => ({
-            name: row.original.name,
-            active: row.original.active,
-            aggregation: "count" as
-                | "count"
-                | "sum"
-                | "average"
-                | "cumulative_sum",
-            sort: "asc" as "asc" | "desc",
-        }));
+    //     // Prepare YAxis data based on active rows
+    //     const stateData = table.getRowModel().rows.map((row) => ({
+    //         name: row.original.name,
+    //         active: row.original.active,
+    //         aggregation: "count" as
+    //             | "count"
+    //             | "sum"
+    //             | "average"
+    //             | "cumulative_sum",
+    //         sort: "asc" as "asc" | "desc",
+    //     }));
 
-        setYAxis(stateData);
-    }, [table, setYAxis]);
+    //     setYAxis(stateData);
+    // }, [table, setYAxis]);
 
-    useEffect(() => {
-        const selectedRows = table.getFilteredSelectedRowModel().rows;
-        const selectedData = selectedRows.map(
-            (row) => row.getValue("name") as string
-        );
+    // useEffect(() => {
+    //     const selectedRows = table.getFilteredSelectedRowModel().rows;
+    //     const selectedData = selectedRows.map(
+    //         (row) => row.getValue("name") as string
+    //     );
 
-        activateYAxis(selectedData);
+    //     activateYAxis(selectedData);
 
-        // eslint-disable-next-line
-    }, [rowSelection, activateYAxis]);
+    //     // eslint-disable-next-line
+    // }, [rowSelection, activateYAxis]);
 
     return (
         <div>

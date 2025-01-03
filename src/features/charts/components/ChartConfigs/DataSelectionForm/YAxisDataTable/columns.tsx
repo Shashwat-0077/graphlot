@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
+// import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 
 export type Columns = {
     id: string;
@@ -21,27 +21,23 @@ export type Columns = {
 };
 
 const SelectMenu = ({
-    name,
+    // name,
     isSelected,
 }: {
     name: string;
     isSelected: boolean;
 }) => {
-    const { getAggregationByKey, setAggregationByKey } = useChartConfigStore(
-        (state) => state
-    );
-
     return (
         <div className="max-w-10">
             <Select
                 disabled={!isSelected}
-                value={getAggregationByKey(name)}
-                onValueChange={(value) => {
-                    setAggregationByKey(
-                        name,
-                        value as "sum" | "average" | "count" | "cumulative_sum"
-                    );
-                }}
+                // value={getAggregationByKey(name)}
+                // onValueChange={(value) => {
+                //     setAggregationByKey(
+                //         name,
+                //         value as "sum" | "average" | "count" | "cumulative_sum"
+                //     );
+                // }}
             >
                 <SelectTrigger
                     className={`w-[180px] ${isSelected ? "border-primary" : ""}`}

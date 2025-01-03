@@ -8,7 +8,6 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 
 export default function ClearAll({ clearFn }: { clearFn: () => void }) {
     return (

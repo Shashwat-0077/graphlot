@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect } from "react";
 import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
@@ -16,9 +15,9 @@ import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 import ClearAll from "../ClearAll";
 
 export default function ChartConfigs() {
@@ -55,12 +54,8 @@ export default function ChartConfigs() {
         clearFilters,
     } = useChartConfigStore((state) => state);
 
-    useEffect(() => {
-        console.log("Filters", filters);
-    }, [filters]);
-
     return (
-        <div className="break1000:grid-cols-[.5fr_1fr] mt-16 grid grid-rows-2 gap-10">
+        <div className="mt-16 grid grid-rows-2 gap-10 break1000:grid-cols-[.5fr_1fr]">
             {/* Chart Config */}
             <section className="relative flex flex-col gap-7 rounded-lg border p-10">
                 <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
