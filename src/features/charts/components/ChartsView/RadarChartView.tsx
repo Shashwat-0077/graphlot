@@ -22,7 +22,10 @@ export const RadarChartData = [
 const configData: string[] = ["desktop", "mobile"];
 
 export const RadarChartView = () => {
-    const { colors, showLegends } = useChartConfigStore((state) => state);
+    // TODO : make that the data in the config View stays for 30 mins (stale time) but the data in the chart view should be live
+
+    const { colors, showLegends, showGrid, showToolTip, gridColor } =
+        useChartConfigStore((state) => state);
 
     let colorIndex = 0;
     const RadarChartConfig: {
@@ -51,12 +54,19 @@ export const RadarChartView = () => {
                     bottom: -10,
                 }}
             >
-                <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="line" />}
-                />
+                {showToolTip && (
+                    <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent indicator="line" />}
+                    />
+                )}
                 <PolarAngleAxis dataKey="month" />
-                <PolarGrid />
+                {showGrid && (
+                    <PolarGrid
+                        stroke={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
+                        fill={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
+                    />
+                )}
 
                 {configData.map((data_label) => (
                     <Radar

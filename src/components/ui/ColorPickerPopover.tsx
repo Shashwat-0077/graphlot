@@ -2,6 +2,8 @@ import React from "react";
 import { RgbaColorPicker } from "react-colorful";
 import { Trash2 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 import { Input } from "./input";
 import { Label } from "./label";
 import { Button } from "./button";
@@ -11,6 +13,7 @@ type ColorPickerPopoverProps =
     | {
           children: React.ReactNode;
           isSingleColor: false;
+          className?: string;
           colorIndex: number;
           removeColor: (index: number) => void;
           color: { r: number; g: number; b: number; a: number };
@@ -28,6 +31,7 @@ type ColorPickerPopoverProps =
           children: React.ReactNode;
           isSingleColor: true;
           colorIndex?: never;
+          className?: string;
           removeColor?: never;
           color: { r: number; g: number; b: number; a: number };
           setColor: (color: {
@@ -42,13 +46,16 @@ export default function ColorPickerPopover({
     children,
     color,
     setColor,
+    className,
     colorIndex,
     removeColor,
     isSingleColor,
 }: ColorPickerPopoverProps) {
     return (
         <Popover>
-            <PopoverTrigger>{children}</PopoverTrigger>
+            <PopoverTrigger className={cn("w-full", className)}>
+                {children}
+            </PopoverTrigger>
             <PopoverContent
                 sideOffset={10}
                 className="grid w-64 place-content-center rounded-xl bg-background-light py-7"

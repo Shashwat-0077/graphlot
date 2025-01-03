@@ -14,6 +14,7 @@ const config: Config = {
             },
             screens: {
                 break1200: "1200px",
+                break1000: "1000px",
                 break900: "900px",
             },
             colors: {

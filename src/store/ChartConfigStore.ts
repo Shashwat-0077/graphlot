@@ -20,14 +20,18 @@ export type ChartConfigState = {
     showLabel: boolean;
     label: string;
     showLegends: boolean;
-    data_labels: "value" | "percentage" | "None";
+    showGrid: boolean;
+    showToolTip: boolean;
+    dataLabels: "value" | "percentage" | "None";
     colors: ColorType[];
-    bg_color: ColorType;
+    bgColor: ColorType;
+    gridColor: ColorType;
     XAxis: string;
     YAxis: string;
     groupBy: string;
     filters: {
-        key: string;
+        column: string;
+        operation: string;
         value: string;
     }[];
 };
@@ -39,16 +43,32 @@ export type ChartConfigActions = {
     setLabel: (label: string) => void;
     setColor: (color: ColorType, index: number) => void;
     setBGColor: (color: ColorType) => void;
+    setGridColor: (color: ColorType) => void;
     setGroupBy: (key: string) => void;
     setDataLabels: (value: "value" | "percentage" | "None") => void;
+    setFilterColumn: (column: string, index: number) => void;
+    setFilterOperation: (operation: string, index: number) => void;
+    setFilterValue: (value: string, index: number) => void;
 
     // toggles
     toggleLabel: () => void;
     toggleLegends: () => void;
+    toggleGrid: () => void;
+    toggleToolTip: () => void;
 
-    // actions
+    // add/remove
     addColor: () => void;
     removeColor: (index: number) => void;
+    addFilter: (filter: {
+        column: string;
+        operation: string;
+        value: string;
+    }) => void;
+    removeFilter: (index: number) => void;
+
+    // actions
+    clearColors: () => void;
+    clearFilters: () => void;
     changeChartType: (type: NonNullable<ChartType>) => void;
 };
 
@@ -58,10 +78,13 @@ export const defaultInitState: ChartConfigState = {
     type: null,
     label: "",
     showLabel: true,
+    showGrid: true,
+    showToolTip: true,
     showLegends: true,
-    data_labels: "value",
+    dataLabels: "value",
     colors: [],
-    bg_color: { r: 25, g: 25, b: 25, a: 1 },
+    bgColor: { r: 25, g: 25, b: 25, a: 1 },
+    gridColor: { r: 38, g: 38, b: 38, a: 1 },
     XAxis: "",
     YAxis: "",
     groupBy: "",
@@ -88,7 +111,7 @@ export const createChartConfigStore = (
                 }),
             setDataLabels: (value) =>
                 set((state) => {
-                    state.data_labels = value;
+                    state.dataLabels = value;
                 }),
             setColor: (color, index) =>
                 set((state) => {
@@ -104,7 +127,7 @@ export const createChartConfigStore = (
                 }),
             setBGColor: (color) =>
                 set((state) => {
-                    state.bg_color = color;
+                    state.bgColor = color;
                 }),
             toggleLegends: () =>
                 set((state) => {
@@ -125,6 +148,46 @@ export const createChartConfigStore = (
             setGroupBy: (key) =>
                 set((state) => {
                     state.groupBy = key;
+                }),
+            clearColors: () =>
+                set((state) => {
+                    state.colors = [];
+                }),
+            toggleGrid: () =>
+                set((state) => {
+                    state.showGrid = !state.showGrid;
+                }),
+            toggleToolTip: () =>
+                set((state) => {
+                    state.showToolTip = !state.showToolTip;
+                }),
+            setGridColor: (color) =>
+                set((state) => {
+                    state.gridColor = color;
+                }),
+            addFilter: (filter) =>
+                set((state) => {
+                    state.filters.push(filter);
+                }),
+            removeFilter: (index) =>
+                set((state) => {
+                    state.filters.splice(index, 1);
+                }),
+            setFilterColumn: (column, index) =>
+                set((state) => {
+                    state.filters[index].column = column;
+                }),
+            setFilterOperation: (operation, index) =>
+                set((state) => {
+                    state.filters[index].operation = operation;
+                }),
+            setFilterValue: (value, index) =>
+                set((state) => {
+                    state.filters[index].value = value;
+                }),
+            clearFilters: () =>
+                set((state) => {
+                    state.filters = [];
                 }),
         }))
     );

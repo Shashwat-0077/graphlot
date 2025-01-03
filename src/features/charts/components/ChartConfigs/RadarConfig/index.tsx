@@ -17,7 +17,7 @@ export default function RadarConfig() {
         setColor,
         addColor,
         removeColor,
-        bg_color,
+        bgColor: bg_color,
         setBGColor,
         setLabel,
         showLegends,
