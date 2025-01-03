@@ -10,6 +10,8 @@ import {
 const CELL_WIDTH = 20;
 const GAP = 5;
 
+// NOTE : Maybe we can use Chart Tooltip here
+
 export default function Heatmap({
     row,
     column,

@@ -1,13 +1,13 @@
 "use client";
 import { Eye, EyeOff, Plus } from "lucide-react";
 
+// NOTE : Maybe used when we intended to use data-table to show the multi-column data
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { Checkbox } from "@/components/ui/checkbox";
-
-import DataSelectionForm from "../DataSelectionForm";
 
 export default function RadarConfig() {
     const {
@@ -107,9 +107,6 @@ export default function RadarConfig() {
                     />
                 </div>
             </section>
-
-            {/* Data */}
-            <DataSelectionForm />
         </div>
     );
 }

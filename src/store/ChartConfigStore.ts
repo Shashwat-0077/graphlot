@@ -8,12 +8,12 @@ export type ColorType = {
     b: number;
     a: number;
 };
-export type YAxisType = {
-    active: boolean;
-    name: string;
-    aggregation: "sum" | "average" | "count" | "cumulative_sum";
-    sort: "asc" | "desc";
-};
+// export type YAxisType = {
+//     active: boolean;
+//     name: string;
+//     aggregation: "sum" | "average" | "count" | "cumulative_sum";
+//     sort: "asc" | "desc";
+// }[];
 
 export type ChartConfigState = {
     type: ChartType;
@@ -24,7 +24,8 @@ export type ChartConfigState = {
     colors: ColorType[];
     bg_color: ColorType;
     XAxis: string;
-    YAxis: YAxisType[];
+    YAxis: string;
+    groupBy: string;
     filters: {
         key: string;
         value: string;
@@ -32,25 +33,23 @@ export type ChartConfigState = {
 };
 
 export type ChartConfigActions = {
-    changeChartType: (type: NonNullable<ChartType>) => void;
-    toggleLabel: () => void;
-    dataLabels: (value: "value" | "percentage" | "None") => void;
+    // setters
+    setYAxis: (yAxis: string) => void;
+    setXAxis: (key: string) => void;
+    setLabel: (label: string) => void;
     setColor: (color: ColorType, index: number) => void;
+    setBGColor: (color: ColorType) => void;
+    setGroupBy: (key: string) => void;
+    setDataLabels: (value: "value" | "percentage" | "None") => void;
+
+    // toggles
+    toggleLabel: () => void;
+    toggleLegends: () => void;
+
+    // actions
     addColor: () => void;
     removeColor: (index: number) => void;
-    setBGColor: (color: ColorType) => void;
-    toggleLegends: () => void;
-    setLabel: (label: string) => void;
-    setXAxis: (key: string) => void;
-    setYAxis: (yAxis: YAxisType[]) => void;
-    activateYAxis: (keys: string[]) => void;
-    getAggregationByKey: (
-        key: string
-    ) => "sum" | "average" | "count" | "cumulative_sum";
-    setAggregationByKey: (
-        key: string,
-        value: "sum" | "average" | "count" | "cumulative_sum"
-    ) => void;
+    changeChartType: (type: NonNullable<ChartType>) => void;
 };
 
 export type ChartConfigStore = ChartConfigState & ChartConfigActions;
@@ -64,7 +63,8 @@ export const defaultInitState: ChartConfigState = {
     colors: [],
     bg_color: { r: 25, g: 25, b: 25, a: 1 },
     XAxis: "",
-    YAxis: [],
+    YAxis: "",
+    groupBy: "",
     filters: [],
 };
 
@@ -76,7 +76,7 @@ export const createChartConfigStore = (
     initState: ChartConfigState = defaultInitState
 ) => {
     return createStore<ChartConfigStore>()(
-        immer((set, get) => ({
+        immer((set) => ({
             ...initState,
             changeChartType: (type) =>
                 set((state) => {
@@ -86,7 +86,7 @@ export const createChartConfigStore = (
                 set((state) => {
                     state.showLabel = !state.showLabel;
                 }),
-            dataLabels: (value) =>
+            setDataLabels: (value) =>
                 set((state) => {
                     state.data_labels = value;
                 }),
@@ -122,27 +122,9 @@ export const createChartConfigStore = (
                 set((state) => {
                     state.YAxis = yAxis;
                 }),
-            activateYAxis: (keys) =>
+            setGroupBy: (key) =>
                 set((state) => {
-                    state.YAxis = state.YAxis.map((yAxis) => {
-                        if (keys.includes(yAxis.name)) {
-                            yAxis.active = true;
-                        } else {
-                            yAxis.active = false;
-                        }
-                        return yAxis;
-                    });
-                }),
-            getAggregationByKey: (key) => {
-                const yAxis = get().YAxis.find((y) => y.name === key);
-                return yAxis?.aggregation ?? "count";
-            },
-            setAggregationByKey: (key, value) =>
-                set((state) => {
-                    const yAxis = state.YAxis.find((y) => y.name === key);
-                    if (yAxis) {
-                        yAxis.aggregation = value;
-                    }
+                    state.groupBy = key;
                 }),
         }))
     );

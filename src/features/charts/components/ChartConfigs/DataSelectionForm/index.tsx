@@ -17,6 +17,8 @@ import YAxisDataTableSkeleton from "./YAxisDataTable/loader";
 import { DataTable } from "./YAxisDataTable/data-table";
 import { Columns, columns } from "./YAxisDataTable/columns";
 
+// NOTE : Maybe used when we intended to use data-table to show the multi-column data, same for the YAxisDataTable folder
+
 export default function DataSelectionForm() {
     // TODO : Fetch from the database as well as notion (as the notion is unlimited) and update the database according to the notion
 

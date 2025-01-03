@@ -7,9 +7,9 @@ import {
     Radar as RadarIcon,
 } from "lucide-react";
 
-import RadarConfig from "@/features/charts/components/ChartConfigs/RadarConfig";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 import { RadarChartView } from "@/features/charts/components/ChartsView/RadarChartView";
+import ChartConfigs from "@/features/charts/components/ChartConfigs";
 
 export default function ChatConfigs() {
     const {
@@ -28,12 +28,15 @@ export default function ChatConfigs() {
                     backgroundColor: `rgba(${bg_color.r}, ${bg_color.g}, ${bg_color.b}, ${bg_color.a})`,
                 }}
             >
-                {showLabel && (
+                {showLabel ? (
                     <h1 className="text-2xl font-bold">
                         {label.length === 0 || !label
                             ? chartType + " Chart"
                             : label}
                     </h1>
+                ) : (
+                    // NOTE : This is added so that if the label is not shown, the height of the page is not affected
+                    <h1 className="text-2xl font-bold">&nbsp;</h1>
                 )}
                 <RadarChartView />
             </div>
@@ -73,7 +76,7 @@ export default function ChatConfigs() {
             </div>
 
             <div>
-                <RadarConfig />
+                <ChartConfigs />
             </div>
         </section>
     );
