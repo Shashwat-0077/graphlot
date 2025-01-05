@@ -10,6 +10,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
+import { data } from "@/coverage/data";
 
 export const RadarChartData = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -41,6 +42,8 @@ export const RadarChartView = () => {
         };
         colorIndex++;
     }
+
+    console.log(data);
 
     return (
         <ChartContainer

@@ -25,7 +25,7 @@ export function ChartCard({
 
     return (
         <Link href={`/dashboard/projects/${projectID}/${type.toLowerCase()}`}>
-            <Card>
+            <Card className="overflow-hidden">
                 <CardHeader className="p-0">
                     <ChartType />
                 </CardHeader>

@@ -2,14 +2,18 @@
 
 import { Area, AreaChart, CartesianGrid } from "recharts";
 
+import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/components/ui/chart";
 
 import { AreaChartData } from "./config/data";
 import { AreaChartConfig } from "./config/chartConfig";
 
-export const AreaChartCardHeader = () => {
+export const AreaChartCardHeader = ({ className }: { className?: string }) => {
     return (
-        <ChartContainer config={AreaChartConfig} className="min-h-[270px]">
+        <ChartContainer
+            config={AreaChartConfig}
+            className={cn("min-h-[270px]", className)}
+        >
             <AreaChart
                 accessibilityLayer
                 data={AreaChartData}

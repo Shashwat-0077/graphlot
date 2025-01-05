@@ -7,15 +7,16 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 
 import { RadarChartConfig } from "./config/chartConfig";
 import { RadarChartData } from "./config/data";
 
-export const RadarChartCardHeader = () => {
+export const RadarChartCardHeader = ({ className }: { className?: string }) => {
     return (
         <ChartContainer
             config={RadarChartConfig}
-            className="mx-auto aspect-square min-h-[270px]"
+            className={cn("mx-auto aspect-square min-h-[270px]", className)}
         >
             <RadarChart
                 data={RadarChartData}
