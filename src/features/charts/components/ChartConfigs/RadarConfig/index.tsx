@@ -12,16 +12,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 export default function RadarConfig() {
     const {
         showLabel: isLabelOn,
-        toggleLabel,
-        colors,
-        setColor,
-        addColor,
-        removeColor,
         bgColor: bg_color,
+        colors,
+        showLegends,
+        setColor,
         setBGColor,
         setLabel,
-        showLegends,
+        toggleLabel,
         toggleLegends,
+        removeColor,
+        addColor,
     } = useChartConfigStore((state) => state);
 
     // const handleSetColors = (color: string, index: number) => {};

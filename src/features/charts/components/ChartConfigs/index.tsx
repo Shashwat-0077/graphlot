@@ -21,67 +21,100 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ClearAll from "../ClearAll";
 import { useGetDatabaseSchema } from "../../api/useGetDatabaseSchema";
 
-export default function ChartConfigs() {
+export default function ChartConfigs({}) {
     const colorSectionHeight = 120; // in px
     const filterSectionHeight = 500; // in px
 
     const { data, isLoading } = useGetDatabaseSchema();
 
-    // TODO : make all the state independent and only add them when the button is clicked
+    // TODO : make the data state independent and only add them when the button is clicked
+    // TODO : Donut and heatmap will have different style of input
+
     const {
+        type: chartType,
         showLabel: isLabelOn,
-        toggleLabel,
         colors,
-        setColor,
-        addColor,
-        removeColor,
         bgColor,
-        setBGColor,
-        gridColor,
-        setGridColor,
-        setLabel,
-        showLegends,
-        toggleLegends,
-        showGrid,
-        showToolTip,
-        toggleGrid,
-        toggleToolTip,
-        changeChartType,
         filters,
-        addFilter,
-        removeFilter,
+        showGrid,
+        gridColor,
+        showLegends,
+        showToolTip,
+        setColor,
+        setLabel,
+        setBGColor,
+        setXAxis,
+        setYAxis,
+        setGridColor,
+        setFilterValue,
         setFilterColumn,
         setFilterOperation,
-        setFilterValue,
+        toggleGrid,
+        toggleLabel,
+        toggleLegends,
+        toggleToolTip,
         clearColors,
         clearFilters,
+        addColor,
+        addFilter,
+        removeColor,
+        removeFilter,
+        changeChartType,
     } = useChartConfigStore((state) => state);
 
     if (isLoading) {
         return (
-            <div className="mt-16 grid grid-rows-2 gap-10 break1000:grid-cols-[.5fr_1fr]">
+            <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
                 <Skeleton className="h-96 w-full" />
-                <Skeleton className="row-span-2 w-full" />
-                <Skeleton className="w-full" />
+                <Skeleton className="row-span-2 min-h-96 w-full" />
+                <Skeleton className="min-h-96 w-full" />
             </div>
         );
     }
 
     if (!data) {
         return (
-            <div className="mt-16 grid grid-rows-2 gap-10 break1000:grid-cols-[.5fr_1fr]">
+            <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
                 <div className="text-2xl font-bold">No Data Available</div>
             </div>
         );
     }
 
-    const columns = [];
-    for (const cols in data) {
-        columns.push(cols);
+    const XAxisColumns = [];
+    const YAxisColumns = [];
+
+    for (const col in data) {
+        switch (chartType) {
+            case "Radar":
+                if (
+                    data[col].type === "select" ||
+                    data[col].type === "status" ||
+                    data[col].type === "multi_select"
+                ) {
+                    YAxisColumns.push(col);
+                    XAxisColumns.push(col);
+                }
+                break;
+            case "Area":
+            case "Bar":
+                if (
+                    data[col].type === "number" ||
+                    data[col].type === "status" ||
+                    data[col].type === "select" ||
+                    data[col].type === "multi_select" ||
+                    data[col].type === "date"
+                ) {
+                    YAxisColumns.push(col);
+                    XAxisColumns.push(col);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     return (
-        <div className="mt-16 grid grid-rows-2 gap-10 break1000:grid-cols-[.5fr_1fr]">
+        <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
             {/* Colors */}
             <section className="relative flex flex-col gap-7 rounded-lg border p-10">
                 <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
@@ -183,12 +216,12 @@ export default function ChartConfigs() {
                         <Label className="mb-2 block text-lg">X Axis</Label>
                         <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
                             <Label className="block text-lg">Column</Label>
-                            <Select>
+                            <Select onValueChange={(value) => setXAxis(value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a Column" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {columns.map((col, index) => (
+                                    {XAxisColumns.map((col, index) => (
                                         <SelectItem key={index} value={col}>
                                             {col}
                                         </SelectItem>
@@ -201,8 +234,11 @@ export default function ChartConfigs() {
                                     <SelectValue placeholder="Select a Column" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {columns.map((col, index) => (
-                                        <SelectItem key={index} value={col}>
+                                    <SelectItem key={0} value="None">
+                                        None
+                                    </SelectItem>
+                                    {XAxisColumns.map((col, index) => (
+                                        <SelectItem key={index + 1} value={col}>
                                             {col}
                                         </SelectItem>
                                     ))}
@@ -233,12 +269,12 @@ export default function ChartConfigs() {
                         <Label className="mb-2 block text-lg">Y Axis</Label>
                         <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
                             <Label className="block text-lg">Column</Label>
-                            <Select>
+                            <Select onValueChange={(value) => setYAxis(value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a Column" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {columns.map((col, index) => (
+                                    {YAxisColumns.map((col, index) => (
                                         <SelectItem key={index} value={col}>
                                             {col}
                                         </SelectItem>
@@ -251,8 +287,11 @@ export default function ChartConfigs() {
                                     <SelectValue placeholder="Select a Column" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {columns.map((col, index) => (
-                                        <SelectItem key={index} value={col}>
+                                    <SelectItem key={0} value="None">
+                                        None
+                                    </SelectItem>
+                                    {YAxisColumns.map((col, index) => (
+                                        <SelectItem key={index + 1} value={col}>
                                             {col}
                                         </SelectItem>
                                     ))}
@@ -343,6 +382,7 @@ export default function ChartConfigs() {
                         Select You chart Type
                     </Label>
                     <Select
+                        defaultValue={chartType || "Radar"}
                         onValueChange={(value) =>
                             changeChartType(
                                 value as

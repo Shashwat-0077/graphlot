@@ -1,7 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @font-face {
     font-family: 'Playwrite-HR-Lijeva'; // Name of the font
@@ -62,8 +61,14 @@ body {
 }
 
 @layer base {
+    * {
+        border-color: hsl(var(--border));
+    }
+
     body {
-        @apply bg-background text-foreground;
+        // TODO : Fix this, this should not be hardcoded
+        color: #FFF3F0;
+        background-color: #191919;
     }
 
     input[type="number"] {
@@ -79,15 +84,5 @@ body {
         -webkit-appearance: none;
         /* Chrome, Safari, Edge */
         margin: 0;
-    }
-}
-
-@layer base {
-    * {
-        @apply border-border;
-    }
-
-    body {
-        @apply bg-background text-foreground;
     }
 }

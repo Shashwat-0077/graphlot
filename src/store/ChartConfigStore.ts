@@ -8,12 +8,6 @@ export type ColorType = {
     b: number;
     a: number;
 };
-// export type YAxisType = {
-//     active: boolean;
-//     name: string;
-//     aggregation: "sum" | "average" | "count" | "cumulative_sum";
-//     sort: "asc" | "desc";
-// }[];
 
 export type ChartConfigState = {
     type: ChartType;
@@ -29,6 +23,7 @@ export type ChartConfigState = {
     XAxis: string;
     YAxis: string;
     groupBy: string;
+    sortBy: "asc" | "desc" | "";
     filters: {
         column: string;
         operation: string;
@@ -49,6 +44,7 @@ export type ChartConfigActions = {
     setFilterColumn: (column: string, index: number) => void;
     setFilterOperation: (operation: string, index: number) => void;
     setFilterValue: (value: string, index: number) => void;
+    setSortBy: (sort: "asc" | "desc" | "") => void;
 
     // toggles
     toggleLabel: () => void;
@@ -75,7 +71,7 @@ export type ChartConfigActions = {
 export type ChartConfigStore = ChartConfigState & ChartConfigActions;
 
 export const defaultInitState: ChartConfigState = {
-    type: null,
+    type: "Radar",
     label: "",
     showLabel: true,
     showGrid: true,
@@ -88,6 +84,7 @@ export const defaultInitState: ChartConfigState = {
     XAxis: "",
     YAxis: "",
     groupBy: "",
+    sortBy: "",
     filters: [],
 };
 
@@ -188,6 +185,10 @@ export const createChartConfigStore = (
             clearFilters: () =>
                 set((state) => {
                     state.filters = [];
+                }),
+            setSortBy: (sort) =>
+                set((state) => {
+                    state.sortBy = sort;
                 }),
         }))
     );
