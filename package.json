@@ -9,11 +9,16 @@
         "clear": "rm -rf .next",
         "lint": "next lint --dir src",
         "format": "bun lint --fix --dir src",
-        "add:ui": "bunx --bun shadcn@latest add"
+        "add:ui": "bunx --bun shadcn@latest add",
+        "db:local": "turso dev --db-file ./drizzle/local-db.db",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "bun run src/db/migrate.ts",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
         "@hono/zod-validator": "^0.4.1",
         "@hookform/resolvers": "^3.9.1",
+        "@libsql/client": "^0.14.0",
         "@notionhq/client": "^2.2.15",
         "@radix-ui/react-accordion": "^1.2.1",
         "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -41,6 +46,9 @@
         "clsx": "^2.1.1",
         "cmdk": "1.0.0",
         "date-fns": "^4.1.0",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.38.4",
+        "drizzle-zod": "^0.6.1",
         "embla-carousel-autoplay": "^8.4.0",
         "embla-carousel-react": "^8.4.0",
         "hono": "^4.6.8",
@@ -63,7 +71,7 @@
         "tailwind-merge": "^2.5.4",
         "tailwindcss-animate": "^1.0.7",
         "vaul": "^1.1.0",
-        "zod": "^3.23.8",
+        "zod": "^3.24.1",
         "zustand": "^5.0.2"
     },
     "devDependencies": {
@@ -72,6 +80,7 @@
         "@types/react-dom": "^18",
         "@typescript-eslint/eslint-plugin": "^8.11.0",
         "@typescript-eslint/parser": "^8.11.0",
+        "drizzle-kit": "^0.30.2",
         "eslint": "^8",
         "eslint-config-next": "14.2.14",
         "eslint-plugin-boundaries": "^4.2.2",

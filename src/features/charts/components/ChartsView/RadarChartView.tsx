@@ -11,10 +11,9 @@ import {
 } from "@/components/ui/chart";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 import { data } from "@/coverage/data";
+import { getRadarChartData } from "@/utils/chartDataConversion/Radar";
 
 import { useGetDatabaseSchema } from "../../api/useGetDatabaseSchema";
-
-const configData: string[] = ["count"];
 
 export const RadarChartView = () => {
     // TODO : make that the data in the config View stays for 30 mins (stale time) but the data in the chart view should be live
@@ -32,123 +31,45 @@ export const RadarChartView = () => {
     const { data: schema, isLoading } = useGetDatabaseSchema();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div>Loading...</div>; // TODO : improve Text and design
     }
 
     if (!schema) {
-        return <div>No Data</div>;
+        return <div>No Data</div>; // TODO : improve Text and design
     }
 
     if (!XAxis || !YAxis) {
-        return <div>Select X and Y Axis</div>;
+        return <div>Select X and Y Axis</div>; // TODO : improve Text and design
     }
 
-    // const configData: string[] = [];
-
-    // const XAxisDetails = schema[XAxis];
-    const YAxisDetails = schema[YAxis];
-    let RadarChartData: {
-        count: number;
-        class: string;
-    }[] = [];
-    let classes = [];
-    switch (YAxisDetails["type"]) {
-        case "status":
-            classes = YAxisDetails["status"]["options"];
-            for (const itemClass of classes) {
-                RadarChartData.push({
-                    class: itemClass.name,
-                    count: 0,
-                });
-            }
-
-            for (const item of data) {
-                // @ts-expect-error - something // TODO : Write a better comment
-                if (item[YAxis] === null) {
-                    continue;
-                }
-
-                for (const r_data of RadarChartData) {
-                    // @ts-expect-error - something // TODO : Write a better comment
-                    if (r_data.class === item[YAxis].name) {
-                        r_data.count++;
-                    }
-                }
-            }
-            break;
-        case "select":
-            classes = YAxisDetails["select"]["options"];
-            for (const itemClass of classes) {
-                RadarChartData.push({
-                    class: itemClass.name,
-                    count: 0,
-                });
-            }
-
-            for (const item of data) {
-                // @ts-expect-error - something // TODO : Write a better comment
-                if (item[YAxis] === null) {
-                    continue;
-                }
-
-                for (const r_data of RadarChartData) {
-                    // @ts-expect-error - something // TODO : Write a better comment
-                    if (r_data.class === item[YAxis].name) {
-                        r_data.count++;
-                    }
-                }
-            }
-            break;
-
-        case "multi_select":
-            classes = YAxisDetails["multi_select"]["options"];
-            console.log(classes);
-            const rawData: typeof RadarChartData = [];
-            for (const itemClass of classes) {
-                rawData.push({
-                    class: itemClass.name,
-                    count: 0,
-                });
-            }
-
-            for (const item of data) {
-                // @ts-expect-error - something // TODO : Write a better comment
-                if (item[YAxis] === null) {
-                    continue;
-                }
-
-                // @ts-expect-error - something // TODO : Write a better comment
-                for (const items_item of item[YAxis]) {
-                    for (const r_data of rawData) {
-                        if (r_data.class === items_item.name) {
-                            r_data.count++;
-                        }
-                    }
-                }
-            }
-
-            RadarChartData = rawData.filter((item) => item.count > 0);
-
-            break;
-    }
+    const { configData, RadarChartData } = getRadarChartData(
+        data,
+        schema,
+        XAxis,
+        YAxis
+    );
 
     // TODO : Show disclaimer message to user if the data is more than 8 and say that only 8 data will be shown for bigger datasets to avoid clutter, and provider link to the full dataset chart their, it will be on different page
     if (RadarChartData.length > 8) {
         RadarChartData.splice(8);
     }
 
-    console.log(RadarChartData);
+    console.log({ RadarChartData, configData });
+
     let colorIndex = 0;
     const RadarChartConfig: {
-        [key: string]: { label: string; color: string };
+        [key: string]: { label: string; color: string; alpha: number };
     } = {};
 
     for (const data_label of configData) {
         RadarChartConfig[data_label] = {
             label: data_label,
             color: colors[colorIndex]
-                ? `rgba(${colors[colorIndex].r}, ${colors[colorIndex].g}, ${colors[colorIndex].b}, ${colors[colorIndex].a})`
-                : "rgba(255, 255, 255, 0.5)",
+                ? `rgb(${colors[colorIndex].r}, ${colors[colorIndex].g}, ${colors[colorIndex].b}`
+                : "rgb(255, 255, 255)",
+            alpha: colors[colorIndex]
+                ? colors[colorIndex].a
+                : Math.min(1 / configData.length, 0.5),
         };
         colorIndex++;
     }
@@ -185,6 +106,11 @@ export const RadarChartView = () => {
                         key={data_label}
                         dataKey={data_label}
                         fill={RadarChartConfig[data_label].color}
+                        fillOpacity={RadarChartConfig[data_label].alpha}
+                        dot={{
+                            r: 4,
+                            fillOpacity: 1,
+                        }}
                     />
                 ))}
 

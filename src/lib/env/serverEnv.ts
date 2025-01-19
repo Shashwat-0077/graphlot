@@ -1,7 +1,14 @@
 import { z } from "zod";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
 
 // Define server-only environment variables
-const serverEnvSchema = z.object({});
+const serverEnvSchema = z.object({
+    NODE_ENV: z.string(),
+    TURSO_CONNECTION_URL: z.string().url(),
+    TURSO_AUTH_TOKEN: z.string(),
+});
 
 // Parse and validate server environment variables
 const parsedServerEnv = serverEnvSchema.safeParse(process.env);
@@ -14,8 +21,7 @@ if (!parsedServerEnv.success) {
 
     // eslint-disable-next-line no-console
     console.error(
-        "Server environment variables validation failed:",
-        formattedErrors
+        `Server environment variables validation failed: \n\t${formattedErrors}`
     );
 
     throw new Error(

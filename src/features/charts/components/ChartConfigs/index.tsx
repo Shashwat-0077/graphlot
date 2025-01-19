@@ -237,6 +237,7 @@ export default function ChartConfigs({}) {
                                     <SelectItem key={0} value="None">
                                         None
                                     </SelectItem>
+                                    <Separator className="my-1" />
                                     {XAxisColumns.map((col, index) => (
                                         <SelectItem key={index + 1} value={col}>
                                             {col}
@@ -274,8 +275,12 @@ export default function ChartConfigs({}) {
                                     <SelectValue placeholder="Select a Column" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem key={0} value="count">
+                                        count
+                                    </SelectItem>
+                                    <Separator className="my-1" />
                                     {YAxisColumns.map((col, index) => (
-                                        <SelectItem key={index} value={col}>
+                                        <SelectItem key={index + 1} value={col}>
                                             {col}
                                         </SelectItem>
                                     ))}
@@ -290,6 +295,7 @@ export default function ChartConfigs({}) {
                                     <SelectItem key={0} value="None">
                                         None
                                     </SelectItem>
+                                    <Separator className="my-1" />
                                     {YAxisColumns.map((col, index) => (
                                         <SelectItem key={index + 1} value={col}>
                                             {col}

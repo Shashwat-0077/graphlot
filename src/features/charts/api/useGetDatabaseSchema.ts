@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "@/lib/rpc";
 
-export const useGetDatabaseSchema = () => {
+export const useGetDatabaseSchema = (id: string) => {
     const query = useQuery({
         queryKey: ["database-schema"],
         queryFn: async () => {
@@ -10,7 +10,7 @@ export const useGetDatabaseSchema = () => {
                 "$get"
             ]({
                 param: {
-                    id: "1534edf4-c844-80e2-8104-c3a8017b216c",
+                    id: id,
                 },
             });
 
