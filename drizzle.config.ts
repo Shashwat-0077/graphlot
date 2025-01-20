@@ -1,13 +1,14 @@
 import { Config } from "drizzle-kit";
+import dotenv from "dotenv";
 
-import { envServer } from "@/lib/env/serverEnv";
+dotenv.config({ path: ".env.local" });
 
 export default {
     dialect: "turso",
     schema: "./src/db/schema.ts",
     out: "./drizzle/migrations",
     dbCredentials: {
-        url: envServer.TURSO_CONNECTION_URL,
-        authToken: envServer.TURSO_AUTH_TOKEN,
+        url: process.env.TURSO_CONNECTION_URL!,
+        // authToken: envServer.TURSO_AUTH_TOKEN, // TODO : Uncomment this line if you are pushing it to production
     },
 } satisfies Config;

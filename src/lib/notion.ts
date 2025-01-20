@@ -21,7 +21,6 @@ export const getNotionClient = async (): Promise<returnType> => {
     const notion_token = data.session?.provider_token;
 
     // BUG : Notion token keeps getting unavailable
-
     if (!notion_token) {
         return {
             success: false,

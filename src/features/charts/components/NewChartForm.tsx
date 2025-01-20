@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { chartSchema, chartTypes } from "@/features/charts/schema";
 
-import { useGetAllDatabases } from "../api/useGetAllDatabases";
+import { useGetAllDatabases } from "../../notion/api/useGetAllDatabases";
 
 import NewChartFormLoader from "./NewChartFormLoader";
 
@@ -76,8 +76,8 @@ export function NewChartForm() {
                             </Select>
                             <FormDescription>
                                 Chart types determine how data is visually
-                                represented in your project. You can customize
-                                this further in your chart settings.
+                                represented in your Collections. You can
+                                customize this further in your chart settings.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

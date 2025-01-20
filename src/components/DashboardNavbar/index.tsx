@@ -26,8 +26,8 @@ const data = {
 
     navMain: [
         {
-            title: "Projects",
-            url: "/dashboard/projects",
+            title: "Collections",
+            url: "/dashboard/Collections",
             icon: <MousePointer2 className="text-primary" />,
         },
         {

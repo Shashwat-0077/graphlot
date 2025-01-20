@@ -3,7 +3,7 @@ import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-export default function ProjectLoader({ size = 150 }: { size?: number }) {
+export default function CollectionLoader({ size = 150 }: { size?: number }) {
     const circleSize = size;
 
     return (

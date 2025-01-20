@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import ClearAll from "../ClearAll";
-import { useGetDatabaseSchema } from "../../api/useGetDatabaseSchema";
+import { useGetDatabaseSchema } from "../../../notion/api/useGetDatabaseSchema";
 
 export default function ChartConfigs({}) {
     const colorSectionHeight = 120; // in px

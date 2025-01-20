@@ -16,17 +16,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { projectSchema } from "../schema";
+import { CollectionSchema } from "../schema";
 
-export function NewProjectForm() {
-    const form = useForm<z.infer<typeof projectSchema>>({
-        resolver: zodResolver(projectSchema),
+export function NewCollectionForm() {
+    const form = useForm<z.infer<typeof CollectionSchema>>({
+        resolver: zodResolver(CollectionSchema),
         defaultValues: {
             name: "",
         },
     });
 
-    function onSubmit(_data: z.infer<typeof projectSchema>) {}
+    function onSubmit(_data: z.infer<typeof CollectionSchema>) {}
 
     return (
         <Form {...form}>

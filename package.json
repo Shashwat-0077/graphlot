@@ -12,7 +12,7 @@
         "add:ui": "bunx --bun shadcn@latest add",
         "db:local": "turso dev --db-file ./drizzle/local-db.db",
         "db:generate": "drizzle-kit generate",
-        "db:migrate": "bun run src/db/migrate.ts",
+        "db:apply": "bun run src/db/migrate.ts",
         "db:studio": "drizzle-kit studio"
     },
     "dependencies": {

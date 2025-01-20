@@ -6,7 +6,7 @@ export const useGetDatabaseSchema = (id: string) => {
     const query = useQuery({
         queryKey: ["database-schema"],
         queryFn: async () => {
-            const response = await client.api.charts[":id"]["get-table-schema"][
+            const response = await client.api.notion[":id"]["get-table-schema"][
                 "$get"
             ]({
                 param: {

@@ -10,10 +10,10 @@ import { HeatmapChartCardHeader } from "./HeaderCharts/Heatmap";
 
 export function ChartCard({
     type,
-    projectID,
+    collectionId,
 }: {
     type: "Area" | "Bar" | "Donut" | "Radar" | "Heatmap";
-    projectID: string;
+    collectionId: string;
 }) {
     const ChartType = {
         Area: AreaChartCardHeader,
@@ -24,7 +24,9 @@ export function ChartCard({
     }[type];
 
     return (
-        <Link href={`/dashboard/projects/${projectID}/${type.toLowerCase()}`}>
+        <Link
+            href={`/dashboard/collections/${collectionId}/${type.toLowerCase()}`}
+        >
             <Card className="overflow-hidden">
                 <CardHeader className="p-0">
                     <ChartType />

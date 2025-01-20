@@ -8,7 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useGetDatabaseSchema } from "@/features/charts/api/useGetDatabaseSchema";
+import { useGetDatabaseSchema } from "@/features/notion/api/useGetDatabaseSchema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";

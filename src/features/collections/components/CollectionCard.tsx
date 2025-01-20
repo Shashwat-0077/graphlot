@@ -4,11 +4,15 @@ import React from "react";
 
 import { cn } from "@/lib/utils";
 
-export default function ProjectCard({
+export default function CollectionCard({
     path,
+    name,
+    chartCount,
     size = 150,
 }: {
     path: string;
+    name: string;
+    chartCount: number;
     size?: number;
 }) {
     const circleSize = size;
@@ -24,7 +28,7 @@ export default function ProjectCard({
                     <span className="text-xs">View</span>
                     <MoveRight size={10} className="mt-1" />
                 </span>
-                <h1>Your project name</h1>
+                <h1>{name}</h1>
             </div>
             {/* Circle */}
             <div
@@ -37,7 +41,7 @@ export default function ProjectCard({
                 }}
             >
                 <div className="absolute left-1/2 top-1/2 grid h-[90%] w-[90%] -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full border-2 border-primary text-2xl">
-                    4
+                    {chartCount}
                 </div>
             </div>
         </Link>

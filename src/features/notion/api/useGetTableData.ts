@@ -4,17 +4,17 @@ import { InferRequestType, InferResponseType } from "hono";
 import { client } from "@/lib/rpc";
 
 type ResponseType = InferResponseType<
-    (typeof client.api.charts)[":id"]["get-table-data"]["$get"]
+    (typeof client.api.notion)[":id"]["get-table-data"]["$get"]
 >;
 type RequestType = InferRequestType<
-    (typeof client.api.charts)[":id"]["get-table-data"]["$get"]
+    (typeof client.api.notion)[":id"]["get-table-data"]["$get"]
 >;
 
 export const useGetAllDatabases = () => {
     const query = useQuery<ResponseType, Error, RequestType>({
         queryKey: ["table-data"],
         queryFn: async () => {
-            const response = await client.api.charts[":id"]["get-table-data"][
+            const response = await client.api.notion[":id"]["get-table-data"][
                 "$get"
             ]({
                 param: {

@@ -6,7 +6,7 @@ export const useGetAllDatabases = () => {
     const query = useQuery({
         queryKey: ["all-databases"],
         queryFn: async () => {
-            const response = await client.api.charts["get-databases"]["$get"]();
+            const response = await client.api.notion["get-databases"]["$get"]();
 
             if (!response.ok) {
                 return null;
