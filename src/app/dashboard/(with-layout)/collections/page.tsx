@@ -3,11 +3,21 @@ import { Plus } from "lucide-react";
 
 import CollectionCard from "@/features/collections/components/CollectionCard";
 import { getAllCollections } from "@/features/collections/api/getAllCollections";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function Dashboard() {
     const cardSize = 150;
 
-    const response = await getAllCollections();
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return <div>Unauthorized</div>;
+    }
+
+    const response = await getAllCollections({ userId: user.id });
 
     if (!response.ok) {
         return <div>{response.error}</div>;

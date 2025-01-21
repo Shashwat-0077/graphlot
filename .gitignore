@@ -40,5 +40,8 @@ extraInfo.txt
 # vscode
 .vscode
 
-#drizzle
+# drizzle
 /drizzle
+
+# thunder client
+thunder-collection_Momentum.json

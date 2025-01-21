@@ -1,12 +1,13 @@
+import { v4 as uuid } from "uuid";
 import { relations, sql } from "drizzle-orm";
 import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 export const Collections = sqliteTable(
     "collections",
     {
-        id: integer("id", { mode: "number" }).primaryKey({
-            autoIncrement: true,
-        }),
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => uuid()),
         userId: text("userId").notNull(),
         name: text("name").notNull(),
         description: text("description").notNull(),
@@ -22,63 +23,79 @@ export const Collections = sqliteTable(
     ]
 );
 
-export const Charts = sqliteTable("charts", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    collection_id: integer("collection_id", { mode: "number" })
-        .notNull()
-        .references(() => Collections.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    description: text("description").notNull(),
-    created_at: integer("created_at", { mode: "timestamp" })
-        .default(sql`CURRENT_TIMESTAMP`)
-        .notNull(),
-    notionDatabaseUrl: text("notionDatabaseUrl").notNull(),
-    xAxis: text("xAxis").notNull(),
-    yAxis: text("yAxis").notNull(),
-    type: text("type").notNull(), // Each chart type will be validated at application level
-});
+export const Charts = sqliteTable(
+    "charts",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => uuid()),
+        collection_id: text("collection_id")
+            .notNull()
+            .references(() => Collections.id, { onDelete: "cascade" }),
+        name: text("name").notNull(),
+        description: text("description").notNull(),
+        created_at: integer("created_at", { mode: "timestamp" })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        notionDatabaseUrl: text("notionDatabaseUrl").notNull(),
+        type: text("type").notNull(),
+        xAxis: text("xAxis").notNull().default(""),
+        yAxis: text("yAxis").notNull().default(""),
+    },
+    (table) => [
+        unique("uniqueConstantForCollectionIdAndName").on(
+            table.collection_id,
+            table.name
+        ),
+    ]
+);
 
 export const AreaCharts = sqliteTable("area_chart", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    chart_id: integer("chart_id", { mode: "number" })
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    chart_id: text("chart_id")
         .notNull()
-        .unique()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add area chart specific properties here
 });
 
 export const RadarCharts = sqliteTable("radar_chart", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    chart_id: integer("chart_id", { mode: "number" })
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    chart_id: text("chart_id")
         .notNull()
-        .unique()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add radar chart specific properties here
 });
 
 export const DonutCharts = sqliteTable("donut_chart", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    chart_id: integer("chart_id", { mode: "number" })
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    chart_id: text("chart_id")
         .notNull()
-        .unique()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add donut chart specific properties here
 });
 
 export const BarCharts = sqliteTable("bar_chart", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    chart_id: integer("chart_id", { mode: "number" })
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    chart_id: text("chart_id")
         .notNull()
-        .unique()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add bar chart specific properties here
 });
 
 export const HeatmapCharts = sqliteTable("heatmap_chart", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    chart_id: integer("chart_id", { mode: "number" })
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    chart_id: text("chart_id")
         .notNull()
-        .unique()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add heatmap chart specific properties here
 });

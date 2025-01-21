@@ -2,10 +2,13 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { Collections } from "@/db/schema";
-import { createClient } from "@/utils/supabase/server";
 import { SelectCollection } from "@/db/types";
 
-export async function getAllCollections(): Promise<
+export async function getAllCollections({
+    userId,
+}: {
+    userId: string;
+}): Promise<
     | {
           ok: true;
           collections: Zod.infer<typeof SelectCollection>[];
@@ -15,21 +18,21 @@ export async function getAllCollections(): Promise<
           error: string;
       }
 > {
-    const supabase = await createClient();
+    try {
+        const collections = await db
+            .select()
+            .from(Collections)
+            .where(eq(Collections.userId, userId))
+            .all();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        return { ok: false, error: "User not found" };
+        return { ok: true, collections };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred.",
+        };
     }
-
-    const collections = await db
-        .select()
-        .from(Collections)
-        .where(eq(Collections.userId, user?.id))
-        .all();
-
-    return { ok: true, collections };
 }
