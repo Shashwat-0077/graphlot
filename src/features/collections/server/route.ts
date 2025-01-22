@@ -10,6 +10,7 @@ import { authMiddleWare } from "@/features/auth/middlewares/authMiddleware";
 
 import { createCollection } from "../api/createCollection";
 import { getAllCollections } from "../api/getAllCollections";
+import { CollectionSchema } from "../schema";
 import { DeleteCollection } from "../api/deleteCollection";
 
 type variables = {
@@ -44,13 +45,7 @@ const app = new Hono<{ Variables: variables }>()
     .post(
         "/create-collection",
         authMiddleWare,
-        zValidator(
-            "form",
-            z.object({
-                name: z.string().nonempty(),
-                description: z.string().nonempty(),
-            })
-        ),
+        zValidator("form", CollectionSchema.Insert),
         async (c) => {
             const userId = c.get("userId");
             const { name, description } = c.req.valid("form");
@@ -71,6 +66,31 @@ const app = new Hono<{ Variables: variables }>()
             const { newCollectionId } = response;
 
             return c.json({ newCollectionId }, 200);
+        }
+    )
+    .put(
+        "/:collectionId",
+        authMiddleWare,
+        zValidator(
+            "param",
+            z.object({
+                collectionId: z.string().nonempty(),
+            })
+        ),
+        zValidator("form", CollectionSchema.Update),
+        async (c) => {
+            const { collectionId } = c.req.valid("param");
+            const userId = c.get("userId");
+
+            const response = await DeleteCollection({ userId, collectionId });
+
+            if (!response.ok) {
+                throw new HTTPException(500, {
+                    res: c.json({ error: response.error }, 500),
+                });
+            }
+
+            return c.json({ deleted: true }, 200);
         }
     )
     .delete(

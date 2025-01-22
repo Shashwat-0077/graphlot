@@ -2,8 +2,9 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { InsertCollection } from "@/db/types";
 import { Collections } from "@/db/schema";
+
+import { InsertCollection } from "@/db/types";
 // import { createClient } from "@/utils/supabase/server";
 
 export const createCollection = async ({

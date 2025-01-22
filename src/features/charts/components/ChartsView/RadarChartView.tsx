@@ -10,10 +10,11 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
-import { data } from "@/coverage/data";
 import { getRadarChartData } from "@/utils/chartDataConversion/Radar";
 
 import { useGetDatabaseSchema } from "../../../notion/api/useGetDatabaseSchema";
+
+import { data } from "@/coverage/data";
 
 export const RadarChartView = () => {
     // TODO : make that the data in the config View stays for 30 mins (stale time) but the data in the chart view should be live

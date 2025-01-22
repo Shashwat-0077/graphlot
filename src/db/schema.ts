@@ -38,9 +38,10 @@ export const Charts = sqliteTable(
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
         notionDatabaseUrl: text("notionDatabaseUrl").notNull(),
-        type: text("type").notNull(),
         xAxis: text("xAxis").notNull().default(""),
         yAxis: text("yAxis").notNull().default(""),
+        type: text("type").notNull(),
+        // NOTE : Maybe add the child chart id here to improve lookup, just maybe
     },
     (table) => [
         unique("uniqueConstantForCollectionIdAndName").on(
@@ -55,6 +56,7 @@ export const AreaCharts = sqliteTable("area_chart", {
         .primaryKey()
         .$defaultFn(() => uuid()),
     chart_id: text("chart_id")
+        .unique()
         .notNull()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add area chart specific properties here
@@ -65,6 +67,7 @@ export const RadarCharts = sqliteTable("radar_chart", {
         .primaryKey()
         .$defaultFn(() => uuid()),
     chart_id: text("chart_id")
+        .unique()
         .notNull()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add radar chart specific properties here
@@ -75,6 +78,7 @@ export const DonutCharts = sqliteTable("donut_chart", {
         .primaryKey()
         .$defaultFn(() => uuid()),
     chart_id: text("chart_id")
+        .unique()
         .notNull()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add donut chart specific properties here
@@ -85,6 +89,7 @@ export const BarCharts = sqliteTable("bar_chart", {
         .primaryKey()
         .$defaultFn(() => uuid()),
     chart_id: text("chart_id")
+        .unique()
         .notNull()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add bar chart specific properties here
@@ -95,6 +100,7 @@ export const HeatmapCharts = sqliteTable("heatmap_chart", {
         .primaryKey()
         .$defaultFn(() => uuid()),
     chart_id: text("chart_id")
+        .unique()
         .notNull()
         .references(() => Charts.id, { onDelete: "cascade" }),
     // Add heatmap chart specific properties here

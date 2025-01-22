@@ -2,11 +2,13 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
-import { InsertChart } from "@/db/types";
 import { authMiddleWare } from "@/features/auth/middlewares/authMiddleware";
 
 import { getAllChartsWithCollectionId } from "../api/getAllChartsWithCollectionId";
 import { CreateNewChart } from "../api/createNewChart";
+import { DeleteChart } from "../api/deleteChart";
+
+import { InsertChart } from "@/db/types";
 
 type variables = {
     userId: string;
@@ -64,7 +66,13 @@ const app = new Hono<{ Variables: variables }>()
             const { chartId } = c.req.valid("param");
             const userId = c.get("userId");
 
-            return c.json({ id }, 200);
+            const response = await DeleteChart({ userId, chartId });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            return c.json({ deleted: true }, 200);
         }
     );
 

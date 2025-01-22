@@ -2,7 +2,8 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { Collections } from "@/db/schema";
-import { SelectCollection } from "@/db/types";
+
+import { CollectionSchema } from "../schema";
 
 export async function getAllCollections({
     userId,
@@ -11,7 +12,7 @@ export async function getAllCollections({
 }): Promise<
     | {
           ok: true;
-          collections: Zod.infer<typeof SelectCollection>[];
+          collections: Zod.infer<typeof CollectionSchema.Insert>[];
       }
     | {
           ok: false;

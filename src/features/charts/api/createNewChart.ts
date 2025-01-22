@@ -1,7 +1,16 @@
 import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { Charts, Collections } from "@/db/schema";
+import {
+    AreaCharts,
+    BarCharts,
+    Charts,
+    Collections,
+    DonutCharts,
+    HeatmapCharts,
+    RadarCharts,
+} from "@/db/schema";
+
 import { InsertChart } from "@/db/types";
 
 export async function CreateNewChart({
@@ -47,10 +56,40 @@ export async function CreateNewChart({
             })
             .returning({ id: Charts.id });
 
+        switch (chart.type) {
+            case "Bar":
+                await db.insert(BarCharts).values({
+                    chart_id: id,
+                });
+                break;
+            case "Area":
+                await db.insert(AreaCharts).values({
+                    chart_id: id,
+                });
+                break;
+            case "Heatmap":
+                await db.insert(HeatmapCharts).values({
+                    chart_id: id,
+                });
+                break;
+            case "Donut":
+                await db.insert(DonutCharts).values({
+                    chart_id: id,
+                });
+                break;
+            case "Radar":
+                await db.insert(RadarCharts).values({
+                    chart_id: id,
+                });
+                break;
+            default:
+                break;
+        }
+
         await db
             .update(Collections)
             .set({
-                chartCount: sql`${Collections.chartCount} + 1`,
+                chartCount: sql`${Collections.chartCount} + 1`, // Use raw SQL expression
             })
             .where(eq(Collections.id, chart.collection_id));
 
