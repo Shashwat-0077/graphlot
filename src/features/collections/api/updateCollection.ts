@@ -45,7 +45,11 @@ export default async function UpdateCollection({
 
         await db
             .update(Collections)
-            .set(newCollection)
+            .set({
+                chartCount: newCollection.chartCount,
+                description: newCollection.description,
+                name: newCollection.name,
+            })
             .where(eq(Collections.id, collectionId));
 
         return { ok: true };

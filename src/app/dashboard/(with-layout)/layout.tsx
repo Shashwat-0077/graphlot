@@ -17,6 +17,7 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { decodeFromUrl } from "@/utils/pathSerialization";
 
 // BUG : Their is key error in the blow code, it should be fixed
 
@@ -31,11 +32,14 @@ export default function RootLayout({
         .split("/")
         .filter((path) => !(!path || path === ""));
 
+    // TODO : Use encoding and decoding of the paths and names for the breadcrumbs
     const breadCrumbs: { path: string; name: string; isLast: boolean }[] =
         paramList.map((path, index) => {
+            const pathObj = decodeFromUrl(path);
+
             return {
                 path: "/" + paramList.slice(0, index + 1).join("/"),
-                name: path
+                name: (pathObj ? pathObj.name : path)
                     .split("-")
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" "),
@@ -57,34 +61,31 @@ export default function RootLayout({
                         <Breadcrumb>
                             <BreadcrumbList>
                                 {breadCrumbs.map((breadcrumb, index) => {
-                                    if (breadcrumb.isLast) {
+                                    if (!breadcrumb.isLast) {
                                         return (
-                                            <BreadcrumbItem
-                                                key={`breadcrumb-item-${index}`}
-                                            >
-                                                <BreadcrumbPage className="text-primary">
-                                                    {breadcrumb.name}
-                                                </BreadcrumbPage>
-                                            </BreadcrumbItem>
+                                            <>
+                                                <BreadcrumbItem key={index}>
+                                                    <BreadcrumbLink
+                                                        href={breadcrumb.path}
+                                                    >
+                                                        {breadcrumb.name}
+                                                    </BreadcrumbLink>
+                                                </BreadcrumbItem>
+                                                <BreadcrumbSeparator
+                                                    key={`separator-${index}`}
+                                                />
+                                            </>
                                         );
                                     }
-                                    return (
-                                        <>
-                                            <BreadcrumbItem
-                                                key={`breadcrumb-item-${index}`}
-                                            >
-                                                <BreadcrumbLink
-                                                    href={breadcrumb.path}
-                                                >
-                                                    {breadcrumb.name}
-                                                </BreadcrumbLink>
-                                            </BreadcrumbItem>
-                                            <BreadcrumbSeparator
-                                                key={`breadcrumb-separator-${index}`}
-                                            />
-                                        </>
-                                    );
                                 })}
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage className="text-primary">
+                                        {
+                                            breadCrumbs[breadCrumbs.length - 1]
+                                                .name
+                                        }
+                                    </BreadcrumbPage>
+                                </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>

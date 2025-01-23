@@ -19,11 +19,12 @@ export async function DeleteChart({
       }
 > {
     try {
-        const [record] = await db
+        const record = await db
             .select()
             .from(Charts)
             .fullJoin(Collections, eq(Collections.id, Charts.collection_id))
-            .where(eq(Charts.id, chartId));
+            .where(eq(Charts.id, chartId))
+            .then(([record]) => record);
 
         if (!record || !record.charts) {
             return {

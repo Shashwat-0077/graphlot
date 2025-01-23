@@ -11,12 +11,12 @@ import {
     RadarCharts,
 } from "@/db/schema";
 
-import { InsertChart } from "@/db/types";
+import { BasicChartSchema } from "../schema";
 
 export async function CreateNewChart({
     chart,
 }: {
-    chart: Zod.infer<typeof InsertChart>;
+    chart: Zod.infer<typeof BasicChartSchema.Insert>;
 }): Promise<
     | {
           ok: true;
@@ -45,7 +45,7 @@ export async function CreateNewChart({
             };
         }
 
-        const [{ id }] = await db
+        const id = await db
             .insert(Charts)
             .values({
                 collection_id: chart.collection_id,
@@ -54,7 +54,8 @@ export async function CreateNewChart({
                 notionDatabaseUrl: chart.notionDatabaseUrl,
                 type: chart.type,
             })
-            .returning({ id: Charts.id });
+            .returning({ id: Charts.id })
+            .then(([{ id }]) => id);
 
         switch (chart.type) {
             case "Bar":

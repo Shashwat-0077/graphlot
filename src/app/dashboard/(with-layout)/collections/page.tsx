@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import CollectionCard from "@/features/collections/components/CollectionCard";
-import { getAllCollections } from "@/features/collections/api/getAllCollections";
+import { getAllCollections } from "@/features/collections/api/getCollections";
 import { createClient } from "@/utils/supabase/server";
+import { encodeForUrl } from "@/utils/pathSerialization";
 
 export default async function Dashboard() {
     const cardSize = 150;
@@ -33,7 +34,7 @@ export default async function Dashboard() {
                 <CollectionCard
                     key={collection.id}
                     name={collection.name}
-                    path={`/dashboard/collections/${collection.id}`}
+                    path={`/dashboard/collections/${encodeForUrl({ path: collection.id, name: collection.name })}`}
                     size={cardSize}
                     chartCount={collection.chartCount}
                 />

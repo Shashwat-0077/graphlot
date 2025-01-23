@@ -3,14 +3,14 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { Charts } from "@/db/schema";
 
-import { SelectChart } from "@/db/types";
+import { BasicChartSchema } from "../schema";
 
 export async function getAllChartsWithCollectionId(
     collectionId: string
 ): Promise<
     | {
           ok: true;
-          charts: Zod.infer<typeof SelectChart>[];
+          charts: Zod.infer<typeof BasicChartSchema.Select>[];
       }
     | {
           ok: false;

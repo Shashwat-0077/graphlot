@@ -9,9 +9,10 @@ import { Collections } from "@/db/schema";
 import { authMiddleWare } from "@/features/auth/middlewares/authMiddleware";
 
 import { createCollection } from "../api/createCollection";
-import { getAllCollections } from "../api/getAllCollections";
+import { getAllCollections } from "../api/getCollections";
 import { CollectionSchema } from "../schema";
 import { DeleteCollection } from "../api/deleteCollection";
+import UpdateCollection from "../api/updateCollection";
 
 type variables = {
     userId: string;
@@ -80,9 +81,15 @@ const app = new Hono<{ Variables: variables }>()
         zValidator("form", CollectionSchema.Update),
         async (c) => {
             const { collectionId } = c.req.valid("param");
+            const newCollection = c.req.valid("form");
+
             const userId = c.get("userId");
 
-            const response = await DeleteCollection({ userId, collectionId });
+            const response = await UpdateCollection({
+                userId,
+                collectionId,
+                newCollection,
+            });
 
             if (!response.ok) {
                 throw new HTTPException(500, {
@@ -90,7 +97,7 @@ const app = new Hono<{ Variables: variables }>()
                 });
             }
 
-            return c.json({ deleted: true }, 200);
+            return c.json({ updated: true }, 200);
         }
     )
     .delete(

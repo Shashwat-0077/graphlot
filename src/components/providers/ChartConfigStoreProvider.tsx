@@ -41,7 +41,7 @@ export const useChartConfigStore = <T,>(
 
     if (!chartConfigStoreContext) {
         throw new Error(
-            `useCounterStore must be used within CounterStoreProvider`
+            `useChartConfigStore must be used within ChartConfigStoreProvider`
         );
     }
 

@@ -4,15 +4,14 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { Collections } from "@/db/schema";
 
-import { InsertCollection } from "@/db/types";
-// import { createClient } from "@/utils/supabase/server";
+import { CollectionSchema } from "../schema";
 
 export const createCollection = async ({
     userId,
     newCollection,
 }: {
     userId: string;
-    newCollection: z.infer<typeof InsertCollection>;
+    newCollection: z.infer<typeof CollectionSchema.Insert>;
 }): Promise<
     | {
           ok: true;
@@ -44,9 +43,9 @@ export const createCollection = async ({
         const [{ id }] = await db
             .insert(Collections)
             .values({
-                description: newCollection.description,
-                name: newCollection.name,
                 userId: userId,
+                name: newCollection.name,
+                description: newCollection.description,
             })
             .returning({ id: Collections.id });
 

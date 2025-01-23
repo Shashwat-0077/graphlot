@@ -21,6 +21,7 @@ import {
     AreaChartSchema,
     BarChartSchema,
     BasicChartSchema,
+    ChartsTypes,
     DonutChartSchema,
     HeatmapChartSchema,
     RadarChartSchema,
@@ -89,7 +90,7 @@ export async function UpdateChartType({
 }: {
     userId: string;
     chartId: string;
-    type: string;
+    type: z.infer<typeof ChartsTypes>;
 }): Promise<
     | {
           ok: true;
@@ -112,7 +113,7 @@ export async function UpdateChartType({
         await db
             .update(Charts)
             .set({
-                type,
+                type: type,
             })
             .where(eq(Charts.id, chartId));
 
@@ -188,6 +189,62 @@ export async function UpdateChartType({
     }
 }
 
+export async function MoveChartBetweenCollections({
+    userId,
+    chartId,
+    newCollectionId,
+}: {
+    userId: string;
+    chartId: string;
+    newCollectionId: string;
+}): Promise<
+    | {
+          ok: true;
+      }
+    | {
+          ok: false;
+          error: string;
+      }
+> {
+    try {
+        const response = await CheckPermission({ userId, chartId });
+
+        if (!response.ok) {
+            return response;
+        }
+
+        const destinationCollection = await db
+            .select()
+            .from(Collections)
+            .where(eq(Collections.id, newCollectionId))
+            .then(([collection]) => collection);
+
+        if (!destinationCollection) {
+            return {
+                ok: false,
+                error: `New Collection ID is invalid, or Collection with ID ${newCollectionId} does not exists`,
+            };
+        }
+
+        await db
+            .update(Charts)
+            .set({
+                collection_id: newCollectionId,
+            })
+            .where(eq(Charts.id, chartId));
+
+        return { ok: true };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred.",
+        };
+    }
+}
+
 export async function UpdateChartExceptType({
     newChart,
     chartId,
@@ -211,7 +268,16 @@ export async function UpdateChartExceptType({
             return response;
         }
 
-        await db.update(Charts).set(newChart).where(eq(Charts.id, chartId));
+        await db
+            .update(Charts)
+            .set({
+                name: newChart.name,
+                description: newChart.description,
+                notionDatabaseUrl: newChart.notionDatabaseUrl,
+                xAxis: newChart.xAxis,
+                yAxis: newChart.yAxis,
+            })
+            .where(eq(Charts.id, chartId));
 
         return { ok: true };
     } catch (error) {
@@ -305,7 +371,7 @@ export async function UpdateSpecificChart({
             const { id } = response;
             await db
                 .update(AreaCharts)
-                .set(chart)
+                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
                 .where(eq(AreaCharts.chart_id, id));
         } else if (type === "Bar") {
             const response = await db
@@ -337,7 +403,7 @@ export async function UpdateSpecificChart({
             const { id } = response;
             await db
                 .update(BarCharts)
-                .set(chart)
+                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
                 .where(eq(BarCharts.chart_id, id));
         } else if (type === "Radar") {
             const response = await db
@@ -369,7 +435,7 @@ export async function UpdateSpecificChart({
             const { id } = response;
             await db
                 .update(RadarCharts)
-                .set(chart)
+                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
                 .where(eq(RadarCharts.chart_id, id));
         } else if (type === "Donut") {
             const response = await db
@@ -401,7 +467,7 @@ export async function UpdateSpecificChart({
             const { id } = response;
             await db
                 .update(DonutCharts)
-                .set(chart)
+                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
                 .where(eq(DonutCharts.chart_id, id));
         } else if (type === "Heatmap") {
             const response = await db
@@ -433,7 +499,7 @@ export async function UpdateSpecificChart({
             const { id } = response;
             await db
                 .update(HeatmapCharts)
-                .set(chart)
+                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
                 .where(eq(HeatmapCharts.chart_id, id));
         } else {
             return {

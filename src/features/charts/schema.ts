@@ -14,7 +14,21 @@ import {
     RadarCharts,
 } from "@/db/schema";
 
-export type ChartsTypes = "Area" | "Bar" | "Donut" | "Heatmap" | "Radar";
+export const ChartsTypes = z
+    .string({
+        required_error: "Type is required",
+        invalid_type_error: "Type must be a string",
+    })
+    .max(20, { message: "Type must be at most 20 characters" })
+    .refine(
+        (value) => {
+            return ["Area", "Bar", "Donut", "Heatmap", "Radar"].includes(value);
+        },
+        {
+            message: "Type must be one of Area, Bar, Donut, Heatmap, Radar",
+        }
+    );
+
 export const BasicChartSchema = {
     Insert: createInsertSchema(Charts, {
         collection_id: z.string({
@@ -67,12 +81,6 @@ export const BasicChartSchema = {
     }).omit({ id: true, created_at: true, xAxis: true, yAxis: true }),
     Select: createSelectSchema(Charts),
     Update: createUpdateSchema(Charts, {
-        collection_id: z
-            .string({
-                required_error: "Collection ID is required",
-                invalid_type_error: "Collection ID must be a string",
-            })
-            .optional(),
         name: z
             .string({
                 required_error: "Name is required",
@@ -110,7 +118,7 @@ export const BasicChartSchema = {
             })
             .max(255, { message: "Y Axis must be at most 255 characters" })
             .optional(),
-    }).omit({ id: true, created_at: true, type: true }),
+    }).omit({ id: true, created_at: true, type: true, collection_id: true }),
 };
 
 export const AreaChartSchema = {

@@ -7,8 +7,12 @@ import { authMiddleWare } from "@/features/auth/middlewares/authMiddleware";
 import { getAllChartsWithCollectionId } from "../api/getAllChartsWithCollectionId";
 import { CreateNewChart } from "../api/createNewChart";
 import { DeleteChart } from "../api/deleteChart";
-
-import { InsertChart } from "@/db/types";
+import { BasicChartSchema, ChartsTypes } from "../schema";
+import {
+    MoveChartBetweenCollections,
+    UpdateChartExceptType,
+    UpdateChartType,
+} from "../api/updateChart";
 
 type variables = {
     userId: string;
@@ -39,7 +43,7 @@ const app = new Hono<{ Variables: variables }>()
     .post(
         "/create-chart",
         authMiddleWare,
-        zValidator("form", InsertChart),
+        zValidator("form", BasicChartSchema.Insert),
         async (c) => {
             const chart = c.req.valid("form");
 
@@ -51,6 +55,96 @@ const app = new Hono<{ Variables: variables }>()
 
             const { newChartId } = response;
             return c.json({ newChartId }, 200);
+        }
+    )
+    .patch(
+        "/change-type/:chartId",
+        authMiddleWare,
+        zValidator(
+            "param",
+            z.object({
+                chartId: z.string().nonempty(),
+            })
+        ),
+        zValidator(
+            "query",
+            z.object({
+                type: ChartsTypes,
+            })
+        ),
+        async (c) => {
+            const { chartId } = c.req.valid("param");
+            const { type } = c.req.valid("query");
+            const userId = c.get("userId");
+
+            const response = await UpdateChartType({ userId, chartId, type });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            return c.json({ updated: true }, 200);
+        }
+    )
+    .patch(
+        "move-chart/:chartId",
+        authMiddleWare,
+        zValidator(
+            "param",
+            z.object({
+                chartId: z.string().nonempty(),
+            })
+        ),
+        zValidator(
+            "query",
+            z.object({
+                newCollectionId: z.string().nonempty(),
+            })
+        ),
+        async (c) => {
+            const { chartId } = c.req.valid("param");
+            const { newCollectionId } = c.req.valid("query");
+            const userId = c.get("userId");
+
+            const response = await MoveChartBetweenCollections({
+                userId,
+                chartId,
+                newCollectionId,
+            });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            return c.json({ moved: true }, 200);
+        }
+    )
+    .put(
+        "/:chartId",
+        authMiddleWare,
+        zValidator(
+            "param",
+            z.object({
+                chartId: z.string().nonempty(),
+            })
+        ),
+        zValidator("form", BasicChartSchema.Update),
+        async (c) => {
+            const { chartId } = c.req.valid("param");
+            const newChart = c.req.valid("form");
+            const userId = c.get("userId");
+
+            const response = await UpdateChartExceptType({
+                newChart,
+                chartId,
+                userId,
+            });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            return c.json({ updated: true }, 200);
         }
     )
     .delete(
