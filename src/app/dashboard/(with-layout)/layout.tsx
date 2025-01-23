@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { usePathname } from "next/navigation";
 
 import { DashboardNavbar } from "@/components/DashboardNavbar";
@@ -18,8 +19,6 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { decodeFromUrl } from "@/utils/pathSerialization";
-
-// BUG : Their is key error in the blow code, it should be fixed
 
 export default function RootLayout({
     children,
@@ -63,7 +62,7 @@ export default function RootLayout({
                                 {breadCrumbs.map((breadcrumb, index) => {
                                     if (!breadcrumb.isLast) {
                                         return (
-                                            <>
+                                            <Fragment key={index}>
                                                 <BreadcrumbItem key={index}>
                                                     <BreadcrumbLink
                                                         href={breadcrumb.path}
@@ -72,9 +71,9 @@ export default function RootLayout({
                                                     </BreadcrumbLink>
                                                 </BreadcrumbItem>
                                                 <BreadcrumbSeparator
-                                                    key={`separator-${index}`}
+                                                    key={`${index}-separator`}
                                                 />
-                                            </>
+                                            </Fragment>
                                         );
                                     }
                                 })}
