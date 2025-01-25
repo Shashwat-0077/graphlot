@@ -1,7 +1,7 @@
 import { Context } from "hono";
-import { HTTPException } from "hono/http-exception";
+// import { HTTPException } from "hono/http-exception";
 
-import { createClient } from "@/utils/supabase/server";
+// import { createClient } from "@/utils/supabase/server";
 
 export const authMiddleWare = async (c: Context, next: () => Promise<void>) => {
     // TODO : Uncomment this code in production

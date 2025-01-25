@@ -14,12 +14,14 @@ export const CollectionSchema = {
                 required_error: "Name is required",
                 invalid_type_error: "Name must be a string",
             })
+            .min(1, { message: "Name is required" })
             .max(100, { message: "Name must be at most 100 characters" }),
         description: z
             .string({
                 required_error: "Description is required",
                 invalid_type_error: "Description must be a string",
             })
+            .min(1, { message: "Description is required" })
             .max(500, {
                 message: "Description must be at most 500 characters",
             }),

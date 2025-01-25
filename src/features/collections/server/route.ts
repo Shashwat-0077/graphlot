@@ -59,14 +59,15 @@ const app = new Hono<{ Variables: variables }>()
             });
 
             if (!response.ok) {
-                throw new HTTPException(500, {
-                    res: c.json({ error: response.error }, 500),
-                });
+                return c.json({ error: response.error }, 500);
             }
 
-            const { newCollectionId } = response;
+            const { newCollection } = response;
 
-            return c.json({ newCollectionId }, 200);
+            return c.json(
+                { name: newCollection.name, id: newCollection.id },
+                200
+            );
         }
     )
     .put(

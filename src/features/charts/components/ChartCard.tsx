@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 import { AreaChartCardHeader } from "./HeaderCharts/AreaChart";
 import { BarChartCardHeader } from "./HeaderCharts/BarChart";
@@ -32,8 +33,15 @@ export function ChartCard({
                     <ChartType />
                 </CardHeader>
                 <CardContent className="pt-10">
-                    <h1 className="text-2xl text-primary">Database Name</h1>
-                    <span className="text-[#686868]">{type} chart</span>
+                    <h1 className="text-2xl text-primary">Chart Name</h1>
+                    <span className="flex items-center text-[#686868]">
+                        {type} chart{" "}
+                        <Separator
+                            orientation="vertical"
+                            className="mx-2 h-5 bg-[#686868]"
+                        />{" "}
+                        Database Name
+                    </span>
                 </CardContent>
             </Card>
         </Link>

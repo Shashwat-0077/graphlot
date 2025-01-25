@@ -15,7 +15,10 @@ export const createCollection = async ({
 }): Promise<
     | {
           ok: true;
-          newCollectionId: string;
+          newCollection: {
+              id: string;
+              name: string;
+          };
       }
     | {
           ok: false;
@@ -40,16 +43,16 @@ export const createCollection = async ({
             };
         }
 
-        const [{ id }] = await db
+        const [{ id, name }] = await db
             .insert(Collections)
             .values({
                 userId: userId,
                 name: newCollection.name,
                 description: newCollection.description,
             })
-            .returning({ id: Collections.id });
+            .returning({ id: Collections.id, name: Collections.name });
 
-        return { ok: true, newCollectionId: id };
+        return { ok: true, newCollection: { id, name } };
     } catch (error) {
         return {
             ok: false,

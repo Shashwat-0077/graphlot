@@ -4,7 +4,10 @@ import { Hono } from "hono";
 
 import { authMiddleWare } from "@/features/auth/middlewares/authMiddleware";
 
-import { getAllChartsWithCollectionId } from "../api/getAllChartsWithCollectionId";
+import {
+    getAllChartsWithCollectionId,
+    getChartWithIdAndCollectionId,
+} from "../api/getCharts";
 import { CreateNewChart } from "../api/createNewChart";
 import { DeleteChart } from "../api/deleteChart";
 import { BasicChartSchema, ChartsTypes } from "../schema";
@@ -38,6 +41,38 @@ const app = new Hono<{ Variables: variables }>()
 
             const { charts } = response;
             return c.json({ charts }, 200);
+        }
+    )
+    .get(
+        "/:chartId",
+        zValidator(
+            "param",
+            z.object({
+                chartId: z.string().nonempty(),
+            })
+        ),
+        zValidator(
+            "query",
+            z.object({
+                collectionId: z.string().nonempty(),
+            })
+        ),
+        async (c) => {
+            const { chartId } = c.req.valid("param");
+            const { collectionId } = c.req.valid("query");
+
+            const response = await getChartWithIdAndCollectionId({
+                chartId,
+                collectionId,
+            });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            const { chart } = response;
+
+            return c.json({ chart }, 200);
         }
     )
     .post(
