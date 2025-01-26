@@ -10,10 +10,10 @@ import {
 } from "../api/getCharts";
 import { CreateNewChart } from "../api/createNewChart";
 import { DeleteChart } from "../api/deleteChart";
-import { BasicChartSchema, ChartsTypes } from "../schema";
+import { BasicChartSchema, ChartsTypesSchema } from "../schema";
 import {
     MoveChartBetweenCollections,
-    UpdateChartExceptType,
+    UpdateChart,
     UpdateChartType,
 } from "../api/updateChart";
 
@@ -88,8 +88,9 @@ const app = new Hono<{ Variables: variables }>()
                 return c.json({ error: response.error }, 500);
             }
 
-            const { newChartId } = response;
-            return c.json({ newChartId }, 200);
+            const { newChart } = response;
+
+            return c.json({ newChart }, 200);
         }
     )
     .patch(
@@ -104,7 +105,7 @@ const app = new Hono<{ Variables: variables }>()
         zValidator(
             "query",
             z.object({
-                type: ChartsTypes,
+                type: ChartsTypesSchema,
             })
         ),
         async (c) => {
@@ -169,7 +170,7 @@ const app = new Hono<{ Variables: variables }>()
             const newChart = c.req.valid("form");
             const userId = c.get("userId");
 
-            const response = await UpdateChartExceptType({
+            const response = await UpdateChart({
                 newChart,
                 chartId,
                 userId,

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 
 // Bruh this code is shit 😵😵😵😵😵
 // This late at night i cant think shit, i will update/optimize it later, i cant think straight
@@ -16,16 +17,19 @@ import {
     RadarCharts,
 } from "@/db/schema";
 import { CollectionSchema } from "@/features/collections/schema";
+import { FieldError } from "@/utils/FieldError";
 
 import {
     AreaChartSchema,
     BarChartSchema,
     BasicChartSchema,
-    ChartsTypes,
+    ChartsTypesSchema,
     DonutChartSchema,
     HeatmapChartSchema,
     RadarChartSchema,
 } from "../schema";
+
+type ErrorType = FieldError<z.infer<typeof BasicChartSchema.Select>>;
 
 async function CheckPermission({
     userId,
@@ -43,33 +47,46 @@ async function CheckPermission({
       }
     | {
           ok: false;
-          error: string;
+          error: ErrorType;
       }
 > {
     return await db
         .select()
         .from(Charts)
-        .fullJoin(Collections, eq(Collections.id, Charts.collection_id))
-        .where(eq(Charts.id, chartId))
+        .fullJoin(
+            Collections,
+            eq(Collections.collection_id, Charts.collection_id)
+        )
+        .where(eq(Charts.chart_id, chartId))
         .then(([record]) => {
             if (!record || !record.charts) {
                 return {
                     ok: false,
-                    error: "Chart not found.",
+                    error: new FieldError({
+                        field: "chart_id",
+                        message: "Chart not found.",
+                    }),
                 };
             }
 
             if (!record.collections) {
                 return {
                     ok: false,
-                    error: `Cannot find corresponding Collection to given Chart ID : ${chartId}`,
+                    error: new FieldError({
+                        field: "chart_id",
+                        message: `Cannot find corresponding Collection to given Chart ID : ${chartId}`,
+                    }),
                 };
             }
 
-            if (record.collections.userId !== userId) {
+            if (record.collections.user_id !== userId) {
                 return {
                     ok: false,
-                    error: "You do not have permission to update this chart.",
+                    error: new FieldError({
+                        field: "root",
+                        message:
+                            "You do not have permission to update this chart.",
+                    }),
                 };
             }
 
@@ -90,18 +107,19 @@ export async function UpdateChartType({
 }: {
     userId: string;
     chartId: string;
-    type: z.infer<typeof ChartsTypes>;
+    type: z.infer<typeof ChartsTypesSchema>;
 }): Promise<
     | {
           ok: true;
       }
     | {
           ok: false;
-          error: string;
+          error: ErrorType;
       }
 > {
     try {
         const response = await CheckPermission({ userId, chartId });
+
         if (!response.ok) {
             return response;
         }
@@ -115,7 +133,7 @@ export async function UpdateChartType({
             .set({
                 type: type,
             })
-            .where(eq(Charts.id, chartId));
+            .where(eq(Charts.chart_id, chartId));
 
         switch (previousChartType) {
             case "Bar":
@@ -179,13 +197,12 @@ export async function UpdateChartType({
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }
 
@@ -203,7 +220,7 @@ export async function MoveChartBetweenCollections({
       }
     | {
           ok: false;
-          error: string;
+          error: ErrorType;
       }
 > {
     try {
@@ -213,39 +230,59 @@ export async function MoveChartBetweenCollections({
             return response;
         }
 
+        const { collection: previousCollection } = response.record;
+
         const destinationCollection = await db
             .select()
             .from(Collections)
-            .where(eq(Collections.id, newCollectionId))
+            .where(eq(Collections.collection_id, newCollectionId))
             .then(([collection]) => collection);
 
         if (!destinationCollection) {
             return {
                 ok: false,
-                error: `New Collection ID is invalid, or Collection with ID ${newCollectionId} does not exists`,
+                error: new FieldError({
+                    field: "root",
+                    message: `New Collection ID is invalid, or Collection with ID ${newCollectionId} does not exists`,
+                }),
             };
         }
+
+        await db
+            .update(Collections)
+            .set({
+                chart_count: sql`${Collections.chart_count} - 1`,
+            })
+            .where(
+                eq(Collections.collection_id, previousCollection.collection_id)
+            );
 
         await db
             .update(Charts)
             .set({
                 collection_id: newCollectionId,
             })
-            .where(eq(Charts.id, chartId));
+            .where(eq(Charts.chart_id, chartId));
+
+        await db
+            .update(Collections)
+            .set({
+                chart_count: sql`${Collections.chart_count} + 1`,
+            })
+            .where(eq(Collections.collection_id, newCollectionId));
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
-                    : "Unknown error occurred.",
-        };
+                    : "Unknown error occurred",
+        });
     }
 }
 
-export async function UpdateChartExceptType({
+export async function UpdateChart({
     newChart,
     chartId,
     userId,
@@ -259,7 +296,7 @@ export async function UpdateChartExceptType({
       }
     | {
           ok: false;
-          error: string;
+          error: ErrorType;
       }
 > {
     try {
@@ -273,21 +310,19 @@ export async function UpdateChartExceptType({
             .set({
                 name: newChart.name,
                 description: newChart.description,
-                notionDatabaseUrl: newChart.notionDatabaseUrl,
-                xAxis: newChart.xAxis,
-                yAxis: newChart.yAxis,
+                x_axis: newChart.x_axis,
+                y_axis: newChart.y_axis,
             })
-            .where(eq(Charts.id, chartId));
+            .where(eq(Charts.chart_id, chartId));
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }
 
@@ -332,7 +367,7 @@ export async function UpdateSpecificChart({
       }
     | {
           ok: false;
-          error: string;
+          error: ErrorType;
       }
 > {
     try {
@@ -345,8 +380,8 @@ export async function UpdateSpecificChart({
             const response = await db
                 .select()
                 .from(Charts)
-                .fullJoin(AreaCharts, eq(AreaCharts.chart_id, Charts.id))
-                .where(eq(Charts.id, chartId))
+                .fullJoin(AreaCharts, eq(AreaCharts.chart_id, Charts.chart_id))
+                .where(eq(Charts.chart_id, chartId))
                 .then(
                     ([result]):
                         | {
@@ -355,13 +390,19 @@ export async function UpdateSpecificChart({
                           }
                         | {
                               ok: false;
-                              error: string;
+                              error: ErrorType;
                           } => {
                         if (!result || !result.area_chart) {
-                            return { ok: false, error: "Chart not found." };
+                            return {
+                                ok: false,
+                                error: new FieldError({
+                                    field: "root",
+                                    message: "Chart not found.",
+                                }),
+                            };
                         }
 
-                        return { ok: true, id: result.area_chart.id };
+                        return { ok: true, id: result.area_chart.area_id };
                     }
                 );
 
@@ -377,8 +418,8 @@ export async function UpdateSpecificChart({
             const response = await db
                 .select()
                 .from(Charts)
-                .fullJoin(BarCharts, eq(BarCharts.chart_id, Charts.id))
-                .where(eq(Charts.id, chartId))
+                .fullJoin(BarCharts, eq(BarCharts.chart_id, Charts.chart_id))
+                .where(eq(Charts.chart_id, chartId))
                 .then(
                     ([result]):
                         | {
@@ -387,13 +428,19 @@ export async function UpdateSpecificChart({
                           }
                         | {
                               ok: false;
-                              error: string;
+                              error: ErrorType;
                           } => {
                         if (!result || !result.bar_chart) {
-                            return { ok: false, error: "Chart not found." };
+                            return {
+                                ok: false,
+                                error: new FieldError({
+                                    field: "root",
+                                    message: "Chart not found.",
+                                }),
+                            };
                         }
 
-                        return { ok: true, id: result.bar_chart.id };
+                        return { ok: true, id: result.bar_chart.bar_id };
                     }
                 );
 
@@ -409,8 +456,11 @@ export async function UpdateSpecificChart({
             const response = await db
                 .select()
                 .from(Charts)
-                .fullJoin(RadarCharts, eq(RadarCharts.chart_id, Charts.id))
-                .where(eq(Charts.id, chartId))
+                .fullJoin(
+                    RadarCharts,
+                    eq(RadarCharts.chart_id, Charts.chart_id)
+                )
+                .where(eq(Charts.chart_id, chartId))
                 .then(
                     ([result]):
                         | {
@@ -419,13 +469,19 @@ export async function UpdateSpecificChart({
                           }
                         | {
                               ok: false;
-                              error: string;
+                              error: ErrorType;
                           } => {
                         if (!result || !result.radar_chart) {
-                            return { ok: false, error: "Chart not found." };
+                            return {
+                                ok: false,
+                                error: new FieldError({
+                                    field: "root",
+                                    message: "Chart not found.",
+                                }),
+                            };
                         }
 
-                        return { ok: true, id: result.radar_chart.id };
+                        return { ok: true, id: result.radar_chart.radar_id };
                     }
                 );
 
@@ -441,8 +497,11 @@ export async function UpdateSpecificChart({
             const response = await db
                 .select()
                 .from(Charts)
-                .fullJoin(DonutCharts, eq(DonutCharts.chart_id, Charts.id))
-                .where(eq(Charts.id, chartId))
+                .fullJoin(
+                    DonutCharts,
+                    eq(DonutCharts.chart_id, Charts.chart_id)
+                )
+                .where(eq(Charts.chart_id, chartId))
                 .then(
                     ([result]):
                         | {
@@ -451,13 +510,19 @@ export async function UpdateSpecificChart({
                           }
                         | {
                               ok: false;
-                              error: string;
+                              error: ErrorType;
                           } => {
                         if (!result || !result.donut_chart) {
-                            return { ok: false, error: "Chart not found." };
+                            return {
+                                ok: false,
+                                error: new FieldError({
+                                    field: "root",
+                                    message: "Chart not found.",
+                                }),
+                            };
                         }
 
-                        return { ok: true, id: result.donut_chart.id };
+                        return { ok: true, id: result.donut_chart.donut_id };
                     }
                 );
 
@@ -473,8 +538,11 @@ export async function UpdateSpecificChart({
             const response = await db
                 .select()
                 .from(Charts)
-                .fullJoin(HeatmapCharts, eq(HeatmapCharts.chart_id, Charts.id))
-                .where(eq(Charts.id, chartId))
+                .fullJoin(
+                    HeatmapCharts,
+                    eq(HeatmapCharts.chart_id, Charts.chart_id)
+                )
+                .where(eq(Charts.chart_id, chartId))
                 .then(
                     ([result]):
                         | {
@@ -483,13 +551,22 @@ export async function UpdateSpecificChart({
                           }
                         | {
                               ok: false;
-                              error: string;
+                              error: ErrorType;
                           } => {
                         if (!result || !result.heatmap_chart) {
-                            return { ok: false, error: "Chart not found." };
+                            return {
+                                ok: false,
+                                error: new FieldError({
+                                    field: "root",
+                                    message: "Chart not found.",
+                                }),
+                            };
                         }
 
-                        return { ok: true, id: result.heatmap_chart.id };
+                        return {
+                            ok: true,
+                            id: result.heatmap_chart.heatmap_id,
+                        };
                     }
                 );
 
@@ -504,18 +581,20 @@ export async function UpdateSpecificChart({
         } else {
             return {
                 ok: false,
-                error: "Invalid chart type.",
+                error: new FieldError({
+                    field: "root",
+                    message: "Invalid Chart Type",
+                }),
             };
         }
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
-                    : "Unknown error occurred.",
-        };
+                    : "Unknown error occurred",
+        });
     }
 }

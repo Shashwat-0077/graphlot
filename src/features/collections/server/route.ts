@@ -39,7 +39,7 @@ const app = new Hono<{ Variables: variables }>()
             const [collection] = await db
                 .select()
                 .from(Collections)
-                .where(eq(Collections.id, id));
+                .where(eq(Collections.collection_id, id));
             return c.json({ collection }, 200);
         }
     )

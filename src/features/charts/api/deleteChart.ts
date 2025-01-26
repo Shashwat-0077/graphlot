@@ -1,4 +1,5 @@
 import { eq, sql } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import { Charts, Collections } from "@/db/schema";
@@ -15,54 +16,62 @@ export async function DeleteChart({
       }
     | {
           ok: false;
-          error: string;
+          error: Error;
       }
 > {
     try {
         const record = await db
             .select()
             .from(Charts)
-            .fullJoin(Collections, eq(Collections.id, Charts.collection_id))
-            .where(eq(Charts.id, chartId))
+            .fullJoin(
+                Collections,
+                eq(Collections.collection_id, Charts.collection_id)
+            )
+            .where(eq(Charts.chart_id, chartId))
             .then(([record]) => record);
 
         if (!record || !record.charts) {
             return {
                 ok: false,
-                error: "Chart not found.",
+                error: new Error("Chart not found."),
             };
         }
 
         if (!record.collections) {
             return {
                 ok: false,
-                error: `Cannot find corresponding Collection to given Chart ID : ${chartId}`,
+                error: new Error(
+                    `Cannot find corresponding Collection to given Chart ID : ${chartId}`
+                ),
             };
         }
 
-        if (record.collections.userId !== userId) {
+        if (record.collections.user_id !== userId) {
             return {
                 ok: false,
-                error: "You do not have permission to delete this chart.",
+                error: new Error(
+                    "You do not have permission to delete this chart."
+                ),
             };
         }
 
-        await db.delete(Charts).where(eq(Charts.id, chartId));
+        await db.delete(Charts).where(eq(Charts.chart_id, chartId));
         await db
             .update(Collections)
             .set({
-                chartCount: sql`${Collections.chartCount} - 1`,
+                chart_count: sql`${Collections.chart_count} - 1`,
             })
-            .where(eq(Collections.id, record.collections.id));
+            .where(
+                eq(Collections.collection_id, record.collections.collection_id)
+            );
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }

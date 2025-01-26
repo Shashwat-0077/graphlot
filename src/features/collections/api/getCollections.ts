@@ -1,7 +1,9 @@
+import { HTTPException } from "hono/http-exception";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { Collections } from "@/db/schema";
+import { FieldError } from "@/utils/FieldError";
 
 import { CollectionSchema } from "../schema";
 
@@ -16,32 +18,34 @@ export async function getCollection({
       }
     | {
           ok: false;
-          error: string;
+          error: FieldError<Zod.infer<typeof CollectionSchema.Select>>;
       }
 > {
     try {
         const collection = await db
             .select()
             .from(Collections)
-            .where(eq(Collections.id, collectionId))
+            .where(eq(Collections.collection_id, collectionId))
             .then(([rows]) => rows);
 
         if (!collection) {
             return {
                 ok: false,
-                error: "Collection not found.",
+                error: new FieldError({
+                    field: "collection_id",
+                    message: "Collection not found.",
+                }),
             };
         }
 
         return { ok: true, collection };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }
 
@@ -63,7 +67,7 @@ export async function getAllCollections({
         const collections = await db
             .select()
             .from(Collections)
-            .where(eq(Collections.userId, userId))
+            .where(eq(Collections.user_id, userId))
             .all();
 
         return { ok: true, collections };

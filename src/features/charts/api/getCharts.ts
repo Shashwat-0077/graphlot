@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import { Charts } from "@/db/schema";
@@ -14,7 +15,7 @@ export async function getAllChartsWithCollectionId(
       }
     | {
           ok: false;
-          error: string;
+          error: Error;
       }
 > {
     try {
@@ -30,10 +31,11 @@ export async function getAllChartsWithCollectionId(
     } catch (error) {
         return {
             ok: false,
-            error:
+            error: new Error(
                 error instanceof Error
                     ? error.message
-                    : "Unknown error occurred.",
+                    : "Unknown error occurred."
+            ),
         };
     }
 }
@@ -51,7 +53,7 @@ export async function getChartWithIdAndCollectionId({
       }
     | {
           ok: false;
-          error: string;
+          error: Error;
       }
 > {
     try {
@@ -60,7 +62,7 @@ export async function getChartWithIdAndCollectionId({
             .from(Charts)
             .where(
                 and(
-                    eq(Charts.id, chartId),
+                    eq(Charts.chart_id, chartId),
                     eq(Charts.collection_id, collectionId)
                 )
             )
@@ -69,7 +71,7 @@ export async function getChartWithIdAndCollectionId({
         if (!chart) {
             return {
                 ok: false,
-                error: "Chart not found.",
+                error: new Error("Chart not found."),
             };
         }
 
@@ -78,12 +80,11 @@ export async function getChartWithIdAndCollectionId({
             chart,
         };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }

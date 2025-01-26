@@ -1,8 +1,8 @@
 "use client";
 
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,23 +21,42 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { chartSchema, chartTypes } from "@/features/charts/schema";
 
 import { useGetAllDatabases } from "../../notion/api/useGetAllDatabases";
+import { BasicChartSchema, ChartType } from "../schema";
+import { useCreateNewChart } from "../api/client/use-create-new-chart";
 
 import NewChartFormLoader from "./NewChartFormLoader";
 
 export function NewChartForm() {
-    const form = useForm<z.infer<typeof chartSchema>>({
-        resolver: zodResolver(chartSchema),
+    const { mutate: createNewChart } = useCreateNewChart();
+
+    const form = useForm<z.infer<typeof BasicChartSchema.Insert>>({
+        resolver: zodResolver(BasicChartSchema.Insert),
+        defaultValues: {
+            name: "",
+            description: "",
+            type: "",
+            notion_database_name: "",
+            notion_database_url: "",
+            collection_id: "",
+        },
     });
 
     const { data: databases, isLoading } = useGetAllDatabases();
 
-    function onSubmit(data: z.infer<typeof chartSchema>) {
-        data.databaseTitle = databases?.find(
-            ({ id }) => id === data.databaseID
-        )?.title;
+    function onSubmit(data: z.infer<typeof BasicChartSchema.Insert>) {
+        createNewChart(
+            { form: data },
+            {
+                onError: (error) => {
+                    form.setError("root", {
+                        type: "value",
+                        message: error.message,
+                    });
+                },
+            }
+        );
     }
 
     if (isLoading) {
@@ -67,7 +86,7 @@ export function NewChartForm() {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {chartTypes.map((type) => (
+                                    {ChartType.map((type) => (
                                         <SelectItem key={type} value={type}>
                                             {type}
                                         </SelectItem>
@@ -86,7 +105,7 @@ export function NewChartForm() {
 
                 <FormField
                     control={form.control}
-                    name="databaseID"
+                    name="type"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Database</FormLabel>

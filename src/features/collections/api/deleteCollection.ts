@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -15,39 +16,42 @@ export async function DeleteCollection({
       }
     | {
           ok: false;
-          error: string;
+          error: Error;
       }
 > {
     try {
         const [collection] = await db
             .select()
             .from(Collections)
-            .where(eq(Collections.id, collectionId));
+            .where(eq(Collections.collection_id, collectionId));
 
         if (!collection) {
             return {
                 ok: false,
-                error: "Collection not found.",
+                error: new Error("Collection not found."),
             };
         }
 
-        if (collection.userId !== userId) {
+        if (collection.user_id !== userId) {
             return {
                 ok: false,
-                error: "You do not have permission to delete this collection.",
+                error: new Error(
+                    "You do not have permission to delete this collection."
+                ),
             };
         }
 
-        await db.delete(Collections).where(eq(Collections.id, collectionId));
+        await db
+            .delete(Collections)
+            .where(eq(Collections.collection_id, collectionId));
 
         return { ok: true };
     } catch (error) {
-        return {
-            ok: false,
-            error:
+        throw new HTTPException(500, {
+            message:
                 error instanceof Error
                     ? error.message
                     : "Unknown error occurred.",
-        };
+        });
     }
 }
