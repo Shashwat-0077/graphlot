@@ -25,7 +25,7 @@ export const useCreateCollection = () => {
 
             if (!response.ok) {
                 const { error } = await response.json();
-                throw new Error(error);
+                throw error;
             }
 
             const newCollection = await response.json();

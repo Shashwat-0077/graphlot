@@ -22,11 +22,13 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { useGetAllDatabases } from "../../notion/api/useGetAllDatabases";
+import { useGetAllDatabases } from "../../notion/api/client/useGetAllDatabases";
 import { BasicChartSchema, ChartType } from "../schema";
 import { useCreateNewChart } from "../api/client/use-create-new-chart";
 
 import NewChartFormLoader from "./NewChartFormLoader";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 export function NewChartForm() {
     const { mutate: createNewChart } = useCreateNewChart();
@@ -72,16 +74,52 @@ export function NewChartForm() {
             >
                 <FormField
                     control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Chart Name</FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder="Your chart name"
+                                    className="border-0 bg-input py-5"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    // disabled={isPending}
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Collection Description</FormLabel>
+                            <FormControl>
+                                <Textarea
+                                    placeholder="Tell us a little bit about your collection"
+                                    className="h-40 resize-none bg-input"
+                                    {...field}
+                                />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="type"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>Chart Type</FormLabel>
                             <Select
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
                             >
                                 <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="bg-input">
                                         <SelectValue placeholder="Select the chart type" />
                                     </SelectTrigger>
                                 </FormControl>
@@ -114,7 +152,7 @@ export function NewChartForm() {
                                 defaultValue={field.value}
                             >
                                 <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="bg-input">
                                         <SelectValue placeholder="Select the Database" />
                                     </SelectTrigger>
                                 </FormControl>

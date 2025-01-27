@@ -2,7 +2,7 @@
 
 import { useChartConfigStore } from "@/components/providers/ChartConfigStoreProvider";
 import { RadarChartView } from "@/features/charts/components/ChartsView/RadarChartView";
-import ChartConfigs from "@/features/charts/components/ChartConfigs";
+// import ChartConfigs from "@/features/charts/components/ChartConfigs";
 
 export default function ChatConfigs() {
     const {
@@ -33,9 +33,7 @@ export default function ChatConfigs() {
                 <RadarChartView />
             </div>
 
-            <div>
-                <ChartConfigs />
-            </div>
+            <div>{/* <ChartConfigs /> */}</div>
         </section>
     );
 }
