@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 
 import CollectionCard from "@/features/collections/components/CollectionCard";
 import { getAllCollections } from "@/features/collections/api/getCollections";
@@ -10,12 +11,14 @@ export default async function Dashboard() {
     const cardSize = 150;
 
     const supabase = await createClient();
+
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return <div>Unauthorized</div>;
+        redirect("/");
+        return;
     }
 
     const response = await getAllCollections({ userId: user.id });

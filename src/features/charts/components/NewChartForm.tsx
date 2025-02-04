@@ -21,14 +21,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 import { useGetAllDatabases } from "../../notion/api/client/useGetAllDatabases";
 import { BasicChartSchema, ChartType } from "../schema";
 import { useCreateNewChart } from "../api/client/use-create-new-chart";
 
 import NewChartFormLoader from "./NewChartFormLoader";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 export function NewChartForm() {
     const { mutate: createNewChart } = useCreateNewChart();

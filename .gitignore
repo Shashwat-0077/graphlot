@@ -35,13 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-extraInfo.txt
-
-# vscode
-.vscode
-
 # drizzle
 /drizzle
-
-# thunder client
-thunder-collection_Momentum.json
