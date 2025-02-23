@@ -5,10 +5,13 @@ export function getRadarChartData(
     YAxis: string
 ) {
     // Type guards
+
+    // eslint-disable-next-line
     function isValidSchema(schema: unknown): schema is Record<string, any> {
         return typeof schema === "object" && schema !== null;
     }
 
+    // eslint-disable-next-line
     function isValidData(data: unknown): data is Record<string, any>[] {
         return (
             Array.isArray(data) &&
@@ -41,6 +44,7 @@ export function getRadarChartData(
 
     // Initialize radar chart data structure
     const RadarChartData = XOptions.map((xOption) => {
+        // eslint-disable-next-line
         const record: Record<string, any> = { class: xOption.name };
         YOptions.forEach((yOption) => {
             record[yOption.name] = 0;
@@ -77,6 +81,7 @@ export function getRadarChartData(
 
 // Helper function to get options based on field type
 function getOptionsForType(
+    // eslint-disable-next-line
     fieldDetails: Record<string, any>
 ): Array<{ name: string }> {
     const type = fieldDetails.type;
@@ -93,6 +98,7 @@ function getOptionsForType(
 }
 
 // Helper function to extract values based on field type
+// eslint-disable-next-line
 function extractValues(field: any, type: string): string[] {
     if (!field) {
         return [];

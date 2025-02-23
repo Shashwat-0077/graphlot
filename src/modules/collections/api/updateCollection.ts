@@ -22,7 +22,10 @@ export default async function UpdateCollection({
       }
     | {
           ok: false;
-          error: FieldError<z.infer<typeof CollectionSchema.Update>>;
+          error: string;
+          field:
+              | FieldError<keyof z.infer<typeof CollectionSchema.Update>>
+              | "root";
       }
 > {
     try {
@@ -34,21 +37,16 @@ export default async function UpdateCollection({
         if (!collection) {
             return {
                 ok: false,
-                error: new FieldError({
-                    field: "root",
-                    message: "Collection not found.",
-                }),
+                error: "Collection not found.",
+                field: "root",
             };
         }
 
         if (collection.user_id !== userId) {
             return {
                 ok: false,
-                error: new FieldError({
-                    field: "root",
-                    message:
-                        "You do not have permission to delete this collection.",
-                }),
+                error: "You do not have permission to delete this collection.",
+                field: "root",
             };
         }
 
