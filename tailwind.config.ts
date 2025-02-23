@@ -1,11 +1,11 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
+export default {
     darkMode: ["class"],
     content: [
-        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/modules/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
         extend: {
@@ -74,7 +74,6 @@ const config: Config = {
                     ring: "hsl(var(--sidebar-ring))",
                 },
             },
-
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
@@ -104,7 +103,7 @@ const config: Config = {
             },
         },
     },
-    plugins: [require("tailwindcss-animate")], // eslint-disable-line
-};
 
-export default config;
+    // eslint-disable-next-line
+    plugins: [require("tailwindcss-animate")],
+} satisfies Config;

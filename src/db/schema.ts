@@ -39,7 +39,7 @@ export const Charts = sqliteTable(
         created_at: integer("created_at", { mode: "timestamp" })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
-        notion_database_url: text("notionDatabaseUrl").notNull(),
+        notion_database_id: text("notionDatabaseUrl").notNull(),
         notion_database_name: text("notionDatabaseName").notNull(),
         x_axis: text("xAxis").notNull().default(""),
         y_axis: text("yAxis").notNull().default(""),

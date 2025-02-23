@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
+import "./globals.css";
 
-import "./globals.scss";
-import { QueryProvider } from "@/components/providers/query-providers";
-import { ChartConfigStoreProvider } from "@/components/providers/ChartConfigStoreProvider";
-import { BreadCrumbsStoreProvider } from "@/components/providers/BreadCrumbsStoreProvider";
+import { QueryProvider } from "@/providers/query-providers";
 
 export const metadata: Metadata = {
     title: "Momentum",
@@ -19,11 +17,8 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`antialiased`}>
-                <ChartConfigStoreProvider>
-                    <BreadCrumbsStoreProvider>
-                        <QueryProvider>{children}</QueryProvider>
-                    </BreadCrumbsStoreProvider>
-                </ChartConfigStoreProvider>
+                {" "}
+                <QueryProvider>{children}</QueryProvider>
             </body>
         </html>
     );

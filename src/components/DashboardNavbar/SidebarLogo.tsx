@@ -21,7 +21,13 @@ export function SidebarLogo() {
                     open ? "my-7" : "mb-5 mt-1"
                 )}
             >
-                <Image width={75} height={75} src={"/logo.png"} alt="logo" />
+                <Image
+                    width={75}
+                    height={75}
+                    src={"/logo.png"}
+                    alt="logo"
+                    priority
+                />
             </SidebarMenuItem>
         </SidebarMenu>
     );

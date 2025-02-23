@@ -9,6 +9,7 @@ import { Label } from "./label";
 import { Button } from "./button";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
+
 type ColorPickerPopoverProps =
     | {
           children: React.ReactNode;
@@ -71,7 +72,7 @@ export default function ColorPickerPopover({
                         }
                     }}
                 />
-                <div className="grid grid-cols-[0.1fr_1fr] gap-2">
+                <div className="grid grid-cols-[0.2fr_1fr] gap-2">
                     <Label className="grid place-content-center">R : </Label>
                     <Input
                         type="number"

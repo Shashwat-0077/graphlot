@@ -1,6 +1,6 @@
 import { Client } from "@notionhq/client";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 type returnType =
     | { success: true; client: Client }
