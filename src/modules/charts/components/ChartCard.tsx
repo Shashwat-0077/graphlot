@@ -10,7 +10,6 @@ import { DonutChartCardHeader } from "./HeaderCharts/Donut";
 import { RadarChartCardHeader } from "./HeaderCharts/RadarChart";
 import { HeatmapChartCardHeader } from "./HeaderCharts/Heatmap";
 
-
 export function ChartCard({
     type,
     encodedCollectionId,
@@ -41,7 +40,7 @@ export function ChartCard({
                     <ChartType />
                 </CardHeader>
                 <CardContent className="pt-10">
-                    <h1 className="text-2xl text-primary">
+                    <h1 className="truncate text-2xl text-primary">
                         {name.charAt(0).toUpperCase() + name.slice(1)}
                     </h1>
                     <span className="flex items-center text-[#686868]">

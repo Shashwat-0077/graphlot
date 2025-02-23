@@ -38,6 +38,7 @@
             "description": "A terminal that runs git commands and actions",
             "icon": "github-alt",
             "color": "terminal.ansiWhite",
+            "command": "give-fuck",
             "persistent": "github_logs"
         }
     ]

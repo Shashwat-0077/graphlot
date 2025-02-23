@@ -13,6 +13,7 @@ export default {
                 "play-write": "var(--playwrite-hr-lijeva)",
             },
             screens: {
+                break1400: "1400px",
                 break1200: "1200px",
                 break1000: "1000px",
                 break900: "900px",

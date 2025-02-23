@@ -9,7 +9,6 @@ import { Label } from "./label";
 import { Button } from "./button";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
-
 type ColorPickerPopoverProps =
     | {
           children: React.ReactNode;
@@ -76,18 +75,27 @@ export default function ColorPickerPopover({
                     <Label className="grid place-content-center">R : </Label>
                     <Input
                         type="number"
-                        value={color.r}
+                        value={color.r !== -Number.MIN_VALUE ? color.r : ""}
                         onChange={(e) => {
+                            const c = parseInt(e.target.value);
                             if (isSingleColor) {
                                 setColor({
                                     ...color,
-                                    r: parseInt(e.target.value),
+                                    r: isNaN(c)
+                                        ? -Number.MIN_VALUE
+                                        : c > 255
+                                          ? 255
+                                          : c,
                                 });
                             } else {
                                 setColor(
                                     {
                                         ...color,
-                                        r: parseInt(e.target.value),
+                                        r: isNaN(c)
+                                            ? -Number.MIN_VALUE
+                                            : c > 255
+                                              ? 255
+                                              : c,
                                     },
                                     colorIndex
                                 );
@@ -97,18 +105,27 @@ export default function ColorPickerPopover({
                     <Label className="grid place-content-center">G : </Label>
                     <Input
                         type="number"
-                        value={color.g}
+                        value={color.g !== -Number.MIN_VALUE ? color.g : ""}
                         onChange={(e) => {
+                            const c = parseInt(e.target.value);
                             if (isSingleColor) {
                                 setColor({
                                     ...color,
-                                    g: parseInt(e.target.value),
+                                    g: isNaN(c)
+                                        ? -Number.MIN_VALUE
+                                        : c > 255
+                                          ? 255
+                                          : c,
                                 });
                             } else {
                                 setColor(
                                     {
                                         ...color,
-                                        g: parseInt(e.target.value),
+                                        g: isNaN(c)
+                                            ? -Number.MIN_VALUE
+                                            : c > 255
+                                              ? 255
+                                              : c,
                                     },
                                     colorIndex
                                 );
@@ -118,18 +135,27 @@ export default function ColorPickerPopover({
                     <Label className="grid place-content-center">B : </Label>
                     <Input
                         type="number"
-                        value={color.b}
+                        value={color.b !== -Number.MIN_VALUE ? color.b : ""}
                         onChange={(e) => {
+                            const c = parseInt(e.target.value);
                             if (isSingleColor) {
                                 setColor({
                                     ...color,
-                                    b: parseInt(e.target.value),
+                                    b: isNaN(c)
+                                        ? -Number.MIN_VALUE
+                                        : c > 255
+                                          ? 255
+                                          : c,
                                 });
                             } else {
                                 setColor(
                                     {
                                         ...color,
-                                        b: parseInt(e.target.value),
+                                        b: isNaN(c)
+                                            ? -Number.MIN_VALUE
+                                            : c > 255
+                                              ? 255
+                                              : c,
                                     },
                                     colorIndex
                                 );
@@ -139,18 +165,28 @@ export default function ColorPickerPopover({
                     <Label className="grid place-content-center">A : </Label>
                     <Input
                         type="number"
-                        value={color.a}
+                        value={color.a === -Number.MIN_VALUE ? "" : color.a}
                         onChange={(e) => {
+                            const a = parseInt(e.target.value);
+
                             if (isSingleColor) {
                                 setColor({
                                     ...color,
-                                    a: parseInt(e.target.value),
+                                    a: isNaN(a)
+                                        ? -Number.MIN_VALUE
+                                        : a > 1
+                                          ? 1
+                                          : a,
                                 });
                             } else {
                                 setColor(
                                     {
                                         ...color,
-                                        a: parseInt(e.target.value),
+                                        a: isNaN(a)
+                                            ? -Number.MIN_VALUE
+                                            : a > 1
+                                              ? 1
+                                              : a,
                                     },
                                     colorIndex
                                 );

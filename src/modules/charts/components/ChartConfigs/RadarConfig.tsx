@@ -181,9 +181,9 @@ export default function RadarConfig({
     }
 
     return (
-        <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
+        <div className="mb-7 mt-16 flex flex-col gap-10 break1200:flex-row">
             {/* Colors */}
-            <section className="relative flex flex-col gap-7 rounded-lg border p-10">
+            <section className="relative flex w-full min-w-[300px] flex-col gap-7 rounded-lg border p-10 break1200:max-w-[500px]">
                 <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
                     Appearance
                 </Label>
@@ -332,12 +332,12 @@ export default function RadarConfig({
             </section>
 
             {/* Data */}
-            <section className="relative flex flex-col gap-7 rounded-lg border p-10">
+            <section className="relative flex w-full flex-col gap-7 rounded-lg border p-10">
                 <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
                     Data
                 </Label>
 
-                <div className="grid grid-cols-[1fr] gap-10 break1200:grid-cols-[1fr_5px_1fr]">
+                <div className="break1400:grid-cols-[1fr_5px_1fr] grid grid-cols-[1fr] gap-10">
                     {/* X Axis */}
                     <div>
                         <Label className="mb-2 block text-lg">X Axis</Label>
@@ -473,7 +473,7 @@ export default function RadarConfig({
                         height: `${FILTER_SECTION_HEIGHT}px`,
                     }}
                 >
-                    <div className="flex flex-col gap-5 p-1 pr-5">
+                    <div className="flex flex-col gap-5 p-1">
                         {filters.map((filter, index) => (
                             <div className="flex gap-5" key={index}>
                                 <Input
@@ -506,7 +506,7 @@ export default function RadarConfig({
                             </div>
                         ))}
                         <Button
-                            className="grid place-content-center rounded border bg-background-light py-2"
+                            className="grid w-full place-content-center rounded border bg-background-light py-2"
                             onClick={() => {
                                 addFilter({
                                     column: "",

@@ -1,119 +1,175 @@
+import { InferResponseType } from "hono";
+
+import { client } from "@/lib/rpc";
+
+type SchemaType = InferResponseType<
+    (typeof client.api.notion)[":notion_table_id"]["get-table-schema"]["$get"],
+    200
+>["schema"];
+
+type DataType = InferResponseType<
+    (typeof client.api.notion)[":notion_table_id"]["get-table-data"]["$get"],
+    200
+>["data"];
+
+type ReturnType = {
+    radarChartConfig: string[];
+    radarChartData: ({ class: string } & { [key: string]: number })[];
+};
+
 export function getRadarChartData(
-    data: unknown,
-    schema: unknown,
+    data: DataType,
+    schema: SchemaType,
     XAxis: string,
     YAxis: string
-) {
-    // Type guards
-
-    // eslint-disable-next-line
-    function isValidSchema(schema: unknown): schema is Record<string, any> {
-        return typeof schema === "object" && schema !== null;
-    }
-
-    // eslint-disable-next-line
-    function isValidData(data: unknown): data is Record<string, any>[] {
-        return (
-            Array.isArray(data) &&
-            data.every((item) => typeof item === "object" && item !== null)
-        );
-    }
-
-    // Validation
-    if (!isValidSchema(schema) || !isValidData(data)) {
-        throw new Error("Invalid data or schema");
-    }
-
-    // Get axis details
+): ReturnType {
     const XAxisDetails = schema[XAxis];
-    const YAxisDetails =
-        YAxis === "count"
-            ? { type: "count", count: { options: [{ name: "count" }] } }
-            : schema[YAxis];
+    const YAxisDetails = schema[YAxis];
 
     if (!XAxisDetails || !YAxisDetails) {
-        throw new Error("Invalid axis configuration");
+        throw new Error("Invalid Schema");
     }
 
-    // Get options for both axes
-    const XOptions = getOptionsForType(XAxisDetails);
-    const YOptions =
-        YAxis === "count"
-            ? [{ name: "count" }]
-            : getOptionsForType(YAxisDetails);
+    let radarChartConfig: ReturnType["radarChartConfig"] = [];
+    if (YAxisDetails.type === "status") {
+        radarChartConfig = YAxisDetails.status.options.map((option) =>
+            option.name.toLowerCase()
+        );
+    } else if (YAxisDetails.type === "select") {
+        radarChartConfig = YAxisDetails.select.options.map((option) =>
+            option.name.toLowerCase()
+        );
+    } else if (YAxisDetails.type === "multi_select") {
+        radarChartConfig = YAxisDetails.multi_select.options.map((option) =>
+            option.name.toLowerCase()
+        );
+    } else {
+        throw new Error("Invalid YAxis Type");
+    }
 
-    // Initialize radar chart data structure
-    const RadarChartData = XOptions.map((xOption) => {
-        // eslint-disable-next-line
-        const record: Record<string, any> = { class: xOption.name };
-        YOptions.forEach((yOption) => {
-            record[yOption.name] = 0;
-        });
-        return record;
-    });
+    const xValues = new Set<string>();
 
-    // Process data based on axis types
-    for (const record of data) {
-        const xValues = extractValues(record[XAxis], XAxisDetails.type);
-        const yValues =
-            YAxis === "count"
-                ? ["count"]
-                : extractValues(record[YAxis], YAxisDetails.type);
+    for (const entry of data) {
+        const xVal = entry[XAxis];
 
-        // Cross multiply all x and y values
-        for (const xValue of xValues) {
-            for (const yValue of yValues) {
-                const matchingRecord = RadarChartData.find(
-                    (r) => r.class === xValue
-                );
-                if (matchingRecord) {
-                    matchingRecord[yValue]++;
-                }
-            }
+        if (xVal.type === "status" && xVal?.status?.name) {
+            xValues.add(xVal.status.name.toLowerCase());
+        } else if (xVal.type === "select" && xVal?.select?.name) {
+            xValues.add(xVal.select.name.toLowerCase());
+        } else if (xVal.type === "multi_select" && xVal?.multi_select) {
+            xVal.multi_select.forEach((option) =>
+                xValues.add(option.name.toLowerCase())
+            );
         }
     }
 
+    const counts = new Map<string, Map<string, number>>();
+    for (const xVal of xValues) {
+        counts.set(xVal, new Map<string, number>());
+        for (const yVal of radarChartConfig) {
+            counts.get(xVal)!.set(yVal.toLowerCase(), 0);
+        }
+    }
+
+    for (const entry of data) {
+        const xVal = entry[XAxis];
+        const yVal = entry[YAxis];
+
+        let xValName: string = "";
+        if (xVal.type === "status" && xVal.status?.name) {
+            xValName = xVal.status.name.toLowerCase();
+        } else if (xVal.type === "select" && xVal.select?.name) {
+            xValName = xVal.select.name.toLowerCase();
+        } else if (xVal.type === "multi_select" && xVal.multi_select) {
+            xVal.multi_select.forEach((option) => {
+                xValName = option.name.toLowerCase();
+                if (xValName && counts.has(xValName)) {
+                    let yValName: string | undefined;
+                    if (yVal.type === "status" && yVal.status?.name) {
+                        yValName = yVal.status.name.toLowerCase();
+                    } else if (yVal.type === "select" && yVal.select?.name) {
+                        yValName = yVal.select.name.toLowerCase();
+                    } else if (
+                        yVal.type === "multi_select" &&
+                        yVal.multi_select
+                    ) {
+                        yVal.multi_select.forEach((opt) => {
+                            yValName = opt.name.toLowerCase();
+                            if (
+                                yValName &&
+                                counts.get(xValName)!.has(yValName)
+                            ) {
+                                counts
+                                    .get(xValName)!
+                                    .set(
+                                        yValName,
+                                        counts.get(xValName)!.get(yValName)! + 1
+                                    );
+                            }
+                        });
+                        return; // Skip to the next option after processing multi_select
+                    }
+
+                    if (yValName && counts.get(xValName)!.has(yValName)) {
+                        counts
+                            .get(xValName)!
+                            .set(
+                                yValName,
+                                counts.get(xValName)!.get(yValName)! + 1
+                            );
+                    }
+                }
+            });
+            continue; // Skip to the next entry after processing multi_select
+        }
+
+        let yValName: string = "";
+        if (yVal.type === "status" && yVal.status?.name) {
+            yValName = yVal.status.name.toLowerCase();
+        } else if (yVal.type === "select" && yVal.select?.name) {
+            yValName = yVal.select.name.toLowerCase();
+        } else if (yVal.type === "multi_select" && yVal.multi_select) {
+            yVal.multi_select.forEach((opt) => {
+                yValName = opt.name.toLowerCase();
+                if (xValName && yValName && counts.has(xValName)) {
+                    counts
+                        .get(xValName)!
+                        .set(
+                            yValName,
+                            counts.get(xValName)!.get(yValName)! + 1
+                        );
+                }
+            });
+            continue; // Skip to the next entry after processing multi_select
+        }
+
+        if (counts.has(xValName)) {
+            counts
+                .get(xValName)!
+                .set(yValName, counts.get(xValName)!.get(yValName)! + 1);
+        }
+    }
+
+    // Format the radarChartData
+    const radarChartData: ReturnType["radarChartData"] = [];
+    for (const xVal of Array.from(xValues).sort()) {
+        const classEntry = {
+            class: xVal,
+        } as { class: string } & { [key: string]: number };
+
+        // Add counts for each YAxis value
+        for (const yVal of radarChartConfig) {
+            const yValLower = yVal.toLowerCase();
+            classEntry[yValLower] = counts.get(xVal)?.get(yValLower) || 0;
+        }
+
+        radarChartData.push(classEntry);
+    }
+
+    console.dir({ radarChartData, radarChartConfig });
+
     return {
-        RadarChartData,
-        configData: YOptions.map((opt) => opt.name),
+        radarChartConfig,
+        radarChartData,
     };
-}
-
-// Helper function to get options based on field type
-function getOptionsForType(
-    // eslint-disable-next-line
-    fieldDetails: Record<string, any>
-): Array<{ name: string }> {
-    const type = fieldDetails.type;
-    if (!type) {
-        return [];
-    }
-
-    const options = fieldDetails[type]?.options;
-    if (!Array.isArray(options)) {
-        throw new Error(`Invalid options for type: ${type}`);
-    }
-
-    return options;
-}
-
-// Helper function to extract values based on field type
-// eslint-disable-next-line
-function extractValues(field: any, type: string): string[] {
-    if (!field) {
-        return [];
-    }
-    switch (type) {
-        case "status":
-        case "select":
-            return [field.name].filter(Boolean);
-        case "multi_select":
-            return Array.isArray(field)
-                ? field.map((f) => f.name).filter(Boolean)
-                : [];
-        case "count":
-            return ["count"];
-        default:
-            return [];
-    }
 }

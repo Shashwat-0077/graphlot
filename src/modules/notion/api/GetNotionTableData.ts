@@ -1,17 +1,11 @@
-import {
-    DatabaseObjectResponse,
-    PageObjectResponse,
-} from "@notionhq/client/build/src/api-endpoints";
+import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 import { getNotionClient } from "@/lib/notion";
 
 export async function GetNotionTableData(id: string): Promise<
     | {
           ok: true;
-          data: (
-              | PageObjectResponse["properties"]
-              | DatabaseObjectResponse["properties"]
-          )[];
+          data: PageObjectResponse["properties"][];
       }
     | { ok: false; error: string }
 > {
@@ -29,10 +23,11 @@ export async function GetNotionTableData(id: string): Promise<
     });
 
     const result = response.results;
+
     const data = [];
 
     for (const entry of result) {
-        if ("properties" in entry) {
+        if ("properties" in entry && entry.object === "page") {
             data.push(entry.properties);
         }
     }

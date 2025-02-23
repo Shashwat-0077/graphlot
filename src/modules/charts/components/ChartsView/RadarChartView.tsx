@@ -16,6 +16,7 @@ import {
     useChartConfigStore,
 } from "@/providers/chart-store-provider";
 import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
+import { useMemo } from "react";
 
 export const RadarChartView = ({
     notion_table_id,
@@ -37,6 +38,20 @@ export const RadarChartView = ({
         isLoading: dataLoading,
     } = useGetTableData(notion_table_id);
 
+    const { radarChartConfig, radarChartData } = useMemo(() => {
+        if (!schema || !tableData?.data || !xAxis || !yAxis) {
+            return { radarChartConfig: [], radarChartData: [] };
+        }
+        return getRadarChartData(tableData.data, schema, xAxis, yAxis);
+    }, [schema, tableData, xAxis, yAxis]);
+
+    // TODO : Show disclaimer message to user if the data is more than 8 and say that only 8 data will be shown for bigger datasets to avoid clutter, and provider link to the full dataset chart their, it will be on different page
+    const limitedRadarChartData = useMemo(() => {
+        return radarChartData.length > 8
+            ? radarChartData.slice(0, 8)
+            : radarChartData;
+    }, [radarChartData]);
+
     if (schemaLoading || dataLoading) {
         return <div>Loading...</div>; // TODO : improve Text and design
     }
@@ -53,46 +68,32 @@ export const RadarChartView = ({
         return <div>Select X and Y Axis</div>; // TODO : improve Text and design
     }
 
-    const { data } = tableData;
-
-    const { configData, RadarChartData } = getRadarChartData(
-        data,
-        schema,
-        xAxis,
-        yAxis
-    );
-
-    // TODO : Show disclaimer message to user if the data is more than 8 and say that only 8 data will be shown for bigger datasets to avoid clutter, and provider link to the full dataset chart their, it will be on different page
-    if (RadarChartData.length > 8) {
-        RadarChartData.splice(8);
-    }
-
-    let colorIndex = 0;
-    const RadarChartConfig: {
+    const configData: {
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
 
-    for (const data_label of configData) {
-        RadarChartConfig[data_label] = {
-            label: data_label,
-            color: colors[colorIndex]
-                ? `rgb(${colors[colorIndex].r}, ${colors[colorIndex].g}, ${colors[colorIndex].b}`
+    for (let idx = 0; idx < radarChartConfig.length; idx++) {
+        const data_label = radarChartConfig[idx];
+        configData[data_label] = {
+            label:
+                data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
+            color: colors[idx]
+                ? `rgb(${colors[idx].r}, ${colors[idx].g}, ${colors[idx].b}`
                 : "rgb(255, 255, 255)",
-            alpha: colors[colorIndex]
-                ? colors[colorIndex].a
-                : Math.min(1 / configData.length, 0.5),
+            alpha: colors[idx]
+                ? colors[idx].a
+                : Math.min(1 / radarChartConfig.length, 0.5),
         };
-        colorIndex++;
     }
 
     return (
         <ChartContainer
-            config={RadarChartConfig}
+            config={configData}
             // TODO : make size responsive
-            className="mx-auto min-h-[270px]"
+            className="mx-auto min-h-[270px] break1200:min-h-[500px]"
         >
             <RadarChart
-                data={RadarChartData}
+                data={limitedRadarChartData}
                 margin={{
                     top: -40,
                     bottom: -10,
@@ -112,16 +113,18 @@ export const RadarChartView = ({
                     />
                 )}
 
-                {configData.map((data_label) => (
+                {radarChartConfig.map((data_label) => (
                     <Radar
                         key={data_label}
                         dataKey={data_label}
-                        fill={RadarChartConfig[data_label].color}
-                        fillOpacity={RadarChartConfig[data_label].alpha}
+                        fill={configData[data_label].color}
+                        fillOpacity={configData[data_label].alpha}
                         dot={{
                             r: 4,
                             fillOpacity: 1,
                         }}
+                        strokeWidth={0.2}
+                        stroke={configData[data_label].color}
                     />
                 ))}
 
