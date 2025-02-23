@@ -1,0 +1,44 @@
+{
+    "autorun": true,
+    "autokill": true,
+    "terminals": [
+        {
+            "name": "Running dev server",
+            "description": "A terminal for running the dev server",
+            "icon": "server",
+            "color": "terminal.ansiRed",
+            "command": "bun run dev",
+            "focus": true
+        },
+        {
+            "name": "Formatting",
+            "description": "A terminal rinning the fomatting for the code",
+            "icon": "eye",
+            "color": "terminal.ansiYellow",
+            "command": "bun run format",
+            "split": "Running dev server"
+        },
+        {
+            "name": "Local Database",
+            "description": "A terminal for turso client",
+            "icon": "database",
+            "color": "terminal.ansiGreen",
+            "command": "bun run db:local"
+        },
+        {
+            "name": "Drizzle Database",
+            "description": "A terminal for drizzle client",
+            "icon": "database",
+            "color": "terminal.ansiGreen",
+            "command": "bun run db:studio",
+            "split": "Local Database"
+        },
+        {
+            "name": "Git logs",
+            "description": "A terminal that runs git commands and actions",
+            "icon": "github-alt",
+            "color": "terminal.ansiWhite",
+            "persistent": "github_logs"
+        }
+    ]
+}
