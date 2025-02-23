@@ -1,6 +1,7 @@
 "use client";
 
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
+import { useMemo } from "react";
 
 import {
     ChartContainer,
@@ -16,7 +17,6 @@ import {
     useChartConfigStore,
 } from "@/providers/chart-store-provider";
 import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
-import { useMemo } from "react";
 
 export const RadarChartView = ({
     notion_table_id,

@@ -166,8 +166,6 @@ export function getRadarChartData(
         radarChartData.push(classEntry);
     }
 
-    console.dir({ radarChartData, radarChartConfig });
-
     return {
         radarChartConfig,
         radarChartData,
