@@ -3,16 +3,33 @@
 import { Area, AreaChart, CartesianGrid } from "recharts";
 
 import { cn } from "@/lib/utils";
-import { ChartContainer } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
-import { AreaChartData } from "./config/data";
-import { AreaChartConfig } from "./config/chartConfig";
+const AreaChartConfig = {
+    desktop: {
+        label: "Desktop",
+        color: "hsl(var(--chart-1))",
+    },
+    mobile: {
+        label: "Mobile",
+        color: "hsl(var(--chart-2))",
+    },
+} satisfies ChartConfig;
+
+const AreaChartData = [
+    { month: "January", desktop: 186, mobile: 80 },
+    { month: "February", desktop: 305, mobile: 200 },
+    { month: "March", desktop: 237, mobile: 120 },
+    { month: "April", desktop: 73, mobile: 190 },
+    { month: "May", desktop: 209, mobile: 130 },
+    { month: "June", desktop: 214, mobile: 140 },
+];
 
 export const AreaChartCardHeader = ({ className }: { className?: string }) => {
     return (
         <ChartContainer
             config={AreaChartConfig}
-            className={cn("min-h-[270px]", className)}
+            className={cn("h-[270px]", className)}
         >
             <AreaChart
                 accessibilityLayer

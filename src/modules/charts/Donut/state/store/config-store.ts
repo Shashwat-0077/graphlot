@@ -7,43 +7,38 @@ export type FilterType = {
     value: string;
 };
 
-export type ChartConfigState = {
+export type DonutChartConfigState = {
     dataLabels: "value" | "percentage" | "None";
     xAxis: string;
-    yAxis: string;
-    groupBy: string;
     sortBy: string;
     filters: FilterType[];
 };
 
-export type ChartConfigActions = {
+export type DonutChartConfigActions = {
     setDataLabels: (value: "value" | "percentage" | "None") => void;
     setXAxis: (value: string) => void;
-    setYAxis: (value: string) => void;
-    setGroupBy: (value: string) => void;
     setSortBy: (value: string) => void;
     setFilters: (filters: FilterType[]) => void;
 };
 
-export type ChartConfigStore = ChartConfigState & ChartConfigActions;
+export type DonutChartConfigStore = DonutChartConfigState &
+    DonutChartConfigActions;
 
-export const defaultInitState: ChartConfigState = {
+export const defaultInitState: DonutChartConfigState = {
     dataLabels: "value",
     xAxis: "",
-    yAxis: "",
-    groupBy: "",
     sortBy: "",
     filters: [],
 };
 
-export const initChartConfigStore = (): ChartConfigState => {
+export const initDonutChartConfigStore = (): DonutChartConfigState => {
     return defaultInitState;
 };
 
-export const createChartConfigStore = (
-    initState: ChartConfigState = defaultInitState
+export const createDonutChartConfigStore = (
+    initState: DonutChartConfigState = defaultInitState
 ) => {
-    return createStore<ChartConfigStore>()(
+    return createStore<DonutChartConfigStore>()(
         immer((set) => ({
             ...initState,
             setDataLabels: (value) =>
@@ -53,14 +48,6 @@ export const createChartConfigStore = (
             setXAxis: (value) =>
                 set((state) => {
                     state.xAxis = value;
-                }),
-            setYAxis: (value) =>
-                set((state) => {
-                    state.yAxis = value;
-                }),
-            setGroupBy: (value) =>
-                set((state) => {
-                    state.groupBy = value;
                 }),
             setSortBy: (value) =>
                 set((state) => {

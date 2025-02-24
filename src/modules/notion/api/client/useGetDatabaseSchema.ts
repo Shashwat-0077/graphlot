@@ -21,6 +21,7 @@ export const useGetDatabaseSchema = (id: string) => {
             const { schema } = await response.json();
             return schema;
         },
+        staleTime: 0,
     });
 
     return query;

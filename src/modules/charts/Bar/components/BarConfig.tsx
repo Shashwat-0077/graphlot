@@ -1,8 +1,11 @@
-"use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
+import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Select,
     SelectContent,
@@ -10,30 +13,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import ToggleSwitch from "@/components/ui/ToggleSwitch";
-import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import ClearAll from "@/modules/charts/components/ClearAll";
 import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import {
-    useChartAppearanceStore,
-    useChartConfigStore,
-} from "@/providers/chart-store-provider";
-import { FilterType } from "@/store/charts/config-store";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
-export default function RadarConfig({
-    chartType,
-    notion_table_id,
-}: {
-    chartType: string;
-    notion_table_id: string;
-}) {
+import ClearAll from "../../components/ClearAll";
+import {
+    useBarChartAppearanceStore,
+    useBarChartConfigStore,
+} from "../state/provider/bar-chart-store-provider";
+import { FilterType } from "../state/store/config-store";
+import { ChartConfigComponentType } from "../../types";
+
+export const BarConfig: ChartConfigComponentType = ({ notion_table_id }) => {
     const COLOR_SECTION_HEIGHT = 120; // in px
     const FILTER_SECTION_HEIGHT = 400; // in px
+
+    // TODO : Add data in functionality
 
     const { data, isLoading } = useGetDatabaseSchema(notion_table_id);
 
@@ -97,9 +95,13 @@ export default function RadarConfig({
         showToolTip,
         showLegends,
         showLabel,
+        barGap,
+        barSize,
 
         // actions
         setColor,
+        setBarGap,
+        setBarSize,
         setLabelColor,
         setBgColor,
         setGridColor,
@@ -110,7 +112,7 @@ export default function RadarConfig({
         addColor,
         removeColor,
         clearColors,
-    } = useChartAppearanceStore((state) => state);
+    } = useBarChartAppearanceStore((state) => state);
 
     const {
         // actions
@@ -119,7 +121,7 @@ export default function RadarConfig({
         setGroupBy: setGlobalGroupBy,
         setSortBy: setGlobalSortBy,
         setFilters: setGlobalFilters,
-    } = useChartConfigStore((state) => state);
+    } = useBarChartConfigStore((state) => state);
 
     const onApply = () => {
         setGlobalXAxis(xAxis);
@@ -147,38 +149,15 @@ export default function RadarConfig({
         );
     }
 
-    const XAxisColumns = [];
-    const YAxisColumns = [];
+    const XAxisColumns: string[] = [];
+    const YAxisColumns: string[] = [];
 
-    for (const col in data) {
-        switch (chartType) {
-            case "Radar":
-                if (
-                    data[col].type === "select" ||
-                    data[col].type === "status" ||
-                    data[col].type === "multi_select"
-                ) {
-                    YAxisColumns.push(col);
-                    XAxisColumns.push(col);
-                }
-                break;
-            case "Area":
-            case "Bar":
-                if (
-                    data[col].type === "number" ||
-                    data[col].type === "status" ||
-                    data[col].type === "select" ||
-                    data[col].type === "multi_select" ||
-                    data[col].type === "date"
-                ) {
-                    YAxisColumns.push(col);
-                    XAxisColumns.push(col);
-                }
-                break;
-            default:
-                break;
+    Object.keys(data).forEach((col) => {
+        if (["status", "select", "multi_select"].includes(data[col].type)) {
+            XAxisColumns.push(col);
+            YAxisColumns.push(col);
         }
-    }
+    });
 
     return (
         <div className="mb-7 mt-16 flex flex-col gap-10 break1200:flex-row">
@@ -221,6 +200,32 @@ export default function RadarConfig({
                     <ToggleSwitch
                         defaultChecked={showToolTip}
                         toggleFunction={toggleToolTip}
+                    />
+                </div>
+
+                {/* Bar Size */}
+                <div>
+                    <Label className="mb-2 block text-lg">Bar Size</Label>
+                    <Slider
+                        defaultValue={[barSize]}
+                        max={100}
+                        min={1}
+                        onValueChange={([value]) => {
+                            setBarSize(value);
+                        }}
+                    />
+                </div>
+
+                {/* Bar Gap */}
+                <div>
+                    <Label className="mb-2 block text-lg">Bar Gap</Label>
+                    <Slider
+                        defaultValue={[barGap]}
+                        max={100}
+                        min={1}
+                        onValueChange={([value]) => {
+                            setBarGap(value);
+                        }}
                     />
                 </div>
 
@@ -337,7 +342,7 @@ export default function RadarConfig({
                     Data
                 </Label>
 
-                <div className="break1400:grid-cols-[1fr_5px_1fr] grid grid-cols-[1fr] gap-10">
+                <div className="grid grid-cols-[1fr] gap-10 break1400:grid-cols-[1fr_5px_1fr]">
                     {/* X Axis */}
                     <div>
                         <Label className="mb-2 block text-lg">X Axis</Label>
@@ -526,4 +531,4 @@ export default function RadarConfig({
             </section>
         </div>
     );
-}
+};

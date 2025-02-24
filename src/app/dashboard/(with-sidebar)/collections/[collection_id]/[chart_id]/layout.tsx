@@ -1,9 +1,9 @@
-import { ChartStoreProvider } from "@/providers/chart-store-provider";
+import { RadarChartStoreProvider } from "@/modules/charts/Radar/state/provider/radar-chart-store-provider";
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <ChartStoreProvider>{children}</ChartStoreProvider>;
+    return <RadarChartStoreProvider>{children}</RadarChartStoreProvider>;
 }

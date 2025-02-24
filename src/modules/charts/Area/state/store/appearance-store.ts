@@ -8,7 +8,7 @@ export type ColorType = {
     a: number;
 };
 
-export type ChartAppearanceState = {
+export type AreaChartAppearanceState = {
     bgColor: ColorType;
     showLabel: boolean;
     showLegends: boolean;
@@ -19,7 +19,7 @@ export type ChartAppearanceState = {
     colors: ColorType[];
 };
 
-export type ChartAppearanceActions = {
+export type AreaChartAppearanceActions = {
     setColor: (color: ColorType, index: number) => void;
     setBgColor: (color: ColorType) => void;
     setGridColor: (color: ColorType) => void;
@@ -33,10 +33,10 @@ export type ChartAppearanceActions = {
     clearColors: () => void;
 };
 
-export type ChartAppearanceStore = ChartAppearanceState &
-    ChartAppearanceActions;
+export type AreaChartAppearanceStore = AreaChartAppearanceState &
+    AreaChartAppearanceActions;
 
-export const defaultInitState: ChartAppearanceState = {
+export const defaultInitState: AreaChartAppearanceState = {
     showLabel: true,
     showLegends: true,
     showGrid: true,
@@ -47,14 +47,14 @@ export const defaultInitState: ChartAppearanceState = {
     labelColor: { r: 255, g: 255, b: 255, a: 1 },
 };
 
-export const initChartAppearanceStore = (): ChartAppearanceState => {
+export const initChartAreaAppearanceStore = (): AreaChartAppearanceState => {
     return defaultInitState;
 };
 
-export const createChartAppearanceStore = (
-    initState: ChartAppearanceState = defaultInitState
+export const createAreaChartAppearanceStore = (
+    initState: AreaChartAppearanceState = defaultInitState
 ) => {
-    return createStore<ChartAppearanceStore>()(
+    return createStore<AreaChartAppearanceStore>()(
         immer((set) => ({
             ...initState,
             setColor: (color, index) =>

@@ -26,25 +26,37 @@ export function getRadarChartData(
     const XAxisDetails = schema[XAxis];
     const YAxisDetails = schema[YAxis];
 
-    if (!XAxisDetails || !YAxisDetails) {
+    if (!XAxisDetails) {
         throw new Error("Invalid Schema");
     }
 
+    if (!(YAxisDetails || YAxis === "count")) {
+        throw new Error("Invalid Schema");
+    }
+
+    // Handle case where YAxis is "count"
+    const isYAxisCount = YAxis === "count";
+
     let radarChartConfig: ReturnType["radarChartConfig"] = [];
-    if (YAxisDetails.type === "status") {
-        radarChartConfig = YAxisDetails.status.options.map((option) =>
-            option.name.toLowerCase()
-        );
-    } else if (YAxisDetails.type === "select") {
-        radarChartConfig = YAxisDetails.select.options.map((option) =>
-            option.name.toLowerCase()
-        );
-    } else if (YAxisDetails.type === "multi_select") {
-        radarChartConfig = YAxisDetails.multi_select.options.map((option) =>
-            option.name.toLowerCase()
-        );
+    if (!isYAxisCount) {
+        if (YAxisDetails.type === "status") {
+            radarChartConfig = YAxisDetails.status.options.map((option) =>
+                option.name.toLowerCase()
+            );
+        } else if (YAxisDetails.type === "select") {
+            radarChartConfig = YAxisDetails.select.options.map((option) =>
+                option.name.toLowerCase()
+            );
+        } else if (YAxisDetails.type === "multi_select") {
+            radarChartConfig = YAxisDetails.multi_select.options.map((option) =>
+                option.name.toLowerCase()
+            );
+        } else {
+            throw new Error("Invalid YAxis Type");
+        }
     } else {
-        throw new Error("Invalid YAxis Type");
+        // If YAxis is "count", set the config to a single value "count"
+        radarChartConfig = ["count"];
     }
 
     const xValues = new Set<string>();
@@ -84,33 +96,77 @@ export function getRadarChartData(
             xVal.multi_select.forEach((option) => {
                 xValName = option.name.toLowerCase();
                 if (xValName && counts.has(xValName)) {
-                    let yValName: string | undefined;
-                    if (yVal.type === "status" && yVal.status?.name) {
-                        yValName = yVal.status.name.toLowerCase();
-                    } else if (yVal.type === "select" && yVal.select?.name) {
-                        yValName = yVal.select.name.toLowerCase();
-                    } else if (
-                        yVal.type === "multi_select" &&
-                        yVal.multi_select
-                    ) {
-                        yVal.multi_select.forEach((opt) => {
-                            yValName = opt.name.toLowerCase();
-                            if (
-                                yValName &&
-                                counts.get(xValName)!.has(yValName)
-                            ) {
-                                counts
-                                    .get(xValName)!
-                                    .set(
-                                        yValName,
-                                        counts.get(xValName)!.get(yValName)! + 1
-                                    );
-                            }
-                        });
-                        return; // Skip to the next option after processing multi_select
-                    }
+                    if (isYAxisCount) {
+                        // If YAxis is "count", increment the count for the XAxis value
+                        counts
+                            .get(xValName)!
+                            .set(
+                                "count",
+                                counts.get(xValName)!.get("count")! + 1
+                            );
+                    } else {
+                        let yValName: string | undefined;
+                        if (yVal.type === "status" && yVal.status?.name) {
+                            yValName = yVal.status.name.toLowerCase();
+                        } else if (
+                            yVal.type === "select" &&
+                            yVal.select?.name
+                        ) {
+                            yValName = yVal.select.name.toLowerCase();
+                        } else if (
+                            yVal.type === "multi_select" &&
+                            yVal.multi_select
+                        ) {
+                            yVal.multi_select.forEach((opt) => {
+                                yValName = opt.name.toLowerCase();
+                                if (
+                                    yValName &&
+                                    counts.get(xValName)!.has(yValName)
+                                ) {
+                                    counts
+                                        .get(xValName)!
+                                        .set(
+                                            yValName,
+                                            counts
+                                                .get(xValName)!
+                                                .get(yValName)! + 1
+                                        );
+                                }
+                            });
+                            return; // Skip to the next option after processing multi_select
+                        }
 
-                    if (yValName && counts.get(xValName)!.has(yValName)) {
+                        if (yValName && counts.get(xValName)!.has(yValName)) {
+                            counts
+                                .get(xValName)!
+                                .set(
+                                    yValName,
+                                    counts.get(xValName)!.get(yValName)! + 1
+                                );
+                        }
+                    }
+                }
+            });
+            continue; // Skip to the next entry after processing multi_select
+        }
+
+        if (isYAxisCount) {
+            // If YAxis is "count", increment the count for the XAxis value
+            if (counts.has(xValName)) {
+                counts
+                    .get(xValName)!
+                    .set("count", counts.get(xValName)!.get("count")! + 1);
+            }
+        } else {
+            let yValName: string = "";
+            if (yVal.type === "status" && yVal.status?.name) {
+                yValName = yVal.status.name.toLowerCase();
+            } else if (yVal.type === "select" && yVal.select?.name) {
+                yValName = yVal.select.name.toLowerCase();
+            } else if (yVal.type === "multi_select" && yVal.multi_select) {
+                yVal.multi_select.forEach((opt) => {
+                    yValName = opt.name.toLowerCase();
+                    if (xValName && yValName && counts.has(xValName)) {
                         counts
                             .get(xValName)!
                             .set(
@@ -118,35 +174,15 @@ export function getRadarChartData(
                                 counts.get(xValName)!.get(yValName)! + 1
                             );
                     }
-                }
-            });
-            continue; // Skip to the next entry after processing multi_select
-        }
+                });
+                continue; // Skip to the next entry after processing multi_select
+            }
 
-        let yValName: string = "";
-        if (yVal.type === "status" && yVal.status?.name) {
-            yValName = yVal.status.name.toLowerCase();
-        } else if (yVal.type === "select" && yVal.select?.name) {
-            yValName = yVal.select.name.toLowerCase();
-        } else if (yVal.type === "multi_select" && yVal.multi_select) {
-            yVal.multi_select.forEach((opt) => {
-                yValName = opt.name.toLowerCase();
-                if (xValName && yValName && counts.has(xValName)) {
-                    counts
-                        .get(xValName)!
-                        .set(
-                            yValName,
-                            counts.get(xValName)!.get(yValName)! + 1
-                        );
-                }
-            });
-            continue; // Skip to the next entry after processing multi_select
-        }
-
-        if (counts.has(xValName)) {
-            counts
-                .get(xValName)!
-                .set(yValName, counts.get(xValName)!.get(yValName)! + 1);
+            if (counts.has(xValName)) {
+                counts
+                    .get(xValName)!
+                    .set(yValName, counts.get(xValName)!.get(yValName)! + 1);
+            }
         }
     }
 

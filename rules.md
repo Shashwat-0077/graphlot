@@ -32,7 +32,7 @@ we can only have types like
 - Status
 - Select
 - Multi-select
-- Date (can be like class like weekly, monthly)
+- Date (can be like class like weekly, monthly) // this can be added later
 
 Types like these are not considered
 - Text
@@ -52,7 +52,7 @@ we can only have types like
 - Status 
 - Select
 - Multi-select
-- Date (can be like class like weekly, monthly)
+- Date (can be like class like weekly, monthly) // this can be added later
 
 Types like these are not considered
 - Text

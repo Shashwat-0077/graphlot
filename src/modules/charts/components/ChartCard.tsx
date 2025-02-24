@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { encodeForUrl } from "@/utils/pathSerialization";
 
-import { AreaChartCardHeader } from "./HeaderCharts/AreaChart";
-import { BarChartCardHeader } from "./HeaderCharts/BarChart";
-import { DonutChartCardHeader } from "./HeaderCharts/Donut";
-import { RadarChartCardHeader } from "./HeaderCharts/RadarChart";
-import { HeatmapChartCardHeader } from "./HeaderCharts/Heatmap";
+import { AreaChartCardHeader } from "../Area/components/AreaHeaderChart";
+import { BarChartCardHeader } from "../Bar/components/BarHeaderChart";
+import { DonutChartCardHeader } from "../Donut/components/DonutHeaderChart";
+import { RadarChartCardHeader } from "../Radar/components/RadarHeaderChart";
+import { HeatmapChartCardHeader } from "../Heatmap/components/HeatmapHeaderChart";
 
 export function ChartCard({
     type,
