@@ -68,7 +68,7 @@ export const HeatmapChartCardHeader = () => {
                                                     col_index
                                             ] / max,
                                     }}
-                                ></div>
+                                />
                             )
                         )}
                     </motion.div>
