@@ -6,7 +6,7 @@ import { ChartViewComponentType } from "../../types";
 import { getProcessedData } from "../utils/getDayOfWeek";
 
 const values = [
-    { date: "2024-07-26", count: 5 },
+    { date: "2024-02-26", count: 5 },
     { date: "2024-08-01", count: 3 },
     { date: "2024-08-10", count: 7 },
     { date: "2024-08-15", count: 2 },
@@ -45,8 +45,8 @@ export const HeatmapChartView: ChartViewComponentType = ({
     const { weeks, maxCount } = getProcessedData(values);
 
     return (
-        <div>
-            <HeatMap weeks={weeks} maxCount={maxCount} />
-        </div>
+        // <div className="flex w-full max-w-full flex-col items-center justify-center rounded-xl border pb-14 pt-7">
+        <HeatMap weeks={weeks} maxCount={maxCount} />
+        // </div>
     );
 };

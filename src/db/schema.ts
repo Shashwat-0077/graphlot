@@ -44,7 +44,7 @@ export const Charts = sqliteTable(
         x_axis: text("xAxis").notNull().default(""),
         y_axis: text("yAxis").notNull().default(""),
         type: text("type").notNull(),
-        // NOTE : Maybe add the child chart id here to improve lookup, just maybe
+        // NOTE : Maybe add the child/specific chart id here to improve lookup, just maybe
     },
     (table) => [
         unique("uniqueConstantForCollectionIdAndName").on(
@@ -109,9 +109,27 @@ export const HeatmapCharts = sqliteTable("heatmap_chart", {
     // Add heatmap chart specific properties here
 });
 
+export const heatmapData = sqliteTable("heatmap_data", {
+    heatmap_data_id: text("id")
+        .primaryKey()
+        .$defaultFn(() => uuid()),
+    heatmap_id: text("heatmap_id")
+        .notNull()
+        .references(() => HeatmapCharts.heatmap_id, { onDelete: "cascade" }),
+    date: text("date").notNull(),
+    count: integer("count").notNull(),
+});
+
 // Relations
 export const collectionRelations = relations(Collections, ({ many }) => ({
     charts: many(Charts),
+}));
+
+export const heatmapDataRelations = relations(heatmapData, ({ one }) => ({
+    heatmap: one(HeatmapCharts, {
+        fields: [heatmapData.heatmap_id],
+        references: [HeatmapCharts.heatmap_id],
+    }),
 }));
 
 export const chartRelations = relations(Charts, ({ one }) => ({

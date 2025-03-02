@@ -20,6 +20,9 @@ import { AreaChartView } from "@/modules/charts/Area/components/AreaChartView";
 import { DonutChartStoreProvider } from "@/modules/charts/Donut/state/provider/donut-chart-store-provider";
 import { DonutConfig } from "@/modules/charts/Donut/components/DonutConfig";
 import { DonutChartView } from "@/modules/charts/Donut/components/DonutChartView";
+import { HeatmapChartView } from "@/modules/charts/Heatmap/components/HeatmapChartView";
+import { HeatmapChartStoreProvider } from "@/modules/charts/Heatmap/state/provider/heatmap-store-provider";
+import { HeatmapConfig } from "@/modules/charts/Heatmap/components/HeatmapConfig";
 
 type Props = {
     params: Promise<{
@@ -27,24 +30,6 @@ type Props = {
         chart_id: string;
         collection_id: string;
     }>;
-};
-
-// eslint-disable-next-line
-const chartViews: Record<string, any> = {
-    Bar: BarChartView,
-    Radar: RadarChartView,
-    // area: AreaChartView,
-    // heatmap: HeatMapChartView,
-    // donut: DonutChartView,
-};
-
-// eslint-disable-next-line
-const chartConfigs: Record<string, any> = {
-    Bar: BarConfig,
-    Radar: RadarConfig,
-    // area: AreaConfig,
-    // heatmap: HeatMapConfig,
-    // donut: DonutConfig,
 };
 
 export default function ChatConfigs({ params }: Props) {
@@ -92,7 +77,7 @@ export default function ChatConfigs({ params }: Props) {
         Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
         Area: [AreaChartView, AreaConfig, AreaChartStoreProvider],
         Donut: [DonutChartView, DonutConfig, DonutChartStoreProvider],
-        // Heatmap: [HeatMapChartView, HeatmapConfig],
+        Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
     };
 
     const [ChartView, ChartConfig, StoreProvider] = chartComponents[
@@ -100,17 +85,15 @@ export default function ChatConfigs({ params }: Props) {
     ] || [RadarChartView, RadarConfig, RadarChartStoreProvider];
 
     return (
-        <section>
-            <StoreProvider>
-                <ChartView
-                    notion_table_id={chart.notion_database_id}
-                    chartName={chart.name}
-                />
+        <StoreProvider>
+            <ChartView
+                notion_table_id={chart.notion_database_id}
+                chartName={chart.name}
+            />
 
-                <div>
-                    <ChartConfig notion_table_id={chart.notion_database_id} />
-                </div>
-            </StoreProvider>
-        </section>
+            <div>
+                <ChartConfig notion_table_id={chart.notion_database_id} />
+            </div>
+        </StoreProvider>
     );
 }

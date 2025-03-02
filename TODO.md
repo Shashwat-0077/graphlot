@@ -14,3 +14,4 @@
 - donut me legends ka colors v change karo taki dikhe wo sab
 - donut me alag se legend v dikha do
 - bohot kaam hai 😭😭😭
+- jese wo life of discipline wali website me jese chart agar overflow kar ra hai to unhone 2 buttons daal die, its not really carousel but it gets the work done do like that in our implementation 

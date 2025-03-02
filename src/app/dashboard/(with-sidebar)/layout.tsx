@@ -95,7 +95,7 @@ export default function RootLayout({
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="mx-12 mt-10">{children}</div>
+                <div className="px-12 pt-10">{children}</div>
             </SidebarInset>
         </SidebarProvider>
     );

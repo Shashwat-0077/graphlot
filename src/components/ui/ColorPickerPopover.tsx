@@ -26,6 +26,7 @@ type ColorPickerPopoverProps =
               },
               index: number
           ) => void;
+          enableAlpha?: boolean;
       }
     | {
           children: React.ReactNode;
@@ -40,6 +41,7 @@ type ColorPickerPopoverProps =
               b: number;
               a: number;
           }) => void;
+          enableAlpha?: boolean;
       };
 
 export default function ColorPickerPopover({
@@ -50,6 +52,7 @@ export default function ColorPickerPopover({
     colorIndex,
     removeColor,
     isSingleColor,
+    enableAlpha = true,
 }: ColorPickerPopoverProps) {
     return (
         <Popover>
@@ -162,37 +165,45 @@ export default function ColorPickerPopover({
                             }
                         }}
                     />
-                    <Label className="grid place-content-center">A : </Label>
-                    <Input
-                        type="number"
-                        value={color.a === -Number.MIN_VALUE ? "" : color.a}
-                        onChange={(e) => {
-                            const a = parseInt(e.target.value);
+                    {enableAlpha && (
+                        <>
+                            <Label className="grid place-content-center">
+                                A :{" "}
+                            </Label>
+                            <Input
+                                type="number"
+                                value={
+                                    color.a === -Number.MIN_VALUE ? "" : color.a
+                                }
+                                onChange={(e) => {
+                                    const a = parseInt(e.target.value);
 
-                            if (isSingleColor) {
-                                setColor({
-                                    ...color,
-                                    a: isNaN(a)
-                                        ? -Number.MIN_VALUE
-                                        : a > 1
-                                          ? 1
-                                          : a,
-                                });
-                            } else {
-                                setColor(
-                                    {
-                                        ...color,
-                                        a: isNaN(a)
-                                            ? -Number.MIN_VALUE
-                                            : a > 1
-                                              ? 1
-                                              : a,
-                                    },
-                                    colorIndex
-                                );
-                            }
-                        }}
-                    />
+                                    if (isSingleColor) {
+                                        setColor({
+                                            ...color,
+                                            a: isNaN(a)
+                                                ? -Number.MIN_VALUE
+                                                : a > 1
+                                                  ? 1
+                                                  : a,
+                                        });
+                                    } else {
+                                        setColor(
+                                            {
+                                                ...color,
+                                                a: isNaN(a)
+                                                    ? -Number.MIN_VALUE
+                                                    : a > 1
+                                                      ? 1
+                                                      : a,
+                                            },
+                                            colorIndex
+                                        );
+                                    }
+                                }}
+                            />
+                        </>
+                    )}
 
                     {!isSingleColor && (
                         <Button
