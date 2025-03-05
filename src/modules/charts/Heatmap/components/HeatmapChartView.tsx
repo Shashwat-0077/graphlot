@@ -1,9 +1,11 @@
 "use client";
 
 import { HeatMap } from "@/components/ui/HeatMap";
+import { cn } from "@/lib/utils";
 
 import { ChartViewComponentType } from "../../types";
 import { getProcessedData } from "../utils/getDayOfWeek";
+import { useHeatmapChartAppearanceStore } from "../state/provider/heatmap-store-provider";
 
 const values = [
     { date: "2024-02-26", count: 5 },
@@ -43,10 +45,21 @@ export const HeatmapChartView: ChartViewComponentType = ({
     notion_table_id: _d,
 }) => {
     const { weeks, maxCount } = getProcessedData(values);
+    const { showBorder, bgColor } = useHeatmapChartAppearanceStore(
+        (state) => state
+    );
 
     return (
-        // <div className="flex w-full max-w-full flex-col items-center justify-center rounded-xl border pb-14 pt-7">
-        <HeatMap weeks={weeks} maxCount={maxCount} />
-        // </div>
+        <div
+            className={cn(
+                `flex w-full flex-col items-center justify-center overflow-hidden rounded-xl pb-7 pt-7`,
+                showBorder && "border"
+            )}
+            style={{
+                backgroundColor: `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, ${bgColor.a}`,
+            }}
+        >
+            <HeatMap weeks={weeks} maxCount={maxCount} />
+        </div>
     );
 };

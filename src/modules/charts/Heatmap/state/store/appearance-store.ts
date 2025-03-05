@@ -27,6 +27,11 @@ export type HeatmapChartAppearanceState = {
     textColor: ColorType;
     defaultBoxColor: ColorType;
     accent: ColorType;
+
+    average: {
+        show: boolean;
+        color: ColorType;
+    };
     longestStreak: {
         show: boolean;
         color: ColorType;
@@ -58,6 +63,7 @@ export type HeatmapChartAppearanceActions = {
     toggleButtonOnHover: () => void;
     toggleLongestStreak: () => void;
     toggleStreak: () => void;
+    toggleAvg: () => void;
     toggleTotal: () => void;
     setMetric: (metric: string) => void;
     toggleDayToContInStreak: (day: DayOfWeek) => void;
@@ -67,6 +73,7 @@ export type HeatmapChartAppearanceActions = {
     setTotalColor: (color: ColorType) => void;
     setLongestStreakColor: (color: ColorType) => void;
     setStreakColor: (color: ColorType) => void;
+    setAverageColor: (color: ColorType) => void;
 };
 
 export type HeatmapChartAppearanceStore = HeatmapChartAppearanceState &
@@ -77,21 +84,25 @@ export const defaultInitState: HeatmapChartAppearanceState = {
     showToolTip: true,
     showBorder: true,
     buttonOnHover: true,
-    numberOfEntries: {
-        show: true,
-        color: { r: 255, g: 255, b: 255, a: 1 },
-    },
     longestStreak: {
         show: true,
-        color: { r: 255, g: 255, b: 255, a: 1 },
+        color: { r: 255, g: 87, b: 34, a: 1 },
     },
     streak: {
         show: true,
-        color: { r: 255, g: 255, b: 255, a: 1 },
+        color: { r: 255, g: 193, b: 7, a: 1 },
     },
     total: {
         show: true,
-        color: { r: 255, g: 255, b: 255, a: 1 },
+        color: { r: 102, g: 187, b: 106, a: 1 },
+    },
+    numberOfEntries: {
+        show: true,
+        color: { r: 66, g: 165, b: 245, a: 1 },
+    },
+    average: {
+        show: true,
+        color: { r: 171, g: 71, b: 188, a: 1 },
     },
     bgColor: { r: 25, g: 25, b: 25, a: 1 },
     textColor: { r: 255, g: 255, b: 255, a: 1 },
@@ -120,7 +131,8 @@ export const createHeatmapChartAppearanceStore = (
                 set((state) => ({ showLabel: !state.showLabel })),
             toggleToolTip: () =>
                 set((state) => ({ showToolTip: !state.showToolTip })),
-            toggleBorder: () => set((state) => ({ border: !state.showBorder })),
+            toggleBorder: () =>
+                set((state) => ({ showBorder: !state.showBorder })),
             toggleButtonOnHover: () =>
                 set((state) => ({ buttonOnHover: !state.buttonOnHover })),
             toggleLongestStreak: () =>
@@ -169,6 +181,14 @@ export const createHeatmapChartAppearanceStore = (
                 })),
             setStreakColor: (color) =>
                 set((state) => ({ streak: { ...state.streak, color } })),
+
+            toggleAvg: () =>
+                set((state) => ({
+                    average: { ...state.average, show: !state.average.show },
+                })),
+
+            setAverageColor: (color) =>
+                set((state) => ({ average: { ...state.average, color } })),
         }))
     );
 };

@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { Calendar, FileText, Flame, Hash, MoveRight, Zap } from "lucide-react";
+import {
+    Calculator,
+    Calendar,
+    FileText,
+    Flame,
+    Hash,
+    LucideIcon,
+    MoveRight,
+    Zap,
+} from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { ColorType } from "@/modules/charts/Area/state/store/appearance-store";
 import { getShortMonth } from "@/modules/charts/Heatmap/utils/getDayOfWeek";
+import { useHeatmapChartAppearanceStore } from "@/modules/charts/Heatmap/state/provider/heatmap-store-provider";
 
 import { ScrollArea, ScrollBar } from "./scroll-area";
 import { Button } from "./button";
@@ -26,6 +37,80 @@ type Props = {
 };
 
 export const HeatMap = ({ weeks, maxCount }: Props) => {
+    const {
+        showToolTip,
+        showLabel,
+        buttonOnHover,
+        longestStreak,
+        streak,
+        total,
+        numberOfEntries,
+        average,
+        textColor,
+        defaultBoxColor,
+        accent,
+    } = useHeatmapChartAppearanceStore((state) => state);
+
+    const stats: {
+        [key: string]: {
+            name: string;
+            value: number;
+            icon: LucideIcon;
+            color: ColorType;
+        };
+    } = {
+        ...(longestStreak.show
+            ? {
+                  longestStreak: {
+                      name: "Longest Streak",
+                      value: 100,
+                      icon: Flame,
+                      color: longestStreak.color,
+                  },
+              }
+            : {}),
+        ...(streak.show
+            ? {
+                  streak: {
+                      name: "Streak",
+                      value: 100,
+                      icon: Zap,
+                      color: streak.color,
+                  },
+              }
+            : {}),
+        ...(total.show
+            ? {
+                  total: {
+                      name: "Total of all entires",
+                      value: 100,
+                      icon: Hash,
+                      color: total.color,
+                  },
+              }
+            : {}),
+        ...(numberOfEntries.show
+            ? {
+                  numberOfEntries: {
+                      name: "Number of entries",
+                      value: 100,
+                      icon: FileText,
+                      color: numberOfEntries.color,
+                  },
+              }
+            : {}),
+        ...(average.show
+            ? {
+                  average: {
+                      name: "Average",
+                      value: 100,
+                      icon: Calculator,
+                      color: average.color,
+                  },
+              }
+            : {}),
+    };
+
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -42,18 +127,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
 
     const GAP = 5;
     const CELL_WIDTH = 20;
-    const ACCENT_COLOR: ColorType = {
-        r: 242,
-        g: 84,
-        b: 92,
-        a: 1,
-    };
-    const DEFAULT_BG_COLOR: ColorType = {
-        r: 30,
-        g: 30,
-        b: 30,
-        a: 1,
-    };
+
     const LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
     const LABELS_WIDTH = 50;
     const TOOLTIP_WIDTH = 200;
@@ -72,69 +146,67 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
     });
 
     return (
-        <div className="container mx-auto max-w-[1450px]">
-            <div className="my-5 ml-10 flex justify-between">
-                <h1 className="text-4xl">Label</h1>
-                <div className="flex items-center justify-center gap-2 pr-5">
-                    {2024}
-                    <div>
-                        <Calendar className="cursor-pointer" />
+        <div
+            className="container mx-auto max-w-[1450px]"
+            style={{
+                color: `rgba(${textColor.r}, ${textColor.g}, ${textColor.b}, ${textColor.a}`,
+            }}
+        >
+            {showLabel && (
+                <div className="flex justify-between py-5 pl-10">
+                    <h1 className="text-4xl">Label</h1>
+                    <div className="flex items-center justify-center gap-2 pr-5">
+                        {new Date().getFullYear()}
+                        <div>
+                            <Calendar className="cursor-pointer" />
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            <div
-                className="flex"
-                style={{
-                    gap: `${GAP}px`,
-                }}
-            >
-                <div
-                    className="flex shrink-0 grow-0 flex-col"
-                    style={{
-                        gap: `${GAP}px`,
-                    }}
-                >
-                    {" "}
+            <div className="flex pt-7">
+                <div>
                     <div
-                        className="flex shrink-0 grow-0"
+                        className="mb-3 flex w-full"
                         style={{
-                            width: `${CELL_WIDTH}px`,
+                            widows: `${CELL_WIDTH}px`,
                             height: `${CELL_WIDTH}px`,
                         }}
                     >
                         &nbsp;
                     </div>
-                    {LABELS.map((label, index) => (
-                        <div
-                            key={index}
-                            className="mr-5 shrink-0 grow-0 text-right"
-                            style={{
-                                width: `${LABELS_WIDTH}px`,
-                                height: `${CELL_WIDTH}px`,
-                            }}
-                        >
-                            {label}
-                        </div>
-                    ))}
+                    <div
+                        className="flex shrink-0 grow-0 flex-col"
+                        style={{
+                            gap: `${GAP}px`,
+                        }}
+                    >
+                        {LABELS.map((label, index) => (
+                            <div
+                                key={index}
+                                className="mr-5 shrink-0 grow-0 text-right"
+                                style={{
+                                    width: `${LABELS_WIDTH}px`,
+                                    height: `${CELL_WIDTH}px`,
+                                }}
+                            >
+                                {label}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-
-                {/* 
-                    // BUG : The scroll is very janky when the component loads 
-                */}
 
                 <ScrollArea ref={scrollAreaRef} className="scroll-smooth">
                     <div
-                        className="flex shrink-0 grow-0"
+                        className="mb-3 flex"
                         style={{
                             gap: `${GAP}px`,
-                            marginBottom: `${GAP}px`,
                         }}
                     >
                         {monthStarts.map((month, col_index) => (
                             <div
                                 key={col_index}
-                                className="shrink-0 grow-0 text-center"
+                                className="text-center"
                                 style={{
                                     width: `${CELL_WIDTH}px`,
                                     height: `${CELL_WIDTH}px`,
@@ -153,7 +225,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                         {weeks.map((week, col_index) => (
                             <motion.div
                                 key={col_index}
-                                className="flex shrink-0 grow-0 flex-col"
+                                className="flex flex-col"
                                 style={{
                                     gap: `${GAP}px`,
                                 }}
@@ -164,8 +236,8 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                                 {week.map((data, row_index) => {
                                     const boxColor =
                                         data.count === 0
-                                            ? DEFAULT_BG_COLOR
-                                            : ACCENT_COLOR;
+                                            ? defaultBoxColor
+                                            : accent;
 
                                     const boxOpacity =
                                         data.count === 0
@@ -213,39 +285,42 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                                                     opacity: boxOpacity,
                                                 }}
                                             />
-                                            {/* Below are the tooltips */}
-                                            <div
-                                                className="absolute z-50 hidden gap-2 overflow-hidden rounded border bg-background text-sm group-hover:flex"
-                                                style={{
-                                                    width: `${TOOLTIP_WIDTH}px`,
-                                                    height: `${TOOLTIP_HEIGHT}px`,
-                                                    top: tooltipTop,
-                                                    left: tooltipLeft,
-                                                    flexDirection: isReversed
-                                                        ? "row-reverse"
-                                                        : "row",
-                                                    textAlign: isReversed
-                                                        ? "right"
-                                                        : "left",
-                                                }}
-                                            >
+
+                                            {showToolTip && (
                                                 <div
-                                                    className="w-1"
+                                                    className="absolute z-50 hidden gap-2 overflow-hidden rounded border bg-background text-sm group-hover:flex"
                                                     style={{
-                                                        backgroundColor: `rgb(${boxColor.r}, ${boxColor.g}, ${boxColor.b})`,
-                                                        opacity: boxOpacity,
+                                                        width: `${TOOLTIP_WIDTH}px`,
+                                                        height: `${TOOLTIP_HEIGHT}px`,
+                                                        top: tooltipTop,
+                                                        left: tooltipLeft,
+                                                        flexDirection:
+                                                            isReversed
+                                                                ? "row-reverse"
+                                                                : "row",
+                                                        textAlign: isReversed
+                                                            ? "right"
+                                                            : "left",
                                                     }}
-                                                />
-                                                <div className="m-0 flex flex-col py-1.5 pr-3">
-                                                    <span>
-                                                        Date :
-                                                        {data.date.toDateString()}
-                                                    </span>
-                                                    <span>
-                                                        Count : {data.count}
-                                                    </span>
+                                                >
+                                                    <div
+                                                        className="w-1"
+                                                        style={{
+                                                            backgroundColor: `rgb(${boxColor.r}, ${boxColor.g}, ${boxColor.b})`,
+                                                            opacity: boxOpacity,
+                                                        }}
+                                                    />
+                                                    <div className="m-0 flex flex-col py-1.5 pr-3">
+                                                        <span>
+                                                            Date :
+                                                            {data.date.toDateString()}
+                                                        </span>
+                                                        <span>
+                                                            Count : {data.count}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -256,88 +331,52 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                 </ScrollArea>
             </div>
 
-            <div className="flex items-center justify-between px-10">
-                {/* Metrics */}
+            <div className="flex flex-col items-center justify-between pt-5">
                 <TooltipProvider delayDuration={0}>
-                    <div className="flex">
-                        <Tooltip>
-                            <TooltipTrigger className="flex gap-1">
-                                <Flame size={20} color="#FF5722" />
-                                <span>100</span>
-                            </TooltipTrigger>
-                            <TooltipContent
-                                className="border bg-background"
-                                side="bottom"
-                            >
-                                Longest Streak
-                            </TooltipContent>
-                        </Tooltip>
-                        <Separator
-                            orientation="vertical"
-                            className="mx-2 h-6"
-                        />
-                        <Tooltip>
-                            <TooltipTrigger className="flex gap-1">
-                                <Zap
-                                    size={20}
-                                    className="mr-1"
-                                    color="#FFC107"
-                                />
-                                <span>100</span>
-                            </TooltipTrigger>
-                            <TooltipContent
-                                className="border bg-background"
-                                side="bottom"
-                            >
-                                Streak
-                            </TooltipContent>
-                        </Tooltip>
-                        <Separator
-                            orientation="vertical"
-                            className="mx-2 h-6"
-                        />
+                    {/* 
+                        // TODO : make these different for mobile  
+                    */}
 
-                        <Tooltip>
-                            <TooltipTrigger className="flex gap-1">
-                                <Hash
-                                    size={20}
-                                    className="mr-1"
-                                    color="#66BB6A"
-                                />
-                                <span>100</span>
-                            </TooltipTrigger>
-                            <TooltipContent
-                                className="border bg-background"
-                                side="bottom"
-                            >
-                                Total
-                            </TooltipContent>
-                        </Tooltip>
-                        <Separator
-                            orientation="vertical"
-                            className="mx-2 h-6"
-                        />
+                    <div className="flex flex-wrap">
+                        {Object.keys(stats).map((key, index) => {
+                            const stat = stats[key as keyof typeof stats];
 
-                        <Tooltip>
-                            <TooltipTrigger className="flex gap-1">
-                                <FileText
-                                    size={20}
-                                    className="mr-1"
-                                    color="#42A5F5"
-                                />
-                                <span>100</span>
-                            </TooltipTrigger>
-                            <TooltipContent
-                                className="border bg-background"
-                                side="bottom"
-                            >
-                                Number of entries
-                            </TooltipContent>
-                        </Tooltip>
+                            return (
+                                <React.Fragment key={key}>
+                                    <Tooltip>
+                                        <TooltipTrigger className="flex gap-1">
+                                            <stat.icon
+                                                size={20}
+                                                color={`rgb(${stat.color.r}, ${stat.color.g}, ${stat.color.b}, ${stat.color.a})`}
+                                            />
+                                            <span>{stat.value}</span>
+                                        </TooltipTrigger>
+                                        <TooltipContent
+                                            className="border bg-background"
+                                            side="bottom"
+                                        >
+                                            {stat.name}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    {index !==
+                                        Object.keys(stats).length - 1 && (
+                                        <Separator
+                                            orientation="vertical"
+                                            className="mx-2 h-6"
+                                        />
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
                 </TooltipProvider>
-                {/* Button */}
-                <Button className="items-start border bg-background">
+                <Button
+                    className={cn(
+                        "mt-10 w-80 max-w-[80%] items-center border bg-background hover:bg-background",
+                        buttonOnHover &&
+                            "opacity-0 transition-opacity duration-200 hover:opacity-100"
+                    )}
+                >
                     Log Today <MoveRight />
                 </Button>
             </div>
