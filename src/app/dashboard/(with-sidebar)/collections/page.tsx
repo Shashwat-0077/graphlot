@@ -18,7 +18,6 @@ export default async function Dashboard() {
 
     if (!user) {
         redirect("/");
-        return;
     }
 
     const response = await getAllCollections({ userId: user.id });
