@@ -2,27 +2,27 @@
 import { use } from "react";
 
 import { decodeFromUrl } from "@/utils/pathSerialization";
-import { RadarChartView } from "@/modules/charts/Radar/components/RadarChartView";
-import { useGetChartWithId } from "@/modules/charts/api/client/useGetChartWithId";
-import { RadarConfig } from "@/modules/charts/Radar/components/RadarConfig";
-import { BarChartView } from "@/modules/charts/Bar/components/BarChartView";
-import { BarConfig } from "@/modules/charts/Bar/components/BarConfig";
+import { useGetChartWithId } from "@/modules/charts/api/client/useGetChart";
 import {
     ChartConfigComponentType,
     ChartViewComponentType,
     StateProviderType,
 } from "@/modules/charts/types";
-import { BarChartStoreProvider } from "@/modules/charts/Bar/state/provider/bar-chart-store-provider";
-import { RadarChartStoreProvider } from "@/modules/charts/Radar/state/provider/radar-chart-store-provider";
-import { AreaChartStoreProvider } from "@/modules/charts/Area/state/provider/area-chart-store-provider";
-import { AreaConfig } from "@/modules/charts/Area/components/AreaConfig";
-import { AreaChartView } from "@/modules/charts/Area/components/AreaChartView";
-import { DonutChartStoreProvider } from "@/modules/charts/Donut/state/provider/donut-chart-store-provider";
-import { DonutConfig } from "@/modules/charts/Donut/components/DonutConfig";
-import { DonutChartView } from "@/modules/charts/Donut/components/DonutChartView";
-import { HeatmapChartView } from "@/modules/charts/Heatmap/components/HeatmapChartView";
-import { HeatmapChartStoreProvider } from "@/modules/charts/Heatmap/state/provider/heatmap-store-provider";
-import { HeatmapConfig } from "@/modules/charts/Heatmap/components/HeatmapConfig";
+import { BarChartView } from "@/modules/charts/specificCharts/Bar/components/BarChartView";
+import { BarConfig } from "@/modules/charts/specificCharts/Bar/components/BarConfig";
+import { BarChartStoreProvider } from "@/modules/charts/specificCharts/Bar/state/provider/bar-chart-store-provider";
+import { RadarChartView } from "@/modules/charts/specificCharts/Radar/components/RadarChartView";
+import { RadarConfig } from "@/modules/charts/specificCharts/Radar/components/RadarConfig";
+import { RadarChartStoreProvider } from "@/modules/charts/specificCharts/Radar/state/provider/radar-chart-store-provider";
+import { AreaChartStoreProvider } from "@/modules/charts/specificCharts/Area/state/provider/area-chart-store-provider";
+import { AreaConfig } from "@/modules/charts/specificCharts/Area/components/AreaConfig";
+import { AreaChartView } from "@/modules/charts/specificCharts/Area/components/AreaChartView";
+import { DonutChartView } from "@/modules/charts/specificCharts/Donut/components/DonutChartView";
+import { DonutConfig } from "@/modules/charts/specificCharts/Donut/components/DonutConfig";
+import { DonutChartStoreProvider } from "@/modules/charts/specificCharts/Donut/state/provider/donut-chart-store-provider";
+import { HeatmapChartStoreProvider } from "@/modules/charts/specificCharts/Heatmap/state/provider/heatmap-store-provider";
+import { HeatmapConfig } from "@/modules/charts/specificCharts/Heatmap/components/HeatmapConfig";
+import { HeatmapChartView } from "@/modules/charts/specificCharts/Heatmap/components/HeatmapChartView";
 
 type Props = {
     params: Promise<{
@@ -43,10 +43,7 @@ export default function ChatConfigs({ params }: Props) {
         data: chartData,
         isLoading: isChartLoading,
         error: chartError,
-    } = useGetChartWithId(
-        chartPathObj ? chartPathObj.path : "",
-        collectionPathObj ? collectionPathObj.path : ""
-    );
+    } = useGetChartWithId(chartPathObj ? chartPathObj.path : "");
 
     if (!chartPathObj) {
         return <div>Invalid Chart ID</div>;

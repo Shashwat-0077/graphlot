@@ -80,4 +80,30 @@ body {
         /* Chrome, Safari, Edge */
         margin: 0;
     }
+
+    /* For Webkit Browsers (Chrome, Safari, Edge) */
+    ::-webkit-scrollbar {
+        width: 8px;
+        /* Width of the scrollbar */
+        height: 8px;
+        /* Height for horizontal scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #191919;
+        /* Track color */
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #262626;
+        /* Scrollbar color */
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #F2545B;
+        /* Hover effect */
+    }
+
 }

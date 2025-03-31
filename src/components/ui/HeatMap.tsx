@@ -13,20 +13,19 @@ import {
     Zap,
 } from "lucide-react";
 
+import { useHeatmapChartAppearanceStore } from "@/modules/charts/specificCharts/Heatmap/state/provider/heatmap-store-provider";
+import { ColorType } from "@/modules/charts/specificCharts/Heatmap/state/store/appearance-store";
 import { cn } from "@/lib/utils";
-import { ColorType } from "@/modules/charts/Area/state/store/appearance-store";
-import { getShortMonth } from "@/modules/charts/Heatmap/utils/getDayOfWeek";
-import { useHeatmapChartAppearanceStore } from "@/modules/charts/Heatmap/state/provider/heatmap-store-provider";
-
-import { ScrollArea, ScrollBar } from "./scroll-area";
-import { Button } from "./button";
-import { Separator } from "./separator";
+import { getShortMonth } from "@/modules/charts/specificCharts/Heatmap/utils/dateAndDays";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "./tooltip";
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 type Props = {
     weeks: {

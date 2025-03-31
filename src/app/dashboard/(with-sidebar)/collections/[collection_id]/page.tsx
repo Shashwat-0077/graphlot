@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChartCard } from "@/modules/charts/components/ChartCard";
 import { decodeFromUrl } from "@/utils/pathSerialization";
 import { getAllChartsWithCollectionId } from "@/modules/charts/api/getCharts";
+import { ChartType } from "@/modules/charts/constants";
 
 export default async function CollectionPage({
     params,
@@ -34,14 +35,7 @@ export default async function CollectionPage({
             {charts.map((chart) => (
                 <ChartCard
                     key={chart.chart_id}
-                    type={
-                        chart.type as
-                            | "Donut"
-                            | "Bar"
-                            | "Radar"
-                            | "Area"
-                            | "Heatmap"
-                    }
+                    type={chart.type as ChartType}
                     encodedCollectionId={encodedId}
                     name={chart.name}
                     chartId={chart.chart_id}

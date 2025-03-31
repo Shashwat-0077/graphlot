@@ -21,11 +21,18 @@ import {
     AreaChartSchema,
     BarChartSchema,
     BasicChartSchema,
-    ChartType,
     DonutChartSchema,
     HeatmapChartSchema,
     RadarChartSchema,
 } from "@/modules/charts/schema";
+import {
+    AREA,
+    BAR,
+    DONUT,
+    RADAR,
+    HEATMAP,
+    ChartType,
+} from "@/modules/charts/constants";
 
 type ChartPermissionResult =
     | {
@@ -232,8 +239,6 @@ export async function updateChart({
             .set({
                 name: newChart.name,
                 description: newChart.description,
-                x_axis: newChart.x_axis,
-                y_axis: newChart.y_axis,
             })
             .where(eq(Charts.chart_id, chart_id));
 
@@ -247,289 +252,439 @@ export async function updateChart({
         });
     }
 }
-export async function updateSpecificChart({
-    type,
-    chart,
+
+export async function updateAreaChart({
     chart_id,
     user_id,
-}:
-    | {
-          type: "Area";
-          chart: z.infer<typeof AreaChartSchema.Update>;
-          chart_id: string;
-          user_id: string;
-      }
-    | {
-          type: "Bar";
-          chart: z.infer<typeof BarChartSchema.Update>;
-          chart_id: string;
-          user_id: string;
-      }
-    | {
-          type: "Radar";
-          chart: z.infer<typeof RadarChartSchema.Update>;
-          chart_id: string;
-          user_id: string;
-      }
-    | {
-          type: "Donut";
-          chart: z.infer<typeof DonutChartSchema.Update>;
-          chart_id: string;
-          user_id: string;
-      }
-    | {
-          type: "Heatmap";
-          chart: z.infer<typeof HeatmapChartSchema.Update>;
-          chart_id: string;
-          user_id: string;
-      }): Promise<
+    data,
+}: {
+    chart_id: string;
+    user_id: string;
+    data: z.infer<typeof AreaChartSchema.Update>;
+}): Promise<
     | {
           ok: true;
       }
     | {
           ok: false;
           error: string;
-          field: keyof z.infer<typeof BasicChartSchema.Select> | "root";
+          field?:
+              | keyof z.infer<typeof BasicChartSchema.Select>
+              | keyof z.infer<typeof AreaChartSchema.Select>
+              | "root";
       }
 > {
     try {
-        const response = await checkPermission({ user_id, chart_id });
-        if (!response.ok) {
-            return response;
+        // First check permission
+        const permission = await checkPermission({ user_id, chart_id });
+        if (!permission.ok) {
+            return permission;
         }
 
-        if (type === "Area") {
-            const response = await db
-                .select()
-                .from(Charts)
-                .fullJoin(AreaCharts, eq(AreaCharts.chart_id, Charts.chart_id))
-                .where(eq(Charts.chart_id, chart_id))
-                .then(
-                    ([result]):
-                        | {
-                              ok: true;
-                              id: string;
-                          }
-                        | {
-                              ok: false;
-                              error: string;
-                              field:
-                                  | keyof z.infer<
-                                        typeof BasicChartSchema.Select
-                                    >
-                                  | "root";
-                          } => {
-                        if (!result || !result.area_chart) {
-                            return {
-                                ok: false,
-                                error: "Chart not found.",
-                                field: "root",
-                            };
-                        }
-
-                        return { ok: true, id: result.area_chart.area_id };
-                    }
-                );
-
-            if (!response.ok) {
-                return response;
-            }
-            const { id } = response;
-            await db
-                .update(AreaCharts)
-                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
-                .where(eq(AreaCharts.chart_id, id));
-        } else if (type === "Bar") {
-            const response = await db
-                .select()
-                .from(Charts)
-                .fullJoin(BarCharts, eq(BarCharts.chart_id, Charts.chart_id))
-                .where(eq(Charts.chart_id, chart_id))
-                .then(
-                    ([result]):
-                        | {
-                              ok: true;
-                              id: string;
-                          }
-                        | {
-                              ok: false;
-                              error: string;
-                              field:
-                                  | keyof z.infer<
-                                        typeof BasicChartSchema.Select
-                                    >
-                                  | "root";
-                          } => {
-                        if (!result || !result.bar_chart) {
-                            return {
-                                ok: false,
-                                error: "Chart not found.",
-                                field: "root",
-                            };
-                        }
-
-                        return { ok: true, id: result.bar_chart.bar_id };
-                    }
-                );
-
-            if (!response.ok) {
-                return response;
-            }
-            const { id } = response;
-            await db
-                .update(BarCharts)
-                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
-                .where(eq(BarCharts.chart_id, id));
-        } else if (type === "Radar") {
-            const response = await db
-                .select()
-                .from(Charts)
-                .fullJoin(
-                    RadarCharts,
-                    eq(RadarCharts.chart_id, Charts.chart_id)
-                )
-                .where(eq(Charts.chart_id, chart_id))
-                .then(
-                    ([result]):
-                        | {
-                              ok: true;
-                              id: string;
-                          }
-                        | {
-                              ok: false;
-                              error: string;
-                              field:
-                                  | keyof z.infer<
-                                        typeof BasicChartSchema.Select
-                                    >
-                                  | "root";
-                          } => {
-                        if (!result || !result.radar_chart) {
-                            return {
-                                ok: false,
-                                error: "Chart not found.",
-                                field: "root",
-                            };
-                        }
-
-                        return { ok: true, id: result.radar_chart.radar_id };
-                    }
-                );
-
-            if (!response.ok) {
-                return response;
-            }
-            const { id } = response;
-            await db
-                .update(RadarCharts)
-                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
-                .where(eq(RadarCharts.chart_id, id));
-        } else if (type === "Donut") {
-            const response = await db
-                .select()
-                .from(Charts)
-                .fullJoin(
-                    DonutCharts,
-                    eq(DonutCharts.chart_id, Charts.chart_id)
-                )
-                .where(eq(Charts.chart_id, chart_id))
-                .then(
-                    ([result]):
-                        | {
-                              ok: true;
-                              id: string;
-                          }
-                        | {
-                              ok: false;
-                              error: string;
-                              field:
-                                  | keyof z.infer<
-                                        typeof BasicChartSchema.Select
-                                    >
-                                  | "root";
-                          } => {
-                        if (!result || !result.donut_chart) {
-                            return {
-                                ok: false,
-                                error: "Chart not found.",
-                                field: "root",
-                            };
-                        }
-
-                        return { ok: true, id: result.donut_chart.donut_id };
-                    }
-                );
-
-            if (!response.ok) {
-                return response;
-            }
-            const { id } = response;
-            await db
-                .update(DonutCharts)
-                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
-                .where(eq(DonutCharts.chart_id, id));
-        } else if (type === "Heatmap") {
-            const response = await db
-                .select()
-                .from(Charts)
-                .fullJoin(
-                    HeatmapCharts,
-                    eq(HeatmapCharts.chart_id, Charts.chart_id)
-                )
-                .where(eq(Charts.chart_id, chart_id))
-                .then(
-                    ([result]):
-                        | {
-                              ok: true;
-                              id: string;
-                          }
-                        | {
-                              ok: false;
-                              error: string;
-                              field:
-                                  | keyof z.infer<
-                                        typeof BasicChartSchema.Select
-                                    >
-                                  | "root";
-                          } => {
-                        if (!result || !result.heatmap_chart) {
-                            return {
-                                ok: false,
-                                error: "Chart not found.",
-                                field: "root",
-                            };
-                        }
-
-                        return {
-                            ok: true,
-                            id: result.heatmap_chart.heatmap_id,
-                        };
-                    }
-                );
-
-            if (!response.ok) {
-                return response;
-            }
-            const { id } = response;
-            await db
-                .update(HeatmapCharts)
-                .set(chart) // TODO : Change this to assign specific values, like {id : newChart.id}
-                .where(eq(HeatmapCharts.chart_id, id));
-        } else {
+        // Verify chart type
+        if (permission.record.chart.type !== AREA) {
             return {
                 ok: false,
-                error: "Invalid Chart Type",
-                field: "root",
+                error: "Chart is not an Area chart",
+                field: "type",
             };
         }
 
-        return { ok: true };
+        // Find the specific chart data
+        const existingChart = await db
+            .select()
+            .from(AreaCharts)
+            .where(eq(AreaCharts.chart_id, chart_id))
+            .then((charts) => charts[0]);
+
+        if (!existingChart) {
+            return {
+                ok: false,
+                error: "Area chart data not found",
+                field: "chart_id",
+            };
+        }
+
+        // Update the chart with explicitly listed fields
+        await db
+            .update(AreaCharts)
+            .set({
+                x_axis: data.x_axis,
+                y_axis: data.y_axis,
+                group_by: data.group_by,
+                sort_by: data.sort_by,
+                background_color: data.background_color,
+                text_color: data.text_color,
+                grid_color: data.grid_color,
+                show_tooltip: data.show_tooltip,
+                show_legend: data.show_legend,
+                show_grid: data.show_grid,
+                border: data.border,
+                omitZeroValues: data.omitZeroValues,
+                cumulative: data.cumulative,
+                filters: data.filters,
+                colors: data.colors,
+            })
+            .where(eq(AreaCharts.chart_id, chart_id));
+
+        return {
+            ok: true,
+        };
     } catch (error) {
-        throw new HTTPException(500, {
-            message:
+        return {
+            ok: false,
+            error:
                 error instanceof Error
                     ? error.message
-                    : "Unknown error occurred",
-        });
+                    : "Unknown error occurred updating area chart",
+        };
+    }
+}
+
+export async function updateBarChart({
+    chart_id,
+    user_id,
+    data,
+}: {
+    chart_id: string;
+    user_id: string;
+    data: z.infer<typeof BarChartSchema.Update>;
+}): Promise<
+    | {
+          ok: true;
+      }
+    | {
+          ok: false;
+          error: string;
+          field?:
+              | keyof z.infer<typeof BasicChartSchema.Select>
+              | keyof z.infer<typeof BarChartSchema.Select>
+              | "root";
+      }
+> {
+    try {
+        // First check permission
+        const permission = await checkPermission({ user_id, chart_id });
+        if (!permission.ok) {
+            return permission;
+        }
+
+        // Verify chart type
+        if (permission.record.chart.type !== BAR) {
+            return {
+                ok: false,
+                error: "Chart is not a Bar chart",
+                field: "type",
+            };
+        }
+
+        // Find the specific chart data
+        const existingChart = await db
+            .select()
+            .from(BarCharts)
+            .where(eq(BarCharts.chart_id, chart_id))
+            .then((charts) => charts[0]);
+
+        if (!existingChart) {
+            return {
+                ok: false,
+                error: "Bar chart data not found",
+                field: "chart_id",
+            };
+        }
+
+        // Update the chart with explicitly listed fields
+        await db
+            .update(BarCharts)
+            .set({
+                x_axis: data.x_axis,
+                y_axis: data.y_axis,
+                group_by: data.group_by,
+                sort_by: data.sort_by,
+                background_color: data.background_color,
+                text_color: data.text_color,
+                grid_color: data.grid_color,
+                show_tooltip: data.show_tooltip,
+                show_legend: data.show_legend,
+                show_grid: data.show_grid,
+                border: data.border,
+                omitZeroValues: data.omitZeroValues,
+                cumulative: data.cumulative,
+                filters: data.filters,
+                colors: data.colors,
+                barSize: data.barSize,
+                barGap: data.barGap,
+            })
+            .where(eq(BarCharts.chart_id, chart_id));
+
+        return {
+            ok: true,
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred updating bar chart",
+        };
+    }
+}
+
+export async function updateDonutChart({
+    chart_id,
+    user_id,
+    data,
+}: {
+    chart_id: string;
+    user_id: string;
+    data: z.infer<typeof DonutChartSchema.Update>;
+}): Promise<
+    | {
+          ok: true;
+      }
+    | {
+          ok: false;
+          error: string;
+          field?:
+              | keyof z.infer<typeof BasicChartSchema.Select>
+              | keyof z.infer<typeof DonutChartSchema.Select>
+              | "root";
+      }
+> {
+    try {
+        // First check permission
+        const permission = await checkPermission({ user_id, chart_id });
+        if (!permission.ok) {
+            return permission;
+        }
+
+        // Verify chart type
+        if (permission.record.chart.type !== DONUT) {
+            return {
+                ok: false,
+                error: "Chart is not a Donut chart",
+                field: "type",
+            };
+        }
+
+        // Find the specific chart data
+        const existingChart = await db
+            .select()
+            .from(DonutCharts)
+            .where(eq(DonutCharts.chart_id, chart_id))
+            .then((charts) => charts[0]);
+
+        if (!existingChart) {
+            return {
+                ok: false,
+                error: "Donut chart data not found",
+                field: "chart_id",
+            };
+        }
+
+        await db
+            .update(DonutCharts)
+            .set({
+                x_axis: data.x_axis,
+                sort_by: data.sort_by,
+                omitZeroValues: data.omitZeroValues,
+                filters: data.filters,
+                background_color: data.background_color,
+                text_color: data.text_color,
+                show_tooltip: data.show_tooltip,
+                show_legend: data.show_legend,
+                border: data.border,
+                colors: data.colors,
+            })
+            .where(eq(DonutCharts.chart_id, chart_id));
+
+        return {
+            ok: true,
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred updating donut chart",
+        };
+    }
+}
+
+export async function updateRadarChart({
+    chart_id,
+    user_id,
+    data,
+}: {
+    chart_id: string;
+    user_id: string;
+    data: z.infer<typeof RadarChartSchema.Update>;
+}): Promise<
+    | {
+          ok: true;
+      }
+    | {
+          ok: false;
+          error: string;
+          field?:
+              | keyof z.infer<typeof BasicChartSchema.Select>
+              | keyof z.infer<typeof RadarChartSchema.Select>
+              | "root";
+      }
+> {
+    try {
+        // First check permission
+        const permission = await checkPermission({ user_id, chart_id });
+        if (!permission.ok) {
+            return permission;
+        }
+
+        // Verify chart type
+        if (permission.record.chart.type !== RADAR) {
+            return {
+                ok: false,
+                error: "Chart is not a Radar chart",
+                field: "type",
+            };
+        }
+
+        // Find the specific chart data
+        const existingChart = await db
+            .select()
+            .from(RadarCharts)
+            .where(eq(RadarCharts.chart_id, chart_id))
+            .then((charts) => charts[0]);
+
+        if (!existingChart) {
+            return {
+                ok: false,
+                error: "Radar chart data not found",
+                field: "chart_id",
+            };
+        }
+
+        // Update the chart with explicitly listed fields
+        await db
+            .update(RadarCharts)
+            .set({
+                x_axis: data.x_axis,
+                y_axis: data.y_axis,
+                group_by: data.group_by,
+                sort_by: data.sort_by,
+                background_color: data.background_color,
+                text_color: data.text_color,
+                grid_color: data.grid_color,
+                show_tooltip: data.show_tooltip,
+                show_legend: data.show_legend,
+                show_grid: data.show_grid,
+                border: data.border,
+                omitZeroValues: data.omitZeroValues,
+                cumulative: data.cumulative,
+                filters: data.filters,
+                colors: data.colors,
+            })
+            .where(eq(RadarCharts.chart_id, chart_id));
+
+        return {
+            ok: true,
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred updating radar chart",
+        };
+    }
+}
+
+export async function updateHeatmapChart({
+    chart_id,
+    user_id,
+    data,
+}: {
+    chart_id: string;
+    user_id: string;
+    data: z.infer<typeof HeatmapChartSchema.Update>;
+}): Promise<
+    | {
+          ok: true;
+      }
+    | {
+          ok: false;
+          error: string;
+          field?:
+              | keyof z.infer<typeof BasicChartSchema.Select>
+              | keyof z.infer<typeof HeatmapChartSchema.Select>
+              | "root";
+      }
+> {
+    try {
+        // First check permission
+        const permission = await checkPermission({ user_id, chart_id });
+        if (!permission.ok) {
+            return permission;
+        }
+
+        // Verify chart type
+        if (permission.record.chart.type !== HEATMAP) {
+            return {
+                ok: false,
+                error: "Chart is not a Heatmap chart",
+                field: "type",
+            };
+        }
+
+        // Find the specific chart data
+        const existingChart = await db
+            .select()
+            .from(HeatmapCharts)
+            .where(eq(HeatmapCharts.chart_id, chart_id))
+            .then((charts) => charts[0]);
+
+        if (!existingChart) {
+            return {
+                ok: false,
+                error: "Heatmap chart data not found",
+                field: "chart_id",
+            };
+        }
+
+        // Update the chart with explicitly listed fields
+        await db
+            .update(HeatmapCharts)
+            .set({
+                metric: data.metric,
+                streak: data.streak,
+                longest_streak: data.longest_streak,
+                sum_of_all_entries: data.sum_of_all_entries,
+                average_of_all_entries: data.average_of_all_entries,
+                number_of_entries: data.number_of_entries,
+                toggle_button_hover: data.toggle_button_hover,
+                default_box_color: data.default_box_color,
+                accent: data.accent,
+                icon_colors: data.icon_colors,
+                background_color: data.background_color,
+                text_color: data.text_color,
+                show_tooltip: data.show_tooltip,
+                show_legend: data.show_legend,
+                border: data.border,
+            })
+            .where(eq(HeatmapCharts.chart_id, chart_id));
+
+        return {
+            ok: true,
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred updating heatmap chart",
+        };
     }
 }

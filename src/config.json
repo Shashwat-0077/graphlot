@@ -1,0 +1,28 @@
+{
+    "common": {
+        "default_chart_color": "rgba(255, 255, 255, 1)",
+        "default_background_color": "rgba(255, 255, 255, 1)",
+        "default_text_color": "rgba(0, 0, 0, 1)",
+        "default_grid_color": "rgba(0, 0, 0, 1)",
+        "default_show_tooltip": 1,
+        "default_show_grid": 1,
+        "default_show_legend": 1,
+        "default_show_border": 1
+    },
+    AREA: {
+        "default_bar_size": 10,
+        "default_bar_gap": 10
+    },
+    HEATMAP: {
+        "default_accent_color": "rgba(255, 0, 0, 1)",
+        "default_streak": 0,
+        "default_longest_streak": 0,
+        "default_sum_of_entries": 0,
+        "default_number_of_entries": 0,
+        "default_average": 0,
+        "default_unit": "units",
+        "default_toggle_button_hover": 1,
+        "default_icon_colors": [],
+        "default_box_color": "rgba(255, 255, 255, 1)"
+    }
+}

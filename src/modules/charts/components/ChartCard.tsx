@@ -3,12 +3,12 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { encodeForUrl } from "@/utils/pathSerialization";
-
-import { AreaChartCardHeader } from "../Area/components/AreaHeaderChart";
-import { BarChartCardHeader } from "../Bar/components/BarHeaderChart";
-import { DonutChartCardHeader } from "../Donut/components/DonutHeaderChart";
-import { RadarChartCardHeader } from "../Radar/components/RadarHeaderChart";
-import { HeatmapChartCardHeader } from "../Heatmap/components/HeatmapHeaderChart";
+import { AreaChartCardHeader } from "@/modules/charts/specificCharts/Area/components/AreaHeaderChart";
+import { BarChartCardHeader } from "@/modules/charts/specificCharts/Bar/components/BarHeaderChart";
+import { DonutChartCardHeader } from "@/modules/charts/specificCharts/Donut/components/DonutHeaderChart";
+import { RadarChartCardHeader } from "@/modules/charts/specificCharts/Radar/components/RadarHeaderChart";
+import { HeatmapChartCardHeader } from "@/modules/charts/specificCharts/Heatmap/components/HeatmapHeaderChart";
+import { ChartType } from "@/modules/charts/constants";
 
 export function ChartCard({
     type,
@@ -17,7 +17,7 @@ export function ChartCard({
     chartId,
     notionDatabaseName,
 }: {
-    type: "Area" | "Bar" | "Donut" | "Radar" | "Heatmap";
+    type: ChartType;
     encodedCollectionId: string;
     name: string;
     chartId: string;

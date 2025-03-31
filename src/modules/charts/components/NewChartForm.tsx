@@ -24,9 +24,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useGetAllDatabases } from "@/modules/notion/api/client/useGetAllDatabases";
-import { BasicChartSchema, CHART_TYPES } from "@/modules/charts/schema";
+import { BasicChartSchema } from "@/modules/charts/schema";
 import { useCreateNewChart } from "@/modules/charts/api/client/useCreateNewChart";
 import NewChartFormLoader from "@/modules/charts/components/NewChartFormLoader";
+import { AREA, CHART_TYPES } from "@/modules/charts/constants";
 
 const FormType = BasicChartSchema.Insert.pick({
     name: true,
@@ -43,7 +44,7 @@ export function NewChartForm({ collection_Id }: { collection_Id: string }) {
         defaultValues: {
             name: "",
             description: "",
-            type: "Area",
+            type: AREA,
             notion_database_id: "",
         },
     });

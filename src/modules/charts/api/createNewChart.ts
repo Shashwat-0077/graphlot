@@ -4,15 +4,16 @@ import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import {
-    AreaCharts,
-    BarCharts,
     Charts,
     Collections,
+    AreaCharts,
+    BarCharts,
     DonutCharts,
     HeatmapCharts,
     RadarCharts,
 } from "@/db/schema";
 import { BasicChartSchema } from "@/modules/charts/schema";
+import { AREA, BAR, DONUT, HEATMAP, RADAR } from "@/modules/charts/constants";
 
 export async function createNewChart({
     chart,
@@ -48,55 +49,73 @@ export async function createNewChart({
             };
         }
 
-        const newChart = await db
-            .insert(Charts)
-            .values({
-                collection_id: chart.collection_id,
-                type: chart.type,
-                name: chart.name,
-                description: chart.description,
-                notion_database_id: chart.notion_database_id,
-                notion_database_name: chart.notion_database_name,
-            })
-            .returning()
-            .then(([record]) => record);
+        const collection = await db
+            .select()
+            .from(Collections)
+            .where(eq(Collections.collection_id, chart.collection_id));
 
-        switch (chart.type) {
-            case "Bar":
-                await db.insert(BarCharts).values({
-                    chart_id: newChart.chart_id,
-                });
-                break;
-            case "Area":
-                await db.insert(AreaCharts).values({
-                    chart_id: newChart.chart_id,
-                });
-                break;
-            case "Heatmap":
-                await db.insert(HeatmapCharts).values({
-                    chart_id: newChart.chart_id,
-                });
-                break;
-            case "Donut":
-                await db.insert(DonutCharts).values({
-                    chart_id: newChart.chart_id,
-                });
-                break;
-            case "Radar":
-                await db.insert(RadarCharts).values({
-                    chart_id: newChart.chart_id,
-                });
-                break;
-            default:
-                break;
+        if (collection.length === 0) {
+            return {
+                ok: false,
+                error: `Collection with id "${chart.collection_id}" does not exist`,
+                field: "collection_id",
+            };
         }
 
-        await db
-            .update(Collections)
-            .set({
-                chart_count: sql`${Collections.chart_count} + 1`,
-            })
-            .where(eq(Collections.collection_id, chart.collection_id));
+        const newChart = await db.transaction(async (tx) => {
+            const newChart = await tx
+                .insert(Charts)
+                .values({
+                    collection_id: chart.collection_id,
+                    type: chart.type,
+                    name: chart.name,
+                    description: chart.description,
+                    notion_database_id: chart.notion_database_id,
+                    notion_database_name: chart.notion_database_name,
+                })
+                .returning()
+                .then(([record]) => record);
+
+            switch (chart.type) {
+                case AREA:
+                    await tx.insert(BarCharts).values({
+                        chart_id: newChart.chart_id,
+                    });
+                    break;
+                case BAR:
+                    await tx.insert(AreaCharts).values({
+                        chart_id: newChart.chart_id,
+                    });
+                    break;
+                case HEATMAP:
+                    await tx.insert(HeatmapCharts).values({
+                        chart_id: newChart.chart_id,
+                    });
+                    break;
+                case DONUT:
+                    await tx.insert(DonutCharts).values({
+                        chart_id: newChart.chart_id,
+                    });
+                    break;
+                case RADAR:
+                    await tx.insert(RadarCharts).values({
+                        chart_id: newChart.chart_id,
+                    });
+                    break;
+                default:
+                    tx.rollback();
+                    break;
+            }
+
+            await tx
+                .update(Collections)
+                .set({
+                    chart_count: sql`${Collections.chart_count} + 1`,
+                })
+                .where(eq(Collections.collection_id, chart.collection_id));
+
+            return newChart;
+        });
 
         return { ok: true, newChart };
     } catch (error) {

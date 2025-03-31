@@ -55,15 +55,26 @@ export async function deleteChart({
             };
         }
 
-        await db.delete(Charts).where(eq(Charts.chart_id, chart_id));
-        await db
-            .update(Collections)
-            .set({
-                chart_count: sql`${Collections.chart_count} - 1`,
-            })
-            .where(
-                eq(Collections.collection_id, record.collections.collection_id)
-            );
+        await db.transaction(async (tx) => {
+            if (!record.collections) {
+                tx.rollback();
+                return;
+            }
+
+            await tx.delete(Charts).where(eq(Charts.chart_id, chart_id));
+
+            await tx
+                .update(Collections)
+                .set({
+                    chart_count: sql`${Collections.chart_count} - 1`,
+                })
+                .where(
+                    eq(
+                        Collections.collection_id,
+                        record.collections.collection_id
+                    )
+                );
+        });
 
         return { ok: true };
     } catch (error) {

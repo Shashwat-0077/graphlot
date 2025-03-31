@@ -22,8 +22,6 @@ export function getNullComponent<
     // eslint-disable-next-line
     Type extends (...args: any[]) => React.JSX.Element,
 >(): Type {
-    // We need to cast here because TypeScript can't verify that an empty component
-    // will match all possible component signatures
     const NullComponent = (() => <></>) as Type;
 
     return NullComponent;
