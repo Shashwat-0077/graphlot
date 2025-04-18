@@ -4,6 +4,7 @@ import { CheckCheck, SaveAll } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getRGBAString, invertRGBA } from "@/utils/colors";
 
 export const ChartViewWrapperComponent = ({
     children,
@@ -30,13 +31,13 @@ export const ChartViewWrapperComponent = ({
                 className
             )}
             style={{
-                backgroundColor: `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, ${bgColor.a})`,
+                backgroundColor: getRGBAString(bgColor, true),
             }}
         >
             <h1
                 className="text-2xl font-bold"
                 style={{
-                    color: `rgba(${labelColor.r}, ${labelColor.g}, ${labelColor.b}, ${labelColor.a})`,
+                    color: getRGBAString(labelColor),
                 }}
             >
                 {showLabel ? (
@@ -45,13 +46,14 @@ export const ChartViewWrapperComponent = ({
                     <>&nbsp;</>
                 )}
             </h1>
+
+            {/* TODO : Add a tooltip here */}
             <Button
                 className={cn(
-                    `absolute right-10 top-5 m-0 border py-6 transition-transform hover:scale-110 [&_svg]:size-6`
+                    `bri absolute right-10 top-5 m-0 border bg-transparent py-6 transition-all hover:scale-110 hover:bg-transparent [&_svg]:size-6`
                 )}
                 style={{
-                    backgroundColor: `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, ${bgColor.a})`,
-                    border: `1px solid rgba(${labelColor.r}, ${labelColor.g}, ${labelColor.b}, ${labelColor.a})`,
+                    border: `1px solid ` + getRGBAString(invertRGBA(bgColor)),
                 }}
                 onClick={() => {
                     if (timeoutRef.current) {
@@ -66,12 +68,12 @@ export const ChartViewWrapperComponent = ({
             >
                 {saved ? (
                     <CheckCheck
-                        color={`rgba(${labelColor.r} , ${labelColor.g} , ${labelColor.b})`}
+                        color={getRGBAString(invertRGBA(bgColor))}
                         size={32}
                     />
                 ) : (
                     <SaveAll
-                        color={`rgba(${labelColor.r} , ${labelColor.g} , ${labelColor.b})`}
+                        color={getRGBAString(invertRGBA(bgColor))}
                         className="size-14"
                         size={32}
                     />

@@ -11,13 +11,12 @@ import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useDonutChartStore } from "@/modules/Donut/store";
 import { processChartData } from "@/utils/processChartData";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
+import { ChartViewComponentType } from "@/constants";
+import { WavyLoader } from "@/components/ui/Loader";
 
-export const DonutChartView = ({
+export const DonutChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
-}: {
-    chartName: string;
-    notion_table_id: string;
 }) => {
     const {
         x_axis,
@@ -52,7 +51,7 @@ export const DonutChartView = ({
                 showLabel={label_enabled}
                 label={chartName}
             >
-                Loading...
+                <WavyLoader />
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
     }

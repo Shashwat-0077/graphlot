@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { encodeForUrl } from "@/utils/pathSerialization";
 import { useCreateCollection } from "@/modules/Collection/api/client/use-create-collection";
 import { CollectionSchema } from "@/modules/Collection/schema";
+import { getSlug } from "@/utils/pathSlugsOps";
 
 export function NewCollectionForm() {
     // BUG : This component is throwing a error because of the form errors
@@ -64,8 +64,8 @@ export function NewCollectionForm() {
         }) => {
             startTransition(() => {
                 router.push(
-                    `/dashboard/collections/${encodeForUrl({
-                        path: newCollection.id,
+                    `/dashboard/collections/${getSlug({
+                        id: newCollection.id,
                         name: newCollection.name,
                     })}`
                 );

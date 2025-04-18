@@ -15,13 +15,12 @@ import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { processChartData } from "@/utils/processChartData";
+import { ChartViewComponentType } from "@/constants";
+import { WavyLoader } from "@/components/ui/Loader";
 
-export const BarChartView = ({
+export const BarChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
-}: {
-    chartName: string;
-    notion_table_id: string;
 }) => {
     // NOTE : Their are some problems with names, we need to fix it
     // TODO : fix names
@@ -72,7 +71,7 @@ export const BarChartView = ({
                 showLabel={label_enabled}
                 label={chartName}
             >
-                Loading...
+                <WavyLoader />
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
     }

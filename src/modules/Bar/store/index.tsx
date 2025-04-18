@@ -8,17 +8,14 @@ import {
     createBarChartStore,
     initBarChartStore,
 } from "@/modules/Bar/store/state";
+import { StateProviderType } from "@/constants";
 
 export type BarChartStoreApi = ReturnType<typeof createBarChartStore>;
 export const BarChartStoreContext = createContext<BarChartStoreApi | undefined>(
     undefined
 );
 
-export const BarChartStoreProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const BarChartStoreProvider: StateProviderType = ({ children }) => {
     const storeRef = useRef<BarChartStoreApi>(null);
 
     if (!storeRef.current) {

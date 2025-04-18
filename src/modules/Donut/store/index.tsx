@@ -8,17 +8,14 @@ import {
     createDonutChartStore,
     initDonutChartStore,
 } from "@/modules/Donut/store/state";
+import { StateProviderType } from "@/constants";
 
 export type DonutChartStoreApi = ReturnType<typeof createDonutChartStore>;
 export const DonutChartStoreContext = createContext<
     DonutChartStoreApi | undefined
 >(undefined);
 
-export const DonutChartStoreProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const DonutChartStoreProvider: StateProviderType = ({ children }) => {
     const storeRef = useRef<DonutChartStoreApi>(null);
 
     if (!storeRef.current) {

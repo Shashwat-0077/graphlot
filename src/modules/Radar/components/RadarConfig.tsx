@@ -18,15 +18,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import { FilterType } from "@/constants";
+import { ChartConfigComponentType, FilterType } from "@/constants";
 import { useRadarChartStore } from "@/modules/Radar/store";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
 
-export const RadarConfig = ({
-    notion_table_id,
-}: {
-    notion_table_id: string;
-}) => {
+export const RadarConfig: ChartConfigComponentType = ({ notion_table_id }) => {
     const COLOR_SECTION_HEIGHT = 120; // in px
     const FILTER_SECTION_HEIGHT = 400; // in px
 
@@ -124,9 +120,9 @@ export const RadarConfig = ({
     if (isLoading) {
         return (
             <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
-                <Skeleton className="h-96 w-full" />
-                <Skeleton className="row-span-2 min-h-96 w-full" />
-                <Skeleton className="min-h-96 w-full" />
+                <Skeleton className="h-96 w-full bg-sidebar-accent" />
+                <Skeleton className="row-span-2 min-h-96 w-full bg-sidebar-accent" />
+                <Skeleton className="min-h-96 w-full bg-sidebar-accent" />
             </div>
         );
     }

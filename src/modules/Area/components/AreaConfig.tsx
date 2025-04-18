@@ -17,16 +17,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FilterType } from "@/constants";
+import { ChartConfigComponentType, FilterType } from "@/constants";
 import { useAreaChartStore } from "@/modules/Area/store";
 import { GridSelect } from "@/components/ui/grid-select";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
 
-export const AreaConfig = ({
-    notion_table_id,
-}: {
-    notion_table_id: string;
-}) => {
+export const AreaConfig: ChartConfigComponentType = ({ notion_table_id }) => {
     const COLOR_SECTION_HEIGHT = 120; // in px
     const FILTER_SECTION_HEIGHT = 400; // in px
 
@@ -127,9 +123,9 @@ export const AreaConfig = ({
     if (isLoading) {
         return (
             <div className="mb-7 mt-16 flex flex-col gap-10 break1200:grid break1200:grid-cols-[.5fr_1fr]">
-                <Skeleton className="h-96 w-full" />
-                <Skeleton className="row-span-2 min-h-96 w-full" />
-                <Skeleton className="min-h-96 w-full" />
+                <Skeleton className="h-96 w-full bg-sidebar-accent" />
+                <Skeleton className="row-span-2 min-h-96 w-full bg-sidebar-accent" />
+                <Skeleton className="min-h-96 w-full bg-sidebar-accent" />
             </div>
         );
     }

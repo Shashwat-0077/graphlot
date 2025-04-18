@@ -39,8 +39,8 @@ export const AreaCharts = sqliteTable(
             .default(true),
         color_palette: text("color_palette", { mode: "json" })
             .notNull()
-            .default([])
-            .$type<ColorType[]>(),
+            .$type<ColorType[]>()
+            .default([]),
         // in the format of [{ r : 255, g : 255, b : 255, a : 1 }, { r : 255, g : 255, b : 255, a : 1 }]
 
         x_axis: text("x_axis"),

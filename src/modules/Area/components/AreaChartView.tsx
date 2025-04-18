@@ -14,13 +14,11 @@ import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { useAreaChartStore } from "@/modules/Area/store";
 import { processChartData } from "@/utils/processChartData";
+import { ChartViewComponentType } from "@/constants";
 
-export const AreaChartView = ({
+export const AreaChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
-}: {
-    chartName: string;
-    notion_table_id: string;
 }) => {
     const LIMIT = 8;
 

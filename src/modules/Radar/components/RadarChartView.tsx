@@ -15,13 +15,11 @@ import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useRadarChartStore } from "@/modules/Radar/store";
 import { processChartData } from "@/utils/processChartData";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
+import { ChartViewComponentType } from "@/constants";
 
-export const RadarChartView = ({
+export const RadarChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
-}: {
-    chartName: string;
-    notion_table_id: string;
 }) => {
     const LIMIT = 8;
 

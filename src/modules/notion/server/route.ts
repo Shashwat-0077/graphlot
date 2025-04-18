@@ -15,7 +15,6 @@ import { GetNotionTableMetaData } from "@/modules/notion/api/GetNotionTableMetaD
 const app = new Hono()
     .get("/get-databases", authMiddleWare, async (c) => {
         const response = await GetAllNotionDatabases();
-
         if (!response.ok) {
             return c.json({ ok: false, error: response.error }, 500);
         }

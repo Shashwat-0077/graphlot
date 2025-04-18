@@ -8,17 +8,14 @@ import {
     createHeatmapChartStore,
     initHeatmapChartStore,
 } from "@/modules/Heatmap/store/state";
+import { StateProviderType } from "@/constants";
 
 export type HeatmapChartStoreApi = ReturnType<typeof createHeatmapChartStore>;
 export const HeatmapChartStoreContext = createContext<
     HeatmapChartStoreApi | undefined
 >(undefined);
 
-export const HeatmapChartStoreProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const HeatmapChartStoreProvider: StateProviderType = ({ children }) => {
     const storeRef = useRef<HeatmapChartStoreApi>(null);
 
     if (!storeRef.current) {

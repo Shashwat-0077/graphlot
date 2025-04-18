@@ -11,8 +11,8 @@ export default function ChartCardLoader() {
                 <ChartSpline className="min-h-[270px]" />
             </CardHeader>
             <CardContent className="flex flex-col gap-2 pt-10">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-52" />
+                <Skeleton className="h-5 w-full bg-sidebar-accent" />
+                <Skeleton className="h-5 w-52 bg-sidebar-accent" />
             </CardContent>
         </Card>
     );

@@ -8,17 +8,14 @@ import {
     createAreaChartStore,
     initAreaChartStore,
 } from "@/modules/Area/store/state";
+import { StateProviderType } from "@/constants";
 
 export type AreaChartStoreApi = ReturnType<typeof createAreaChartStore>;
 export const AreaChartStoreContext = createContext<
     AreaChartStoreApi | undefined
 >(undefined);
 
-export const AreaChartStoreProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const AreaChartStoreProvider: StateProviderType = ({ children }) => {
     const storeRef = useRef<AreaChartStoreApi>(null);
 
     if (!storeRef.current) {

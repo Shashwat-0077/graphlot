@@ -8,17 +8,14 @@ import {
     createRadarChartStore,
     initRadarChartStore,
 } from "@/modules/Radar/store/state";
+import { StateProviderType } from "@/constants";
 
 export type RadarChartStoreApi = ReturnType<typeof createRadarChartStore>;
 export const RadarChartStoreContext = createContext<
     RadarChartStoreApi | undefined
 >(undefined);
 
-export const RadarChartStoreProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const RadarChartStoreProvider: StateProviderType = ({ children }) => {
     const storeRef = useRef<RadarChartStoreApi>(null);
 
     if (!storeRef.current) {

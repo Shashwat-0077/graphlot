@@ -3,7 +3,7 @@ import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import { AREA, BAR, DONUT, HEATMAP, RADAR } from "@/constants";
-import { ChartInsert } from "@/modules/BasicChart/schema";
+import { ChartInsert, ChartSelect } from "@/modules/BasicChart/schema";
 import {
     Charts,
     BarCharts,
@@ -21,12 +21,12 @@ export async function createNewChart({
 }): Promise<
     | {
           ok: true;
-          newChart: ChartInsert;
+          newChart: ChartSelect;
       }
     | {
           ok: false;
           error: string;
-          field: keyof ChartInsert | "root";
+          field: keyof ChartSelect | "root";
       }
 > {
     try {
