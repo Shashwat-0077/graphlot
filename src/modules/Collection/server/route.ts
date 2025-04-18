@@ -20,7 +20,6 @@ type variables = {
 const app = new Hono<{ Variables: variables }>()
     .get("/all", authMiddleWare, async (c) => {
         const userId = c.get("userId");
-
         const response = await getAllCollections({ userId });
         if (!response.ok) {
             throw new HTTPException(500, {

@@ -10,6 +10,7 @@ export const authMiddleWare = async (c: Context, next: () => Promise<void>) => {
     // TODO : Uncomment this code in production
 
     const supabase = await createClient();
+
     const {
         data: { user },
     } = await supabase.auth.getUser();

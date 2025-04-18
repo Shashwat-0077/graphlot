@@ -7,10 +7,10 @@ export default async function Home() {
     const client = await createClient();
 
     const {
-        data: { session },
-    } = await client.auth.getSession();
+        data: { user },
+    } = await client.auth.getUser();
 
-    if (session) {
+    if (user) {
         redirect("/dashboard");
     }
 
