@@ -9,11 +9,11 @@
         "default_show_legend": 1,
         "default_show_border": 1
     },
-    AREA: {
+    "AREA": {
         "default_bar_size": 10,
         "default_bar_gap": 10
     },
-    HEATMAP: {
+    "HEATMAP": {
         "default_accent_color": "rgba(255, 0, 0, 1)",
         "default_streak": 0,
         "default_longest_streak": 0,

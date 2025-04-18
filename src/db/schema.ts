@@ -21,9 +21,7 @@ export const Collections = sqliteTable(
         chart_count: integer("chartCount", { mode: "number" })
             .notNull()
             .default(0),
-        created_at: integer("created_at", { mode: "timestamp" })
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        created_at: text().default(sql`(CURRENT_TIMESTAMP)`),
     },
     (table) => [
         unique("collections_user_name_unique").on(table.user_id, table.name),
