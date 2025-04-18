@@ -8,19 +8,18 @@ type returnType =
 
 export const getNotionClient = async (): Promise<returnType> => {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getUser();
 
     if (error) {
         return { success: false, error: error.message };
     }
 
-    if (data.session === null) {
-        return { success: false, error: "No session found" };
+    if (data.user === null) {
+        return { success: false, error: "No user found" };
     }
 
-    const notion_token = data.session?.provider_token;
+    const notion_token = data.user.user_metadata?.provider_token;
 
-    // BUG : Notion token keeps getting unavailable
     if (!notion_token) {
         return {
             success: false,

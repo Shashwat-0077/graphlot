@@ -7,12 +7,12 @@ export async function GetNotionTableSchema(id: string): Promise<
           ok: true;
           schema: GetDatabaseResponse["properties"];
       }
-    | { ok: false; error: Error }
+    | { ok: false; error: string }
 > {
     const notionClient = await getNotionClient();
 
     if (notionClient.success === false) {
-        return { ok: false, error: new Error(notionClient.error) };
+        return { ok: false, error: notionClient.error };
     }
 
     const data = await notionClient.client.databases.retrieve({

@@ -9,7 +9,8 @@ export const useGetAllDatabases = () => {
             const response = await client.api.notion["get-databases"]["$get"]();
 
             if (!response.ok) {
-                return null;
+                const { error } = await response.json();
+                throw new Error(error);
             }
 
             const { databases } = await response.json();

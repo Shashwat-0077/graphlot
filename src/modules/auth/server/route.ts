@@ -9,7 +9,14 @@ const app = new Hono().get("/callback", async (c) => {
 
     if (code) {
         const supabase = await createClient();
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { data, error } =
+            await supabase.auth.exchangeCodeForSession(code);
+
+        supabase.auth.updateUser({
+            data: {
+                provider_token: data.session?.provider_token,
+            },
+        });
 
         if (!error) {
             const forwardedHost = c.req.header("x-forwarded-host"); // original origin before load balancer

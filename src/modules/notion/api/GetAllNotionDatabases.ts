@@ -10,13 +10,13 @@ export async function GetAllNotionDatabases(): Promise<
       }
     | {
           ok: false;
-          error: Error;
+          error: string;
       }
 > {
     const notionClient = await getNotionClient();
 
     if (notionClient.success === false) {
-        return { ok: false, error: new Error(notionClient.error) };
+        return { ok: false, error: notionClient.error };
     }
 
     const response = await notionClient.client.search({
