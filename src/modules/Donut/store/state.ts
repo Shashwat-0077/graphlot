@@ -56,7 +56,10 @@ export const defaultDonutChartState: DonutChartState = {
     filters: [],
 };
 
-export const initDonutChartStore = (): DonutChartState => {
+export const initDonutChartStore = (data: DonutChartState): DonutChartState => {
+    if (data) {
+        return data;
+    }
     return defaultDonutChartState;
 };
 

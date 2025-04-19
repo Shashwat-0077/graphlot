@@ -84,7 +84,12 @@ export const defaultHeatmapChartState: HeatmapChartState = {
     ],
 };
 
-export const initHeatmapChartStore = (): HeatmapChartState => {
+export const initHeatmapChartStore = (
+    data?: HeatmapChartState
+): HeatmapChartState => {
+    if (data) {
+        return data;
+    }
     return defaultHeatmapChartState;
 };
 

@@ -8,7 +8,7 @@ import { ChartType } from "@/constants";
 export const Charts = sqliteTable(
     "charts",
     {
-        chart_id: text("id")
+        chart_id: text("chart_id")
             .primaryKey()
             .$defaultFn(() => uuid()),
         collection_id: text("collection_id")

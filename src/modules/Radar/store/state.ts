@@ -73,7 +73,12 @@ export const defaultRadarChartState: RadarChartState = {
     grid_enabled: true,
 };
 
-export const initRadarChartStore = (): RadarChartState => {
+export const initRadarChartStore = (
+    data?: RadarChartState
+): RadarChartState => {
+    if (data) {
+        return data;
+    }
     return defaultRadarChartState;
 };
 

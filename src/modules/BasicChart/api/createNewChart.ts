@@ -77,12 +77,12 @@ export async function createNewChart({
 
             switch (chart.type) {
                 case AREA:
-                    await tx.insert(BarCharts).values({
+                    await tx.insert(AreaCharts).values({
                         chart_id: newChart.chart_id,
                     });
                     break;
                 case BAR:
-                    await tx.insert(AreaCharts).values({
+                    await tx.insert(BarCharts).values({
                         chart_id: newChart.chart_id,
                     });
                     break;

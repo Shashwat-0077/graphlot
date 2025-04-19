@@ -85,7 +85,7 @@ export default function ChatConfigs({ params }: Props) {
     ] || [RadarChartView, RadarConfig, RadarChartStoreProvider];
 
     return (
-        <StoreProvider>
+        <StoreProvider char_id={chart_id}>
             <ChartView
                 notion_table_id={chart.notion_database_id}
                 chartName={chart.name}

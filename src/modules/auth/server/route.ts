@@ -28,6 +28,7 @@ const app = new Hono().get("/callback", async (c) => {
                         env.NEXT_PUBLIC_APP_URL
                     }${next ?? DEFAULT_AUTH_REDIRECT_PATH}`
                 );
+                // HACK : maybe remove this check in production
             } else if (forwardedHost) {
                 return c.redirect(
                     `https://${forwardedHost}${next ?? DEFAULT_AUTH_REDIRECT_PATH}`

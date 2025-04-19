@@ -22,6 +22,5 @@ export const authMiddleWare = async (c: Context, next: () => Promise<void>) => {
     }
 
     c.set("userId", user.id);
-    // c.set("userId", "5a81fc9a-78f5-4faa-8c03-acf73104d4ae");
     await next();
 };

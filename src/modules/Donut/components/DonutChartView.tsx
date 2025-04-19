@@ -13,6 +13,7 @@ import { processChartData } from "@/utils/processChartData";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { ChartViewComponentType } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
+import { getRGBAString } from "@/utils/colors";
 
 export const DonutChartView: ChartViewComponentType = ({
     chartName,
@@ -45,12 +46,7 @@ export const DonutChartView: ChartViewComponentType = ({
 
     if (schemaLoading || dataLoading) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 <WavyLoader />
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -58,12 +54,7 @@ export const DonutChartView: ChartViewComponentType = ({
 
     if (error || !schema || !tableData) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Error
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -71,12 +62,7 @@ export const DonutChartView: ChartViewComponentType = ({
 
     if (!schema) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 No Data
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -84,12 +70,7 @@ export const DonutChartView: ChartViewComponentType = ({
 
     if (!x_axis) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Select X Axis
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -120,17 +101,27 @@ export const DonutChartView: ChartViewComponentType = ({
     });
 
     return (
-        <ChartViewWrapperComponent
-            bgColor={background_color}
-            labelColor={text_color}
-            showLabel={label_enabled}
-            label={chartName}
-        >
+        <ChartViewWrapperComponent bgColor={background_color}>
             <ChartContainer
                 config={configData}
                 className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
             >
                 <RadialBarChart data={data} innerRadius={40} outerRadius={120}>
+                    {label_enabled && (
+                        <text
+                            x="50%"
+                            y={40}
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "bold",
+                                fill: getRGBAString(text_color),
+                            }}
+                            width={200}
+                            textAnchor="middle"
+                        >
+                            {chartName}
+                        </text>
+                    )}
                     {tooltip_enabled && (
                         <ChartTooltip
                             cursor={false}

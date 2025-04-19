@@ -79,7 +79,10 @@ export const defaultBarChartState: BarChartState = {
     bar_size: 5,
 };
 
-export const initBarChartStore = (): BarChartState => {
+export const initBarChartStore = (data?: BarChartState): BarChartState => {
+    if (data) {
+        return data;
+    }
     return defaultBarChartState;
 };
 

@@ -54,9 +54,9 @@ export async function getAreaChartWithId({
     try {
         const [chart] = await db
             .select()
-            .from(Charts)
-            .where(eq(Charts.chart_id, chart_id))
-            .innerJoin(AreaCharts, eq(Charts.chart_id, AreaCharts.chart_id));
+            .from(AreaCharts)
+            .where(eq(AreaCharts.chart_id, chart_id))
+            .innerJoin(Charts, eq(AreaCharts.chart_id, Charts.chart_id));
 
         if (!chart) {
             return { ok: false, error: "Area chart not found" };

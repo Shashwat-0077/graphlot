@@ -15,6 +15,8 @@ import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/Chart
 import { useAreaChartStore } from "@/modules/Area/store";
 import { processChartData } from "@/utils/processChartData";
 import { ChartViewComponentType } from "@/constants";
+import { WavyLoader } from "@/components/ui/Loader";
+import { getRGBAString } from "@/utils/colors";
 
 export const AreaChartView: ChartViewComponentType = ({
     chartName,
@@ -58,25 +60,15 @@ export const AreaChartView: ChartViewComponentType = ({
 
     if (schemaLoading || dataLoading) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
-                Loading...
+            <ChartViewWrapperComponent bgColor={background_color}>
+                <WavyLoader />
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
     }
 
     if (error || !schema || !tableData) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Error
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -84,12 +76,7 @@ export const AreaChartView: ChartViewComponentType = ({
 
     if (!schema) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 No Data
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -97,12 +84,7 @@ export const AreaChartView: ChartViewComponentType = ({
 
     if (!x_axis || !y_axis) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Select X and Y Axis
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -127,17 +109,32 @@ export const AreaChartView: ChartViewComponentType = ({
     }
 
     return (
-        <ChartViewWrapperComponent
-            bgColor={background_color}
-            labelColor={text_color}
-            showLabel={label_enabled}
-            label={chartName}
-        >
+        <ChartViewWrapperComponent bgColor={background_color}>
             <ChartContainer
                 config={configData}
                 className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
             >
-                <AreaChart accessibilityLayer data={limitedRadarChartData}>
+                <AreaChart
+                    accessibilityLayer
+                    data={limitedRadarChartData}
+                    // margin={{ top: 100, right: 30, left: 0, bottom: 0 }}
+                >
+                    {label_enabled && (
+                        <text
+                            x="50%"
+                            y={40}
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "bold",
+                                fill: getRGBAString(text_color),
+                            }}
+                            width={200}
+                            textAnchor="middle"
+                        >
+                            {chartName}
+                        </text>
+                    )}
+
                     {legend_enabled && (
                         <ChartLegend content={<ChartLegendContent />} />
                     )}
@@ -203,7 +200,7 @@ export const AreaChartView: ChartViewComponentType = ({
                             fillOpacity={0.4}
                             stroke={configData[data_label].color}
                             stackId="a"
-                        />
+                        ></Area>
                     ))}
                 </AreaChart>
             </ChartContainer>

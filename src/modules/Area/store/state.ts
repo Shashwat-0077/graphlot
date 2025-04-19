@@ -70,8 +70,11 @@ export const defaultAreaChartState: AreaChartState = {
     grid_type: GRID_HORIZONTAL,
 };
 
-export const initAreaChartStore = (): AreaChartState => {
-    return defaultAreaChartState;
+export const initAreaChartStore = (data?: AreaChartState): AreaChartState => {
+    if (!data) {
+        return defaultAreaChartState;
+    }
+    return data;
 };
 
 export const createAreaChartStore = (

@@ -174,21 +174,21 @@ export const AreaConfig: ChartConfigComponentType = ({ notion_table_id }) => {
                     />
                 </div>
 
-                {/* Grid */}
-                <div className="flex w-full items-center justify-between">
-                    <Label className="text-lg">Grid</Label>
-                    <GridSelect
-                        grid_type={grid_type}
-                        setGridType={setGridType}
-                    />
-                </div>
-
                 {/* ToolTip */}
                 <div className="flex w-full items-center justify-between">
                     <Label className="text-lg">Tool Tip</Label>
                     <ToggleSwitch
                         defaultChecked={tooltip_enabled}
                         toggleFunction={toggleTooltip}
+                    />
+                </div>
+
+                {/* Grid */}
+                <div className="flex w-full items-center justify-between">
+                    <Label className="text-lg">Grid</Label>
+                    <GridSelect
+                        grid_type={grid_type}
+                        setGridType={setGridType}
                     />
                 </div>
 

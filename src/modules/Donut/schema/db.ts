@@ -1,5 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+import defaultConfig from "@/modules/Donut/default.config";
 import { Charts } from "@/modules/BasicChart/schema/db";
 import { ColorType, FilterType } from "@/constants";
 
@@ -10,36 +11,36 @@ export const DonutCharts = sqliteTable("donut_charts", {
 
     background_color: text("background_color", { mode: "json" })
         .notNull()
-        .default({ r: 25, g: 25, b: 25, a: 1 })
+        .default(defaultConfig.background_color)
         .$type<ColorType>(),
     text_color: text("text_color", { mode: "json" })
         .notNull()
-        .default({ r: 255, g: 255, b: 255, a: 1 })
+        .default(defaultConfig.text_color)
         .$type<ColorType>(),
     tooltip_enabled: integer("show_tooltip", { mode: "boolean" })
         .notNull()
-        .default(true),
+        .default(defaultConfig.tooltip_enabled),
     label_enabled: integer("show_label", { mode: "boolean" })
         .notNull()
-        .default(true),
+        .default(defaultConfig.label_enabled),
     legend_enabled: integer("show_legend", { mode: "boolean" })
         .notNull()
-        .default(true),
+        .default(defaultConfig.legend_enabled),
     has_border: integer("has_border", { mode: "boolean" })
         .notNull()
-        .default(false),
+        .default(defaultConfig.has_border),
     color_palette: text("color_palette", { mode: "json" })
         .notNull()
-        .default([])
+        .default(defaultConfig.color_palette)
         .$type<ColorType[]>(),
 
-    x_axis: text("x_axis"),
-    sort_by: text("sort_by"),
+    x_axis: text("x_axis").default(defaultConfig.x_axis),
+    sort_by: text("sort_by").default(defaultConfig.sort_by),
     omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
         .notNull()
-        .default(false),
+        .default(defaultConfig.omit_zero_values),
     filters: text("filters", { mode: "json" })
         .notNull()
-        .default([])
+        .default(defaultConfig.filters)
         .$type<FilterType[]>(),
 });

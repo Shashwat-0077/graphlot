@@ -17,6 +17,7 @@ import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/Chart
 import { processChartData } from "@/utils/processChartData";
 import { ChartViewComponentType } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
+import { getRGBAString } from "@/utils/colors";
 
 export const BarChartView: ChartViewComponentType = ({
     chartName,
@@ -65,12 +66,7 @@ export const BarChartView: ChartViewComponentType = ({
 
     if (schemaLoading || dataLoading) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 <WavyLoader />
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -78,12 +74,7 @@ export const BarChartView: ChartViewComponentType = ({
 
     if (error || !schema || !tableData) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Error
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -91,12 +82,7 @@ export const BarChartView: ChartViewComponentType = ({
 
     if (!schema) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 No Data
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -104,12 +90,7 @@ export const BarChartView: ChartViewComponentType = ({
 
     if (!x_axis || !y_axis) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Select X and Y Axis
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -134,12 +115,7 @@ export const BarChartView: ChartViewComponentType = ({
     }
 
     return (
-        <ChartViewWrapperComponent
-            bgColor={background_color}
-            labelColor={text_color}
-            showLabel={label_enabled}
-            label={chartName}
-        >
+        <ChartViewWrapperComponent bgColor={background_color}>
             <ChartContainer
                 config={configData}
                 className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
@@ -152,6 +128,21 @@ export const BarChartView: ChartViewComponentType = ({
                     barSize={bar_size}
                     barGap={bar_gap}
                 >
+                    {label_enabled && (
+                        <text
+                            x="50%"
+                            y={40}
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "bold",
+                                fill: getRGBAString(text_color),
+                            }}
+                            width={200}
+                            textAnchor="middle"
+                        >
+                            {chartName}
+                        </text>
+                    )}
                     {grid_type !== "NONE" && (
                         <CartesianGrid
                             vertical={
@@ -170,8 +161,8 @@ export const BarChartView: ChartViewComponentType = ({
                     <XAxis dataKey="class" tickMargin={10} axisLine={false} />
                     {tooltip_enabled && (
                         <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent indicator="dashed" />}
+                            cursor={false} // this make the behind the bar a little bit lighter
+                            content={<ChartTooltipContent />}
                         />
                     )}
 

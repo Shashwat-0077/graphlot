@@ -16,6 +16,7 @@ import { useRadarChartStore } from "@/modules/Radar/store";
 import { processChartData } from "@/utils/processChartData";
 import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { ChartViewComponentType } from "@/constants";
+import { getRGBAString } from "@/utils/colors";
 
 export const RadarChartView: ChartViewComponentType = ({
     chartName,
@@ -62,12 +63,7 @@ export const RadarChartView: ChartViewComponentType = ({
 
     if (schemaLoading || dataLoading) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Loading...
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -75,12 +71,7 @@ export const RadarChartView: ChartViewComponentType = ({
 
     if (error || !schema || !tableData) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Error
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -88,12 +79,7 @@ export const RadarChartView: ChartViewComponentType = ({
 
     if (!schema) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 No Data
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -101,12 +87,7 @@ export const RadarChartView: ChartViewComponentType = ({
 
     if (!x_axis || !y_axis) {
         return (
-            <ChartViewWrapperComponent
-                bgColor={background_color}
-                labelColor={text_color}
-                showLabel={label_enabled}
-                label={chartName}
-            >
+            <ChartViewWrapperComponent bgColor={background_color}>
                 Select X and Y Axis
             </ChartViewWrapperComponent>
         ); // TODO : improve Text and design
@@ -131,24 +112,28 @@ export const RadarChartView: ChartViewComponentType = ({
     }
 
     return (
-        <ChartViewWrapperComponent
-            bgColor={background_color}
-            labelColor={text_color}
-            showLabel={label_enabled}
-            label={chartName}
-        >
+        <ChartViewWrapperComponent bgColor={background_color}>
             <ChartContainer
                 config={configData}
                 // TODO : make size responsive
                 className="mx-auto min-h-[270px] break1200:min-h-[500px]"
             >
-                <RadarChart
-                    data={limitedRadarChartData}
-                    margin={{
-                        top: -40,
-                        bottom: -10,
-                    }}
-                >
+                <RadarChart data={limitedRadarChartData} margin={{ top: 40 }}>
+                    {label_enabled && (
+                        <text
+                            x="50%"
+                            y={40}
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "bold",
+                                fill: getRGBAString(text_color),
+                            }}
+                            width={200}
+                            textAnchor="middle"
+                        >
+                            {chartName}
+                        </text>
+                    )}
                     {tooltip_enabled && (
                         <ChartTooltip
                             cursor={false}

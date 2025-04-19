@@ -9,17 +9,41 @@ import {
     initAreaChartStore,
 } from "@/modules/Area/store/state";
 import { StateProviderType } from "@/constants";
+import { useGetAreaChartWithId } from "@/modules/Area/api/client/useGetAreaChart";
+import { BoxLoader } from "@/components/ui/Loader";
 
 export type AreaChartStoreApi = ReturnType<typeof createAreaChartStore>;
 export const AreaChartStoreContext = createContext<
     AreaChartStoreApi | undefined
 >(undefined);
 
-export const AreaChartStoreProvider: StateProviderType = ({ children }) => {
+export const AreaChartStoreProvider: StateProviderType = ({
+    children,
+    char_id,
+}) => {
     const storeRef = useRef<AreaChartStoreApi>(null);
+    const { data, isLoading, error, isError } = useGetAreaChartWithId(char_id);
+
+    if (!data || isLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <BoxLoader />
+            </div>
+        );
+    }
+
+    if (isError || error) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <div className="text-red-500">
+                    Error: {error?.message || "Something went wrong"}
+                </div>
+            </div>
+        );
+    }
 
     if (!storeRef.current) {
-        storeRef.current = createAreaChartStore(initAreaChartStore());
+        storeRef.current = createAreaChartStore(initAreaChartStore(data.chart));
     }
 
     return (

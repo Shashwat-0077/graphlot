@@ -64,6 +64,8 @@ export type ChartConfigComponentType = ({
 
 export type StateProviderType = ({
     children,
+    char_id,
 }: {
     children: React.ReactNode;
+    char_id: string;
 }) => React.JSX.Element;
