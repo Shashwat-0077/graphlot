@@ -18,11 +18,11 @@ const ToggleGroup = React.forwardRef<
     React.ElementRef<typeof ToggleGroupPrimitive.Root>,
     React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root> &
         VariantProps<typeof toggleVariants>
->(({ className, variant, size, children, value, type, ...props }, ref) => (
+>(({ className, variant, size, children, value, ...props }, ref) => (
     <ToggleGroupPrimitive.Root
         ref={ref}
         value={value}
-        type={type}
+        type={"multiple"}
         className={cn("flex items-center justify-center gap-1", className)}
         {...props}
     >
