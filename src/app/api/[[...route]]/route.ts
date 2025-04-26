@@ -22,8 +22,8 @@ app.onError((err, c) => {
 });
 
 const _routes = app
-    .route("/collections", collections)
     .route("/auth", auth)
+    .route("/collections", collections)
     .route("/charts", charts)
     .route("/notion", notion)
     .route("/radar-chart", radar)

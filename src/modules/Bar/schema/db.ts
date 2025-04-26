@@ -56,7 +56,7 @@ export const BarCharts = sqliteTable(
             .$type<FilterType[]>(),
         // in the format of {column: string; operation: string; value: string; }
 
-        grid_color: text("grid_color")
+        grid_color: text("grid_color", { mode: "json" })
             .$type<ColorType>()
             .notNull()
             .default(defaultConfig.grid_color),

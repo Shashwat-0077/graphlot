@@ -123,16 +123,20 @@ export const BarChartView: ChartViewComponentType = ({
                 <BarChart
                     accessibilityLayer
                     data={limitedRadarChartData}
-                    width={100}
-                    maxBarSize={70}
                     barSize={bar_size}
                     barGap={bar_gap}
+                    barCategoryGap={0}
+                    margin={{
+                        top: 70,
+                        bottom: 0,
+                    }}
                 >
                     {label_enabled && (
                         <text
                             x="50%"
                             y={40}
                             style={{
+                                zIndex: 100,
                                 fontSize: 36,
                                 fontWeight: "bold",
                                 fill: getRGBAString(text_color),
@@ -152,7 +156,7 @@ export const BarChartView: ChartViewComponentType = ({
                                 grid_type === "BOTH" ||
                                 grid_type === "HORIZONTAL"
                             }
-                            stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
+                            stroke={getRGBAString(grid_color)}
                         />
                     )}
                     {legend_enabled && (
@@ -174,7 +178,7 @@ export const BarChartView: ChartViewComponentType = ({
                             fillOpacity={configData[data_label].alpha}
                             stroke={configData[data_label].color}
                             strokeWidth={0.2}
-                            radius={10}
+                            radius={0}
                         />
                     ))}
                 </BarChart>

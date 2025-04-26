@@ -22,6 +22,7 @@ import { ChartConfigComponentType, FilterType } from "@/constants";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { GridSelect } from "@/components/ui/grid-select";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
+import { getRGBAString } from "@/utils/colors";
 
 export const BarConfig: ChartConfigComponentType = ({ notion_table_id }) => {
     const COLOR_SECTION_HEIGHT = 120; // in px
@@ -273,7 +274,7 @@ export const BarConfig: ChartConfigComponentType = ({ notion_table_id }) => {
                         <div
                             className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
                             style={{
-                                backgroundColor: `rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`,
+                                backgroundColor: getRGBAString(grid_color),
                             }}
                         >
                             Click me to modify{" "}
