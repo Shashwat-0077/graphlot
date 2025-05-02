@@ -1,23 +1,9 @@
 "use client";
-import React from "react";
+
 import styled, { keyframes } from "styled-components";
 
-const BoxLoader = () => {
-    return (
-        <StyledWrapper>
-            <div className="spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-            </div>
-        </StyledWrapper>
-    );
-};
-
-const StyledWrapper = styled.div`
+// 3D Box Loader Animation
+const StyledBoxWrapper = styled.div`
     .spinner {
         width: 44px;
         height: 44px;
@@ -75,6 +61,7 @@ const StyledWrapper = styled.div`
     }
 `;
 
+// Wave Animation
 const waveAnimation = keyframes`
   0% {
     height: 10px;
@@ -116,7 +103,22 @@ const LoadingBar = styled.div`
     }
 `;
 
-const WavyLoader = () => {
+export function BoxLoader() {
+    return (
+        <StyledBoxWrapper>
+            <div className="spinner">
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+            </div>
+        </StyledBoxWrapper>
+    );
+}
+
+export function WavyLoader() {
     return (
         <LoadingWave>
             <LoadingBar />
@@ -125,6 +127,4 @@ const WavyLoader = () => {
             <LoadingBar />
         </LoadingWave>
     );
-};
-
-export { BoxLoader, WavyLoader };
+}

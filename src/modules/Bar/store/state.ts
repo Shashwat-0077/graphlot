@@ -31,6 +31,8 @@ export type BarChartActions = {
     // Data display options
     toggleOmitZeroValues: () => void;
     toggleCumulative: () => void;
+    setOmitZeroValues: (omit: boolean) => void;
+    setCumulative: (cumulative: boolean) => void;
 
     // Filter operations
     setFilters: (filters: FilterType[]) => void;
@@ -179,6 +181,14 @@ export const createBarChartStore = (
             toggleCumulative: () =>
                 set((state) => {
                     state.cumulative = !state.cumulative;
+                }),
+            setOmitZeroValues: (omit) =>
+                set((state) => {
+                    state.omit_zero_values = omit;
+                }),
+            setCumulative: (cumulative) =>
+                set((state) => {
+                    state.cumulative = cumulative;
                 }),
 
             // Filter operations

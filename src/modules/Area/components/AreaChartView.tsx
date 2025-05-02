@@ -1,6 +1,7 @@
 "use client";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+
 import { useMemo } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
     ChartContainer,
@@ -11,12 +12,12 @@ import {
 } from "@/components/ui/chart";
 import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
 import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
-import { ChartViewWrapperComponent } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { useAreaChartStore } from "@/modules/Area/store";
 import { processChartData } from "@/utils/processChartData";
-import { ChartViewComponentType } from "@/constants";
-import { WavyLoader } from "@/components/ui/Loader";
 import { getRGBAString } from "@/utils/colors";
+import type { ChartViewComponentType } from "@/constants";
+import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
+import { WavyLoader } from "@/components/ui/Loader";
 
 export const AreaChartView: ChartViewComponentType = ({
     chartName,
@@ -58,38 +59,134 @@ export const AreaChartView: ChartViewComponentType = ({
             : radarChartData;
     }, [radarChartData]);
 
+    // Loading state
     if (schemaLoading || dataLoading) {
         return (
-            <ChartViewWrapperComponent bgColor={background_color}>
-                <WavyLoader />
-            </ChartViewWrapperComponent>
-        ); // TODO : improve Text and design
+            <ChartViewWrapper
+                bgColor={background_color}
+                className="flex items-center justify-center"
+            >
+                <div className="flex flex-col items-center gap-4">
+                    <WavyLoader />
+                    <p className="text-sm text-muted-foreground">
+                        Loading chart data...
+                    </p>
+                </div>
+            </ChartViewWrapper>
+        );
     }
 
+    // Error state
     if (error || !schema || !tableData) {
         return (
-            <ChartViewWrapperComponent bgColor={background_color}>
-                Error
-            </ChartViewWrapperComponent>
-        ); // TODO : improve Text and design
+            <ChartViewWrapper
+                bgColor={background_color}
+                className="flex items-center justify-center"
+            >
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="rounded-full bg-destructive/10 p-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-6 w-6 text-destructive"
+                        >
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                            <path d="M12 9v4" />
+                            <path d="M12 17h.01" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                        Failed to load chart data
+                    </h3>
+                    <p className="max-w-[250px] text-sm text-muted-foreground">
+                        There was an error loading the chart data. Please try
+                        again later.
+                    </p>
+                </div>
+            </ChartViewWrapper>
+        );
     }
 
+    // No schema state
     if (!schema) {
         return (
-            <ChartViewWrapperComponent bgColor={background_color}>
-                No Data
-            </ChartViewWrapperComponent>
-        ); // TODO : improve Text and design
+            <ChartViewWrapper
+                bgColor={background_color}
+                className="flex items-center justify-center"
+            >
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="rounded-full bg-muted p-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-6 w-6 text-muted-foreground"
+                        >
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <path d="M3 9h18" />
+                            <path d="M9 21V9" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold">No Data Available</h3>
+                    <p className="max-w-[250px] text-sm text-muted-foreground">
+                        No schema data found. Please connect a valid database.
+                    </p>
+                </div>
+            </ChartViewWrapper>
+        );
     }
 
+    // No axis selected state
     if (!x_axis || !y_axis) {
         return (
-            <ChartViewWrapperComponent bgColor={background_color}>
-                Select X and Y Axis
-            </ChartViewWrapperComponent>
-        ); // TODO : improve Text and design
+            <ChartViewWrapper
+                bgColor={background_color}
+                className="flex items-center justify-center"
+            >
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="rounded-full bg-muted p-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-6 w-6 text-muted-foreground"
+                        >
+                            <path d="M3 3v18h18" />
+                            <path d="m19 9-5 5-4-4-3 3" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                        Chart Configuration Required
+                    </h3>
+                    <p className="max-w-[250px] text-sm text-muted-foreground">
+                        Please select both X and Y axis values to display the
+                        chart.
+                    </p>
+                </div>
+            </ChartViewWrapper>
+        );
     }
 
+    // Prepare chart configuration data
     const configData: {
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
@@ -109,27 +206,26 @@ export const AreaChartView: ChartViewComponentType = ({
     }
 
     return (
-        <ChartViewWrapperComponent bgColor={background_color}>
+        <ChartViewWrapper bgColor={background_color}>
             <ChartContainer
                 config={configData}
-                className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
+                className="mx-auto h-full w-full min-w-0"
             >
                 <AreaChart
                     accessibilityLayer
                     data={limitedRadarChartData}
-                    // margin={{ top: 100, right: 30, left: 0, bottom: 0 }}
+                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                 >
                     {label_enabled && (
                         <text
                             x="50%"
-                            y={40}
+                            y={30}
                             style={{
-                                fontSize: 36,
+                                fontSize: "1.25rem",
                                 fontWeight: "bold",
                                 fill: getRGBAString(text_color),
+                                textAnchor: "middle",
                             }}
-                            width={200}
-                            textAnchor="middle"
                         >
                             {chartName}
                         </text>
@@ -149,6 +245,8 @@ export const AreaChartView: ChartViewComponentType = ({
                                 grid_type === "BOTH"
                             }
                             stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
+                            strokeDasharray="3 3"
+                            strokeOpacity={0.6}
                         />
                     )}
 
@@ -158,6 +256,7 @@ export const AreaChartView: ChartViewComponentType = ({
                         padding={{ left: 20, right: 20 }}
                         tickMargin={10}
                         tickFormatter={(value) => value}
+                        stroke={getRGBAString(text_color)}
                     />
 
                     {tooltip_enabled && (
@@ -171,7 +270,7 @@ export const AreaChartView: ChartViewComponentType = ({
                         {radarChartConfig.map((data_label, idx) => (
                             <linearGradient
                                 key={idx}
-                                id={`fill${data_label.replace(" ", "")}`}
+                                id={`fill${data_label.replace(/\s+/g, "")}`}
                                 x1="0"
                                 y1="0"
                                 x2="0"
@@ -196,14 +295,15 @@ export const AreaChartView: ChartViewComponentType = ({
                             key={data_label}
                             dataKey={data_label}
                             type="natural"
-                            fill={`url(#fill${data_label.replace(" ", "")})`}
+                            fill={`url(#fill${data_label.replace(/\s+/g, "")})`}
                             fillOpacity={0.4}
                             stroke={configData[data_label].color}
+                            strokeWidth={2}
                             stackId="a"
-                        ></Area>
+                        />
                     ))}
                 </AreaChart>
             </ChartContainer>
-        </ChartViewWrapperComponent>
+        </ChartViewWrapper>
     );
 };

@@ -70,10 +70,10 @@ const app = new Hono<{ Variables: variables }>()
                 chart_id: z.string().nonempty(),
             })
         ),
-        zValidator("form", BarSchema.Update),
+        zValidator("json", BarSchema.Update),
         async (c) => {
             const { chart_id } = c.req.valid("param");
-            const data = c.req.valid("form");
+            const data = c.req.valid("json");
 
             const response = await updateBarChart({
                 chart_id,

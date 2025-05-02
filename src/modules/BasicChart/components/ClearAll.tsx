@@ -1,6 +1,5 @@
 "use client";
 import { X } from "lucide-react";
-import React from "react";
 
 import {
     Tooltip,
@@ -13,16 +12,18 @@ export default function ClearAll({ clearFn }: { clearFn: () => void }) {
     return (
         <TooltipProvider>
             <Tooltip>
-                <TooltipTrigger>
-                    <div
-                        className="cursor-pointer text-muted-foreground"
+                <TooltipTrigger asChild>
+                    <button
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/20"
                         onClick={clearFn}
+                        type="button"
+                        aria-label="Reset to default"
                     >
-                        <X />
-                    </div>
+                        <X size={16} />
+                    </button>
                 </TooltipTrigger>
                 <TooltipContent className="border-black bg-black text-white">
-                    <p>Reset To default</p>
+                    <p>Reset to default</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

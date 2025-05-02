@@ -28,6 +28,7 @@ export type DonutChartActions = {
 
     // Data display options
     toggleOmitZeroValues: () => void;
+    setOmitZeroValues: (omit: boolean) => void;
 
     // Filter operations
     setFilters: (filters: FilterType[]) => void;
@@ -144,6 +145,10 @@ export const createDonutChartStore = (
             toggleOmitZeroValues: () =>
                 set((state) => {
                     state.omit_zero_values = !state.omit_zero_values;
+                }),
+            setOmitZeroValues: (omit) =>
+                set((state) => {
+                    state.omit_zero_values = omit;
                 }),
 
             // Filter operations
