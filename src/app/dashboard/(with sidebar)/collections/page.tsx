@@ -3,22 +3,24 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { getAllCollections } from "@/modules/Collection/api/getCollections";
-import { createClient } from "@/lib/supabase/server";
 import CollectionCard from "@/modules/Collection/components/CollectionCard";
+import { getAllCollections } from "@/modules/Collection/api/getCollections";
 import { getSlug } from "@/utils/pathSlugsOps";
 import { BoxLoader } from "@/components/ui/Loader";
+import { auth } from "@/modules/auth";
 
 export default async function Dashboard() {
     const cardSize = 150;
 
-    const supabase = await createClient();
+    const session = await auth();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    if (!session) {
+        redirect("/");
+    }
 
-    if (!user) {
+    const { user } = session;
+
+    if (!user || !user.id) {
         redirect("/");
     }
 

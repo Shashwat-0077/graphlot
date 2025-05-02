@@ -7,10 +7,27 @@ import { HeatmapCharts, HeatmapData } from "@/modules/Heatmap/schema/db";
 import { RadarCharts } from "@/modules/Radar/schema/db";
 import { Collections } from "@/modules/Collection/schema/db";
 import { Charts } from "@/modules/BasicChart/schema/db";
+import { Users, Accounts } from "@/modules/auth/schema/db";
 
 // relations
-export const collectionRelations = relations(Collections, ({ many }) => ({
+export const userRelations = relations(Users, ({ many }) => ({
+    collections: many(Collections),
+    accounts: many(Accounts),
+}));
+
+export const accountRelations = relations(Accounts, ({ one }) => ({
+    user: one(Users, {
+        fields: [Accounts.userId],
+        references: [Users.id],
+    }),
+}));
+
+export const collectionRelations = relations(Collections, ({ many, one }) => ({
     charts: many(Charts),
+    user: one(Users, {
+        fields: [Collections.user_id],
+        references: [Users.id],
+    }),
 }));
 
 export const chartRelations = relations(Charts, ({ one }) => ({
@@ -75,4 +92,6 @@ export {
     Collections,
     Charts,
     HeatmapData,
+    Users,
+    Accounts,
 };

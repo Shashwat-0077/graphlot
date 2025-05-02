@@ -1,9 +1,10 @@
+import "server-only";
+
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { HTTPException } from "hono/http-exception";
 
 import collections from "@/modules/Collection/server/route";
-import auth from "@/modules/auth/server/route";
 import charts from "@/modules/BasicChart/server/route";
 import notion from "@/modules/notion/server/route";
 import radar from "@/modules/Radar/server/route";
@@ -22,7 +23,6 @@ app.onError((err, c) => {
 });
 
 const _routes = app
-    .route("/auth", auth)
     .route("/collections", collections)
     .route("/charts", charts)
     .route("/notion", notion)

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,8 +23,64 @@ import { ChartConfigComponentType, FilterType } from "@/constants";
 import { useAreaChartStore } from "@/modules/Area/store";
 import { GridSelect } from "@/components/ui/grid-select";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
+import { toast } from "@/hooks/use-toast";
+import { useUpdateAreaChart } from "@/modules/Area/api/client/useUpdateAreaChart";
 
-export const AreaConfig: ChartConfigComponentType = ({ notion_table_id }) => {
+export const AreaConfig: ChartConfigComponentType = ({
+    notion_table_id,
+    chart_id,
+}) => {
+    const { mutate: updateChart } = useUpdateAreaChart({
+        onSuccess: () => {
+            toast({
+                title: "Chart updated",
+            });
+        },
+    });
+
+    const handleUpdate = () => {
+        toast({
+            title: "Saving the chart......",
+        });
+
+        updateChart({
+            param: {
+                chart_id: chart_id,
+            },
+            json: {
+                // BUG : the axis data is overridden by the default values, not good
+                x_axis: xAxis,
+                y_axis: yAxis,
+                group_by: groupBy,
+                sort_by: sortBy,
+                omit_zero_values: omitZeroValues,
+                cumulative: cumulative,
+                filters: filters,
+                background_color: background_color,
+                grid_color: grid_color,
+                text_color: text_color,
+                grid_type: grid_type,
+                color_palette: color_palette,
+            },
+        });
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Example: Override Ctrl+S
+            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+                e.preventDefault(); // Prevent browser's save
+                handleUpdate();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    });
+
     const COLOR_SECTION_HEIGHT = 120; // in px
     const FILTER_SECTION_HEIGHT = 400; // in px
 
@@ -149,349 +207,379 @@ export const AreaConfig: ChartConfigComponentType = ({ notion_table_id }) => {
     });
 
     return (
-        <div className="mb-7 mt-16 flex flex-col gap-10 break1200:flex-row">
-            {/* Colors */}
-            <section className="relative flex w-full min-w-[300px] flex-col gap-7 rounded-lg border p-10 break1200:max-w-[500px]">
-                <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
-                    Appearance
-                </Label>
-
-                {/* Label*/}
-                <div className="flex w-full items-center justify-between">
-                    <Label className="text-lg">Label</Label>
-                    <ToggleSwitch
-                        defaultChecked={label_enabled}
-                        toggleFunction={toggleLabel}
-                    />
-                </div>
-
-                {/* Legends */}
-                <div className="flex w-full items-center justify-between">
-                    <Label className="text-lg">Legends</Label>
-                    <ToggleSwitch
-                        defaultChecked={legend_enabled}
-                        toggleFunction={toggleLegend}
-                    />
-                </div>
-
-                {/* ToolTip */}
-                <div className="flex w-full items-center justify-between">
-                    <Label className="text-lg">Tool Tip</Label>
-                    <ToggleSwitch
-                        defaultChecked={tooltip_enabled}
-                        toggleFunction={toggleTooltip}
-                    />
-                </div>
-
-                {/* Grid */}
-                <div className="flex w-full items-center justify-between">
-                    <Label className="text-lg">Grid</Label>
-                    <GridSelect
-                        grid_type={grid_type}
-                        setGridType={setGridType}
-                    />
-                </div>
-
-                {/* Label Color */}
-                <div className="w-full">
-                    <Label className="mb-2 block text-lg">Label Color</Label>
-                    <ColorPickerPopover
-                        isSingleColor={true}
-                        color={text_color}
-                        setColor={setTextColor}
-                    >
-                        <div
-                            className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
-                            style={{
-                                backgroundColor: `rgba(${text_color.r}, ${text_color.g}, ${text_color.b}, ${text_color.a})`,
-                            }}
-                        >
-                            Click me to modify
-                        </div>
-                    </ColorPickerPopover>
-                </div>
-
-                {/* Background Color */}
-                <div className="w-full">
-                    <Label className="mb-2 block text-lg">
-                        Background Color
+        <div>
+            <div className="mb-7 mt-16 flex flex-col gap-10 break1200:flex-row">
+                {/* Colors */}
+                <section className="relative flex w-full min-w-[300px] flex-col gap-7 rounded-lg border p-10 break1200:max-w-[500px]">
+                    <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
+                        Appearance
                     </Label>
-                    <ColorPickerPopover
-                        isSingleColor={true}
-                        color={background_color}
-                        setColor={setBackgroundColor}
-                    >
-                        <div
-                            className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
-                            style={{
-                                backgroundColor: `rgba(${background_color.r}, ${background_color.g}, ${background_color.b}, ${background_color.a})`,
-                            }}
-                        >
-                            Click me to modify
-                        </div>
-                    </ColorPickerPopover>
-                </div>
 
-                {/*
+                    {/* Label*/}
+                    <div className="flex w-full items-center justify-between">
+                        <Label className="text-lg">Label</Label>
+                        <ToggleSwitch
+                            defaultChecked={label_enabled}
+                            toggleFunction={toggleLabel}
+                        />
+                    </div>
+
+                    {/* Legends */}
+                    <div className="flex w-full items-center justify-between">
+                        <Label className="text-lg">Legends</Label>
+                        <ToggleSwitch
+                            defaultChecked={legend_enabled}
+                            toggleFunction={toggleLegend}
+                        />
+                    </div>
+
+                    {/* ToolTip */}
+                    <div className="flex w-full items-center justify-between">
+                        <Label className="text-lg">Tool Tip</Label>
+                        <ToggleSwitch
+                            defaultChecked={tooltip_enabled}
+                            toggleFunction={toggleTooltip}
+                        />
+                    </div>
+
+                    {/* Grid */}
+                    <div className="flex w-full items-center justify-between">
+                        <Label className="text-lg">Grid</Label>
+                        <GridSelect
+                            grid_type={grid_type}
+                            setGridType={setGridType}
+                        />
+                    </div>
+
+                    {/* Label Color */}
+                    <div className="w-full">
+                        <Label className="mb-2 block text-lg">
+                            Label Color
+                        </Label>
+                        <ColorPickerPopover
+                            isSingleColor={true}
+                            color={text_color}
+                            setColor={setTextColor}
+                        >
+                            <div
+                                className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
+                                style={{
+                                    backgroundColor: `rgba(${text_color.r}, ${text_color.g}, ${text_color.b}, ${text_color.a})`,
+                                }}
+                            >
+                                Click me to modify
+                            </div>
+                        </ColorPickerPopover>
+                    </div>
+
+                    {/* Background Color */}
+                    <div className="w-full">
+                        <Label className="mb-2 block text-lg">
+                            Background Color
+                        </Label>
+                        <ColorPickerPopover
+                            isSingleColor={true}
+                            color={background_color}
+                            setColor={setBackgroundColor}
+                        >
+                            <div
+                                className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
+                                style={{
+                                    backgroundColor: `rgba(${background_color.r}, ${background_color.g}, ${background_color.b}, ${background_color.a})`,
+                                }}
+                            >
+                                Click me to modify
+                            </div>
+                        </ColorPickerPopover>
+                    </div>
+
+                    {/*
                     // TODO : Add the functionality to change the color of the legends and the chart label and axis labels
                 */}
 
-                {/* Grid Color */}
-                <div className="w-full">
-                    <Label className="mb-2 block text-lg">Grid Color</Label>
-                    <ColorPickerPopover
-                        isSingleColor={true}
-                        color={grid_color}
-                        setColor={setGridColor}
-                    >
-                        <div
-                            className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
+                    {/* Grid Color */}
+                    <div className="w-full">
+                        <Label className="mb-2 block text-lg">Grid Color</Label>
+                        <ColorPickerPopover
+                            isSingleColor={true}
+                            color={grid_color}
+                            setColor={setGridColor}
+                        >
+                            <div
+                                className="grid h-8 w-full shrink-0 grow-0 cursor-pointer place-content-center rounded border py-4 text-muted"
+                                style={{
+                                    backgroundColor: `rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`,
+                                }}
+                            >
+                                Click me to modify{" "}
+                            </div>
+                        </ColorPickerPopover>
+                    </div>
+
+                    {/* Chart Colors */}
+                    <div>
+                        <Label className="flex items-center gap-3 text-lg">
+                            <span>Chart color</span>
+                            <ClearAll clearFn={clearColorPalette} />
+                        </Label>
+                        <ScrollArea
                             style={{
-                                backgroundColor: `rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`,
+                                height: `${COLOR_SECTION_HEIGHT}px`,
+                                marginTop: "10px",
                             }}
                         >
-                            Click me to modify{" "}
-                        </div>
-                    </ColorPickerPopover>
-                </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                {color_palette.map((color, index) => (
+                                    <ColorPickerPopover
+                                        key={index}
+                                        isSingleColor={false}
+                                        color={color}
+                                        className="w-auto"
+                                        colorIndex={index}
+                                        setColor={updateColor}
+                                        removeColor={removeColor}
+                                    >
+                                        <div
+                                            className="h-10 w-10 shrink-0 grow-0 cursor-pointer rounded-full border transition-transform hover:scale-105"
+                                            style={{
+                                                backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+                                            }}
+                                        />
+                                    </ColorPickerPopover>
+                                ))}
+                                <div
+                                    className="grid h-10 w-10 cursor-pointer place-content-center rounded-full border"
+                                    onClick={() => {
+                                        addColor();
+                                    }}
+                                >
+                                    <Plus />
+                                </div>
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </section>
 
-                {/* Chart Colors */}
-                <div>
+                {/* Data */}
+                <section className="relative flex w-full flex-col gap-7 rounded-lg border p-10">
+                    <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
+                        Data
+                    </Label>
+
+                    <div className="grid grid-cols-[1fr] gap-10 break1400:grid-cols-[1fr_5px_1fr]">
+                        {/* X Axis */}
+                        <div>
+                            <Label className="mb-2 block text-lg">X Axis</Label>
+                            <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
+                                <Label className="block text-lg">Column</Label>
+                                <Select
+                                    onValueChange={(value) => {
+                                        setXAxis(value);
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a Column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {XAxisColumns.map((col, index) => (
+                                            <SelectItem key={index} value={col}>
+                                                {col}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Label className="block text-lg">Sort By</Label>
+                                <Select
+                                    onValueChange={(value) => {
+                                        setSortBy(value);
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a Column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem key={0} value="None">
+                                            None
+                                        </SelectItem>
+                                        <Separator className="my-1" />
+                                        {XAxisColumns.map((col, index) => (
+                                            <SelectItem
+                                                key={index + 1}
+                                                value={col}
+                                            >
+                                                {col}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center justify-between pt-6">
+                                <Label className="block text-lg">
+                                    Omit Zero Values
+                                </Label>
+                                <ToggleSwitch
+                                    defaultChecked={omitZeroValues}
+                                    toggleFunction={() => {
+                                        setOmitZeroValues(!omitZeroValues);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <Separator
+                            orientation="vertical"
+                            className="hidden justify-self-center break1200:block"
+                        />
+                        <Separator
+                            orientation="horizontal"
+                            className="justify-self-center break1200:hidden"
+                        />
+
+                        {/* Y Axis */}
+                        <div>
+                            <Label className="mb-2 block text-lg">Y Axis</Label>
+                            <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
+                                <Label className="block text-lg">Column</Label>
+                                <Select
+                                    onValueChange={(value) => {
+                                        setYAxis(value);
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a Column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem key={0} value="count">
+                                            count
+                                        </SelectItem>
+                                        <Separator className="my-1" />
+                                        {YAxisColumns.map((col, index) => (
+                                            <SelectItem
+                                                key={index + 1}
+                                                value={col}
+                                            >
+                                                {col}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Label className="block text-lg">
+                                    Group By
+                                </Label>
+                                <Select
+                                    onValueChange={(value) => {
+                                        setGroupBy(value);
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a Column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem key={0} value="None">
+                                            None
+                                        </SelectItem>
+                                        <Separator className="my-1" />
+                                        {YAxisColumns.map((col, index) => (
+                                            <SelectItem
+                                                key={index + 1}
+                                                value={col}
+                                            >
+                                                {col}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center justify-between pt-6">
+                                <Label className="block text-lg">
+                                    Cumulative
+                                </Label>
+                                <ToggleSwitch
+                                    defaultChecked={cumulative}
+                                    toggleFunction={() => {
+                                        setCumulative(!cumulative);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <Separator orientation="horizontal" />
+
+                    {/* Filters */}
                     <Label className="flex items-center gap-3 text-lg">
-                        <span>Chart color</span>
-                        <ClearAll clearFn={clearColorPalette} />
+                        <span>Filters</span>
+                        <ClearAll clearFn={clearFilters} />
                     </Label>
                     <ScrollArea
                         style={{
-                            height: `${COLOR_SECTION_HEIGHT}px`,
-                            marginTop: "10px",
+                            height: `${FILTER_SECTION_HEIGHT}px`,
                         }}
                     >
-                        <div className="flex flex-wrap items-center gap-2">
-                            {color_palette.map((color, index) => (
-                                <ColorPickerPopover
-                                    key={index}
-                                    isSingleColor={false}
-                                    color={color}
-                                    className="w-auto"
-                                    colorIndex={index}
-                                    setColor={updateColor}
-                                    removeColor={removeColor}
-                                >
-                                    <div
-                                        className="h-10 w-10 shrink-0 grow-0 cursor-pointer rounded-full border transition-transform hover:scale-105"
-                                        style={{
-                                            backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-                                        }}
+                        <div className="flex flex-col gap-5 p-1">
+                            {filters.map((filter, index) => (
+                                <div className="flex gap-5" key={index}>
+                                    <Input
+                                        placeholder="Column"
+                                        value={filter.column}
+                                        onChange={(e) =>
+                                            setFilterColumn(
+                                                e.target.value,
+                                                index
+                                            )
+                                        }
                                     />
-                                </ColorPickerPopover>
+                                    <Input
+                                        placeholder="Operation"
+                                        value={filter.operation}
+                                        onChange={(e) =>
+                                            setFilterOperation(
+                                                e.target.value,
+                                                index
+                                            )
+                                        }
+                                    />
+                                    <Input
+                                        placeholder="Value"
+                                        value={filter.value}
+                                        onChange={(e) =>
+                                            setFilterValue(
+                                                e.target.value,
+                                                index
+                                            )
+                                        }
+                                    />
+                                    <Button onClick={() => removeFilter(index)}>
+                                        <Trash2 />
+                                    </Button>
+                                </div>
                             ))}
-                            <div
-                                className="grid h-10 w-10 cursor-pointer place-content-center rounded-full border"
+                            <Button
+                                className="grid w-full place-content-center rounded border bg-background-light py-2"
                                 onClick={() => {
-                                    addColor();
+                                    addFilter({
+                                        column: "",
+                                        operation: "",
+                                        value: "",
+                                    });
                                 }}
                             >
                                 <Plus />
-                            </div>
+                            </Button>
                         </div>
                     </ScrollArea>
-                </div>
-            </section>
 
-            {/* Data */}
-            <section className="relative flex w-full flex-col gap-7 rounded-lg border p-10">
-                <Label className="absolute -top-4 left-2 bg-background px-3 text-2xl font-bold">
-                    Data
-                </Label>
-
-                <div className="grid grid-cols-[1fr] gap-10 break1400:grid-cols-[1fr_5px_1fr]">
-                    {/* X Axis */}
-                    <div>
-                        <Label className="mb-2 block text-lg">X Axis</Label>
-                        <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
-                            <Label className="block text-lg">Column</Label>
-                            <Select
-                                onValueChange={(value) => {
-                                    setXAxis(value);
-                                }}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a Column" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {XAxisColumns.map((col, index) => (
-                                        <SelectItem key={index} value={col}>
-                                            {col}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Label className="block text-lg">Sort By</Label>
-                            <Select
-                                onValueChange={(value) => {
-                                    setSortBy(value);
-                                }}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a Column" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem key={0} value="None">
-                                        None
-                                    </SelectItem>
-                                    <Separator className="my-1" />
-                                    {XAxisColumns.map((col, index) => (
-                                        <SelectItem key={index + 1} value={col}>
-                                            {col}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex items-center justify-between pt-6">
-                            <Label className="block text-lg">
-                                Omit Zero Values
-                            </Label>
-                            <ToggleSwitch
-                                defaultChecked={omitZeroValues}
-                                toggleFunction={() => {
-                                    setOmitZeroValues(!omitZeroValues);
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <Separator
-                        orientation="vertical"
-                        className="hidden justify-self-center break1200:block"
-                    />
-                    <Separator
-                        orientation="horizontal"
-                        className="justify-self-center break1200:hidden"
-                    />
-
-                    {/* Y Axis */}
-                    <div>
-                        <Label className="mb-2 block text-lg">Y Axis</Label>
-                        <div className="grid grid-cols-[100px_1fr] grid-rows-2 items-center gap-y-4">
-                            <Label className="block text-lg">Column</Label>
-                            <Select
-                                onValueChange={(value) => {
-                                    setYAxis(value);
-                                }}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a Column" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem key={0} value="count">
-                                        count
-                                    </SelectItem>
-                                    <Separator className="my-1" />
-                                    {YAxisColumns.map((col, index) => (
-                                        <SelectItem key={index + 1} value={col}>
-                                            {col}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Label className="block text-lg">Group By</Label>
-                            <Select
-                                onValueChange={(value) => {
-                                    setGroupBy(value);
-                                }}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a Column" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem key={0} value="None">
-                                        None
-                                    </SelectItem>
-                                    <Separator className="my-1" />
-                                    {YAxisColumns.map((col, index) => (
-                                        <SelectItem key={index + 1} value={col}>
-                                            {col}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex items-center justify-between pt-6">
-                            <Label className="block text-lg">Cumulative</Label>
-                            <ToggleSwitch
-                                defaultChecked={cumulative}
-                                toggleFunction={() => {
-                                    setCumulative(!cumulative);
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <Separator orientation="horizontal" />
-
-                {/* Filters */}
-                <Label className="flex items-center gap-3 text-lg">
-                    <span>Filters</span>
-                    <ClearAll clearFn={clearFilters} />
-                </Label>
-                <ScrollArea
-                    style={{
-                        height: `${FILTER_SECTION_HEIGHT}px`,
-                    }}
-                >
-                    <div className="flex flex-col gap-5 p-1">
-                        {filters.map((filter, index) => (
-                            <div className="flex gap-5" key={index}>
-                                <Input
-                                    placeholder="Column"
-                                    value={filter.column}
-                                    onChange={(e) =>
-                                        setFilterColumn(e.target.value, index)
-                                    }
-                                />
-                                <Input
-                                    placeholder="Operation"
-                                    value={filter.operation}
-                                    onChange={(e) =>
-                                        setFilterOperation(
-                                            e.target.value,
-                                            index
-                                        )
-                                    }
-                                />
-                                <Input
-                                    placeholder="Value"
-                                    value={filter.value}
-                                    onChange={(e) =>
-                                        setFilterValue(e.target.value, index)
-                                    }
-                                />
-                                <Button onClick={() => removeFilter(index)}>
-                                    <Trash2 />
-                                </Button>
-                            </div>
-                        ))}
-                        <Button
-                            className="grid w-full place-content-center rounded border bg-background-light py-2"
-                            onClick={() => {
-                                addFilter({
-                                    column: "",
-                                    operation: "",
-                                    value: "",
-                                });
-                            }}
-                        >
-                            <Plus />
-                        </Button>
-                    </div>
-                </ScrollArea>
-
-                <Button type="button" onClick={onApply}>
-                    Apply
-                </Button>
-            </section>
+                    <Button type="button" onClick={onApply}>
+                        Apply
+                    </Button>
+                </section>
+            </div>
+            <Button
+                type="button"
+                onClick={handleUpdate}
+                className="mt-4 w-full"
+            >
+                Save Chart
+            </Button>
         </div>
     );
 };

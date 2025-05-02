@@ -92,7 +92,10 @@ export default function ChatConfigs({ params }: Props) {
             />
 
             <div>
-                <ChartConfig notion_table_id={chart.notion_database_id} />
+                <ChartConfig
+                    notion_table_id={chart.notion_database_id}
+                    chart_id={chart_id}
+                />
             </div>
         </StoreProvider>
     );

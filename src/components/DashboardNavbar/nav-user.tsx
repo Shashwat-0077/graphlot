@@ -1,6 +1,6 @@
 "use client";
-import { User } from "@supabase/supabase-js";
 import { ChevronsUpDown, LogOut } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,60 +19,74 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/modules/auth";
 
-export function NavUser({
-    user,
-    authInitialized,
-}: {
-    user: User;
-    authInitialized: boolean;
-}) {
+export function NavUser() {
     const router = useRouter();
-    const profileImage = user.user_metadata?.avatar_url;
-    const name = user.user_metadata?.full_name;
-    const email = user.user_metadata?.email;
     const { isMobile } = useSidebar();
+    const { data: userData, status } = useSession();
 
-    const handleLogout = async () => {
-        const supabase = createClient();
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            toast({
-                title: "Error",
-                description: "Failed to log out",
-                variant: "destructive",
-            });
-            return;
-        }
-        toast({
-            title: "Success",
-            description: "Logged out successfully",
-            variant: "default",
-        });
+    if (status === "loading") {
+        return (
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <Skeleton className="mb-2 h-8 w-full rounded-lg bg-sidebar-accent" />
+                </SidebarMenuItem>
+            </SidebarMenu>
+        );
+    }
+
+    if (status === "unauthenticated" || !userData || !userData.user) {
         router.push("/");
-    };
+        return null;
+    }
+
+    const { name, email, image: profileImage } = userData.user;
 
     return (
         <SidebarMenu>
             <SidebarMenuItem>
-                {!authInitialized ? (
-                    <Skeleton className="mb-2 h-8 w-full rounded-lg bg-sidebar-accent" />
-                ) : (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <SidebarMenuButton
-                                size="lg"
-                                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                            >
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                        >
+                            <Avatar className="h-8 w-8 rounded-lg">
+                                <AvatarImage
+                                    src={profileImage ?? undefined}
+                                    alt={name ?? undefined}
+                                />
+                                <AvatarFallback className="rounded-lg">
+                                    {name && name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-semibold">
+                                    {name}
+                                </span>
+                                <span className="truncate text-xs">
+                                    {email}
+                                </span>
+                            </div>
+                            <ChevronsUpDown className="ml-auto size-4" />
+                        </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                        side={isMobile ? "bottom" : "right"}
+                        align="end"
+                        sideOffset={4}
+                    >
+                        <DropdownMenuLabel className="p-0 font-normal">
+                            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8 rounded-lg">
                                     <AvatarImage
-                                        src={profileImage}
-                                        alt={name}
+                                        src={profileImage ?? undefined}
+                                        alt={name ?? undefined}
                                     />
                                     <AvatarFallback className="rounded-lg">
-                                        {name.charAt(0).toUpperCase()}
+                                        {name && name.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -83,48 +97,20 @@ export function NavUser({
                                         {email}
                                     </span>
                                 </div>
-                                <ChevronsUpDown className="ml-auto size-4" />
-                            </SidebarMenuButton>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                            side={isMobile ? "bottom" : "right"}
-                            align="end"
-                            sideOffset={4}
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            onClick={() => {
+                                signOut();
+                                router.push("/");
+                            }}
                         >
-                            <DropdownMenuLabel className="p-0 font-normal">
-                                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <Avatar className="h-8 w-8 rounded-lg">
-                                        <AvatarImage
-                                            src={profileImage}
-                                            alt={name}
-                                        />
-                                        <AvatarFallback className="rounded-lg">
-                                            {name.charAt(0).toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">
-                                            {name}
-                                        </span>
-                                        <span className="truncate text-xs">
-                                            {email}
-                                        </span>
-                                    </div>
-                                </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    handleLogout();
-                                }}
-                            >
-                                <LogOut />
-                                Log out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
+                            <LogOut />
+                            Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </SidebarMenuItem>
         </SidebarMenu>
     );

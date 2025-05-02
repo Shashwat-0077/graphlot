@@ -1,19 +1,17 @@
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-import { createClient } from "@/lib/supabase/server";
-// import { HTTPException } from "hono/http-exception";
-
-// import { createClient } from "@/utils/supabase/server";
+import { auth } from "@/modules/auth";
 
 export const authMiddleWare = async (c: Context, next: () => Promise<void>) => {
-    // TODO : Uncomment this code in production
+    const session = await auth();
 
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    if (!session) {
+        throw new HTTPException(401, {
+            res: c.json({ error: "Unauthorized" }, 401),
+        });
+    }
+    const { user } = session;
 
     if (!user) {
         throw new HTTPException(401, {

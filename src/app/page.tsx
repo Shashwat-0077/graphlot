@@ -1,16 +1,12 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/modules/auth";
 import SocialsButton from "@/modules/auth/components/SocialsButton";
 
 export default async function Home() {
-    const client = await createClient();
+    const session = await auth();
 
-    const {
-        data: { user },
-    } = await client.auth.getUser();
-
-    if (user) {
+    if (session) {
         redirect("/dashboard");
     }
 

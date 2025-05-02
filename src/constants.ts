@@ -58,8 +58,10 @@ export type ChartViewComponentType = ({
 
 export type ChartConfigComponentType = ({
     notion_table_id,
+    chart_id,
 }: {
     notion_table_id: string;
+    chart_id: string;
 }) => React.JSX.Element;
 
 export type StateProviderType = ({
