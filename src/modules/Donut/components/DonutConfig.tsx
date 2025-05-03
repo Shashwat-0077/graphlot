@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
     SORT_OPTIONS,
+    SortOptionsType,
     type ChartConfigComponentType,
     type FilterType,
 } from "@/constants";
@@ -302,8 +303,8 @@ function DataSection({
 }: {
     xAxis: string;
     setXAxis: (value: string) => void;
-    sortBy: string;
-    setSortBy: (value: string) => void;
+    sortBy: SortOptionsType;
+    setSortBy: (value: SortOptionsType) => void;
     omitZeroValues: boolean;
     setOmitZeroValues: (value: boolean) => void;
     filters: FilterType[];
