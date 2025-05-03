@@ -20,6 +20,7 @@ import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData
 export const AreaChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
+    user_id,
 }) => {
     const LIMIT = 8;
 
@@ -45,6 +46,7 @@ export const AreaChartView: ChartViewComponentType = ({
         y_axis,
         sort_x,
         sort_y,
+        user_id,
     });
 
     const limitedRadarChartData = useMemo(() => {

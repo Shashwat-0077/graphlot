@@ -55,9 +55,11 @@ export type DayOfWeek = (typeof DAY_OF_WEEK)[number];
 export type ChartViewComponentType = ({
     chartName,
     notion_table_id,
+    user_id,
 }: {
     chartName: string;
     notion_table_id: string;
+    user_id: string;
 }) => React.JSX.Element;
 
 export type ChartConfigComponentType = ({

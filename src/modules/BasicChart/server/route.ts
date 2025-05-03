@@ -16,6 +16,7 @@ import {
 import { deleteChart } from "@/modules/BasicChart/api/deleteChart";
 import { ChartSchema } from "@/modules/BasicChart/schema";
 import { CHART_TYPES } from "@/constants";
+import { GetNotionTableMetaData } from "@/modules/notion/api/GetNotionTableMetaData";
 
 type variables = {
     userId: string;
@@ -76,41 +77,43 @@ const app = new Hono<{ Variables: variables }>()
         ),
         async (c) => {
             const chart = c.req.valid("form");
+            const user_id = c.get("userId");
 
-            // const tableMetaData = await GetNotionTableMetaData(
-            //     chart.notion_database_id
-            // );
+            const tableMetaData = await GetNotionTableMetaData({
+                notion_table_id: chart.notion_database_id,
+                user_id,
+            });
 
-            // if (!tableMetaData.ok) {
-            //     return c.json(
-            //         {
-            //             error: tableMetaData.error,
-            //             field: "notion_database_id" as
-            //                 | keyof Zod.infer<typeof BasicChartSchema.Insert>
-            //                 | "root",
-            //         },
-            //         500
-            //     );
-            // }
+            if (!tableMetaData.ok) {
+                return c.json(
+                    {
+                        error: tableMetaData.error,
+                        field: "notion_database_id" as
+                            | keyof Zod.infer<typeof ChartSchema.Insert>
+                            | "root",
+                    },
+                    500
+                );
+            }
 
-            // if (!("title" in tableMetaData.data)) {
-            //     return c.json(
-            //         {
-            //             error: "Invalid Response from Notion API, title is not defined",
-            //             field: "notion_database_id" as
-            //                 | keyof Zod.infer<typeof BasicChartSchema.Insert>
-            //                 | "root",
-            //         },
-            //         500
-            //     );
-            // }
+            if (!("title" in tableMetaData.data)) {
+                return c.json(
+                    {
+                        error: "Invalid Response from Notion API, title is not defined",
+                        field: "notion_database_id" as
+                            | keyof Zod.infer<typeof ChartSchema.Insert>
+                            | "root",
+                    },
+                    500
+                );
+            }
 
-            // const databaseName = tableMetaData.data.title[0]["plain_text"];
+            const databaseName = tableMetaData.data.title[0]["plain_text"];
 
             const response = await createNewChart({
                 chart: {
                     ...chart,
-                    notion_database_name: "databaseName",
+                    notion_database_name: databaseName,
                 },
             });
 

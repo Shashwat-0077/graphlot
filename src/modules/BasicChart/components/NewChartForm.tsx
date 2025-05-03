@@ -31,6 +31,7 @@ import { AREA, CHART_TYPES } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSlug, parseSlug } from "@/utils/pathSlugsOps";
 import { toast } from "@/hooks/use-toast";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 const FormType = ChartSchema.Insert.pick({
     name: true,
@@ -54,7 +55,21 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
         },
     });
 
-    const { data: databases, isLoading } = useGetAllDatabases();
+    const {
+        session,
+        isLoading: isAuthLoading,
+        isAuthenticated,
+    } = useAuthSession();
+
+    const user_id = session ? session.user?.id : undefined;
+
+    const {
+        data: databases,
+        isLoading: isDatabasesLoading,
+        error,
+    } = useGetAllDatabases({
+        user_id,
+    });
 
     function onSubmit(data: z.infer<typeof FormType>) {
         createNewChart(
@@ -76,6 +91,25 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
                     );
                 },
             }
+        );
+    }
+
+    if (isAuthLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <Skeleton
+                    className="h-4 w-20 bg-input"
+                    style={{ borderRadius: "0.5rem" }}
+                />
+            </div>
+        );
+    }
+
+    if (error || !isAuthenticated || !session || !session.user) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                Error
+            </div>
         );
     }
 
@@ -154,7 +188,7 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
                     )}
                 />
 
-                {isLoading ? (
+                {isDatabasesLoading ? (
                     <div className="space-y-2">
                         <Skeleton
                             className="h-4 w-20 bg-input"

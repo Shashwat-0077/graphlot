@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
     Plus,
     Trash2,
@@ -49,6 +50,9 @@ import {
     YAxisType,
 } from "@/modules/Bar/util/selectFieldsForBar";
 import { Slider } from "@/components/ui/slider";
+import { useAuthSession } from "@/hooks/useAuthSession";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { envClient } from "@/lib/env/clientEnv";
 
 function Colors({
     text_color,
@@ -800,6 +804,8 @@ export const BarConfig: ChartConfigComponentType = ({
     notion_table_id,
     chart_id,
 }) => {
+    const path = usePathname();
+
     const { mutate: updateChart } = useUpdateBarChart({
         onSuccess: () => {
             toast({
@@ -854,8 +860,6 @@ export const BarConfig: ChartConfigComponentType = ({
             window.removeEventListener("keydown", handleKeyDown);
         };
     });
-
-    const { data, isLoading } = useGetDatabaseSchema(notion_table_id);
 
     const {
         text_color,
@@ -954,7 +958,24 @@ export const BarConfig: ChartConfigComponentType = ({
         setGlobalCumulative(cumulative);
     };
 
-    if (isLoading) {
+    const {
+        session,
+        isLoading: isAuthLoading,
+        isAuthenticated,
+    } = useAuthSession();
+
+    const user_id = session ? session.user?.id : undefined;
+
+    const {
+        data: schema,
+        isLoading,
+        error,
+    } = useGetDatabaseSchema({
+        notion_table_id,
+        user_id,
+    });
+
+    if (isLoading || isAuthLoading || !isAuthenticated) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="mb-6 flex items-center justify-between">
@@ -972,7 +993,7 @@ export const BarConfig: ChartConfigComponentType = ({
         );
     }
 
-    if (!data) {
+    if (!schema || error) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="flex h-60 flex-col items-center justify-center rounded-lg border bg-muted/5 text-center">
@@ -986,20 +1007,30 @@ export const BarConfig: ChartConfigComponentType = ({
         );
     }
 
-    const { XAxisColumns, YAxisColumns } = SelectFieldsForBar(data);
+    const { XAxisColumns, YAxisColumns } = SelectFieldsForBar(schema);
 
     return (
         <div className="px-4 py-8">
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Bar Chart Configuration</h1>
-                <Button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="flex items-center gap-2"
-                >
-                    <Save className="h-4 w-4" />
-                    Save Chart
-                </Button>
+                <div className="flex items-center gap-2">
+                    <CopyButton
+                        textToCopy={
+                            envClient.NEXT_PUBLIC_APP_URL +
+                            path +
+                            "/view?user_id=" +
+                            user_id
+                        }
+                    />
+                    <Button
+                        type="button"
+                        onClick={handleUpdate}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        Save Chart
+                    </Button>
+                </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[350px_1fr]">

@@ -24,6 +24,7 @@ import { RadarConfig } from "@/modules/Radar/components/RadarConfig";
 import { RadarChartStoreProvider } from "@/modules/Radar/store";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { BoxLoader } from "@/components/ui/Loader";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 type Props = {
     params: Promise<{
@@ -44,6 +45,8 @@ export default function ChatConfigs({ params }: Props) {
         error: chartError,
     } = useGetChartWithId(chart_id);
 
+    const { session, isAuthenticated, isLoading } = useAuthSession();
+
     if (!chart_id) {
         return <div>Invalid Chart ID</div>;
     }
@@ -52,7 +55,7 @@ export default function ChatConfigs({ params }: Props) {
         return <div>Invalid Collection ID</div>;
     }
 
-    if (isChartLoading) {
+    if (isChartLoading || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
                 <BoxLoader />
@@ -60,8 +63,20 @@ export default function ChatConfigs({ params }: Props) {
         );
     }
 
-    if (chartError || !chartData) {
+    if (
+        chartError ||
+        !chartData ||
+        !isAuthenticated ||
+        !session ||
+        !session.user
+    ) {
         return <div>Error: {chartError?.message}</div>;
+    }
+
+    const user_id = session?.user.id;
+
+    if (!user_id) {
+        return <div>Invalid User ID</div>;
     }
 
     const { chart } = chartData;
@@ -89,6 +104,7 @@ export default function ChatConfigs({ params }: Props) {
             <ChartView
                 notion_table_id={chart.notion_database_id}
                 chartName={chart.name}
+                user_id={user_id}
             />
 
             <div>

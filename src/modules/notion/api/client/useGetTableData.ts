@@ -8,7 +8,13 @@ type ResponseType = InferResponseType<
     200
 >;
 
-export const useGetTableData = (notion_table_id: string) => {
+export const useGetTableData = ({
+    notion_table_id,
+    user_id,
+}: {
+    notion_table_id: string;
+    user_id: string;
+}) => {
     const query = useQuery<ResponseType, Error>({
         queryKey: ["table-data"],
         queryFn: async () => {
@@ -17,6 +23,9 @@ export const useGetTableData = (notion_table_id: string) => {
             ]["$get"]({
                 param: {
                     notion_table_id: notion_table_id,
+                },
+                query: {
+                    user_id,
                 },
             });
 

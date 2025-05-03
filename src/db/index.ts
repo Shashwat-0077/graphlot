@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 
 import * as schema from "@/db/schema";
-import { envServer } from "@/lib/env";
+import { envServer } from "@/lib/env/serverEnv";
 
 const client = createClient({
     url: envServer.TURSO_CONNECTION_URL,

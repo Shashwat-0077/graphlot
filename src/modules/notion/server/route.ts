@@ -2,7 +2,6 @@ import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
-import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
 import { GetAllNotionDatabases } from "@/modules/notion/api/GetAllNotionDatabases";
 import { GetNotionTableData } from "@/modules/notion/api/GetNotionTableData";
 import { GetNotionTableSchema } from "@/modules/notion/api/GetNotionTableSchema";
@@ -13,28 +12,56 @@ import { GetNotionTableMetaData } from "@/modules/notion/api/GetNotionTableMetaD
 // NOTE : We don't support Files and media from notion
 
 const app = new Hono()
-    .get("/get-databases", authMiddleWare, async (c) => {
-        const response = await GetAllNotionDatabases();
-        if (!response.ok) {
-            return c.json({ ok: false, error: response.error }, 500);
+    .get(
+        "/get-databases",
+        zValidator(
+            "query",
+            z.object({
+                user_id: z.string().nonempty(),
+            })
+        ),
+        async (c) => {
+            const { user_id } = c.req.valid("query");
+            if (!user_id) {
+                return c.json({ ok: false, error: "User ID is required" }, 400);
+            }
+
+            const response = await GetAllNotionDatabases({ user_id });
+            if (!response.ok) {
+                return c.json({ ok: false, error: response.error }, 500);
+            }
+
+            const { databases } = response;
+
+            return c.json({ ok: true, databases: databases }, 200);
         }
-
-        const { databases } = response;
-
-        return c.json({ ok: true, databases: databases }, 200);
-    })
+    )
     .get(
         "/:notion_table_id/get-table-data",
-        authMiddleWare,
         zValidator(
             "param",
             z.object({
                 notion_table_id: z.string().nonempty(),
             })
         ),
+        zValidator(
+            "query",
+            z.object({
+                user_id: z.string().nonempty(),
+            })
+        ),
         async (c) => {
             const { notion_table_id } = c.req.valid("param");
-            const response = await GetNotionTableData(notion_table_id);
+            const { user_id } = c.req.valid("query");
+
+            if (!user_id) {
+                return c.json({ ok: false, error: "User ID is required" }, 400);
+            }
+
+            const response = await GetNotionTableData({
+                database_id: notion_table_id,
+                user_id,
+            });
 
             if (!response.ok) {
                 return c.json({ ok: false, error: response.error }, 500);
@@ -53,10 +80,24 @@ const app = new Hono()
                 notion_table_id: z.string().nonempty(),
             })
         ),
+        zValidator(
+            "query",
+            z.object({
+                user_id: z.string().nonempty(),
+            })
+        ),
         async (c) => {
             const { notion_table_id } = c.req.valid("param");
+            const { user_id } = c.req.valid("query");
 
-            const response = await GetNotionTableSchema(notion_table_id);
+            if (!user_id) {
+                return c.json({ ok: false, error: "User ID is required" }, 400);
+            }
+
+            const response = await GetNotionTableSchema({
+                database_id: notion_table_id,
+                user_id,
+            });
 
             if (!response.ok) {
                 return c.json({ ok: false, error: response.error }, 500);
@@ -75,9 +116,22 @@ const app = new Hono()
                 notion_table_id: z.string().nonempty(),
             })
         ),
+        zValidator(
+            "query",
+            z.object({
+                user_id: z.string().nonempty(),
+            })
+        ),
         async (c) => {
             const { notion_table_id } = c.req.valid("param");
-            const response = await GetNotionTableMetaData(notion_table_id);
+            const { user_id } = c.req.valid("query");
+            if (!user_id) {
+                return c.json({ ok: false, error: "User ID is required" }, 400);
+            }
+            const response = await GetNotionTableMetaData({
+                notion_table_id,
+                user_id,
+            });
 
             if (!response.ok) {
                 return c.json({ ok: false, error: response.error }, 500);

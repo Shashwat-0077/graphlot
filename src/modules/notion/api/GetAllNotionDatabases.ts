@@ -1,6 +1,10 @@
 import { getNotionClient } from "@/lib/notion";
 
-export async function GetAllNotionDatabases(): Promise<
+export async function GetAllNotionDatabases({
+    user_id,
+}: {
+    user_id: string;
+}): Promise<
     | {
           ok: true;
           databases: {
@@ -13,7 +17,7 @@ export async function GetAllNotionDatabases(): Promise<
           error: string;
       }
 > {
-    const notionClient = await getNotionClient();
+    const notionClient = await getNotionClient(user_id);
 
     if (notionClient.success === false) {
         return { ok: false, error: notionClient.error };

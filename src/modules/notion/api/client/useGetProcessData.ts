@@ -7,25 +7,29 @@ import { SortOptionsType } from "@/constants";
 import { sortDataAndConfig } from "@/modules/notion/utils/sortData";
 
 export const useGetProcessData = ({
+    user_id,
     notion_table_id,
     x_axis,
     y_axis,
     sort_x,
     sort_y,
 }: {
+    user_id: string;
     notion_table_id: string;
     x_axis: string | null;
     y_axis: string | null;
     sort_x: SortOptionsType;
     sort_y: SortOptionsType;
 }) => {
-    const { data: schema, isLoading: schemaLoading } =
-        useGetDatabaseSchema(notion_table_id);
+    const { data: schema, isLoading: schemaLoading } = useGetDatabaseSchema({
+        notion_table_id,
+        user_id,
+    });
     const {
         data: tableData,
         error,
         isLoading: dataLoading,
-    } = useGetTableData(notion_table_id);
+    } = useGetTableData({ notion_table_id, user_id });
 
     const { config, data } = useMemo(() => {
         if (!schema || !y_axis || !x_axis || !tableData || !tableData.data) {

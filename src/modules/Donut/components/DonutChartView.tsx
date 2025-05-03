@@ -15,6 +15,7 @@ import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData
 export const DonutChartView: ChartViewComponentType = ({
     chartName,
     notion_table_id,
+    user_id,
 }) => {
     const {
         x_axis,
@@ -33,6 +34,7 @@ export const DonutChartView: ChartViewComponentType = ({
         y_axis: "count",
         sort_x: sort_by,
         sort_y: SORT_DEFAULT,
+        user_id,
     });
 
     // Loading state

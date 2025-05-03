@@ -2,9 +2,10 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { Accounts, Users } from "@/db/schema";
-import { auth } from "@/modules/auth";
 
-export const getNotionAccessToken = async (): Promise<
+export const getNotionAccessToken = async (
+    user_id: string
+): Promise<
     | {
           ok: true;
           access_token: string;
@@ -14,31 +15,13 @@ export const getNotionAccessToken = async (): Promise<
           error: string;
       }
 > => {
-    const session = await auth();
-
-    if (!session) {
-        return {
-            ok: false,
-            error: "Session not found",
-        };
-    }
-
-    const { user } = session;
-
-    if (!user || !user.id) {
-        return {
-            ok: false,
-            error: "User not found",
-        };
-    }
-
     const response = await db
         .select()
         .from(Users)
-        .where(eq(Users.id, user.id))
+        .where(eq(Users.id, user_id))
         .innerJoin(
             Accounts,
-            and(eq(Accounts.provider, "notion"), eq(Accounts.userId, user.id))
+            and(eq(Accounts.provider, "notion"), eq(Accounts.userId, user_id))
         )
         .then(([res]) => res);
 

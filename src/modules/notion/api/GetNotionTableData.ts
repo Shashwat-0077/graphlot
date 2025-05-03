@@ -2,14 +2,20 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 import { getNotionClient } from "@/lib/notion";
 
-export async function GetNotionTableData(id: string): Promise<
+export async function GetNotionTableData({
+    database_id,
+    user_id,
+}: {
+    database_id: string;
+    user_id: string;
+}): Promise<
     | {
           ok: true;
           data: PageObjectResponse["properties"][];
       }
     | { ok: false; error: string }
 > {
-    const notionClient = await getNotionClient();
+    const notionClient = await getNotionClient(user_id);
 
     if (notionClient.success === false) {
         return {
@@ -19,7 +25,7 @@ export async function GetNotionTableData(id: string): Promise<
     }
 
     const response = await notionClient.client.databases.query({
-        database_id: id,
+        database_id: database_id,
     });
 
     const result = response.results;

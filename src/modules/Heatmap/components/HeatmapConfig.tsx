@@ -151,6 +151,24 @@ export const HeatmapConfig = ({ chart_id }: { chart_id: string }) => {
                     <CardTitle className="flex items-center gap-2">
                         <LineChart className="h-5 w-5" />
                         Heatmap Configuration
+                        {/* <div className="flex items-center gap-2">
+                            <CopyButton
+                                textToCopy={
+                                    envClient.NEXT_PUBLIC_APP_URL +
+                                    path +
+                                    "/view?user_id=" +
+                                    user_id
+                                }
+                            />
+                            <Button
+                                type="button"
+                                onClick={handleUpdate}
+                                className="flex items-center gap-2"
+                            >
+                                <Save className="h-4 w-4" />
+                                Save Chart
+                            </Button>
+                        </div> */}
                     </CardTitle>
                     <CardDescription>
                         Customize your heatmap chart appearance and behavior

@@ -11,6 +11,7 @@ import {
     Layout,
     BarChart,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
@@ -48,6 +49,9 @@ import {
     XAxisType,
     YAxisType,
 } from "@/modules/Area/util/selectFieldsForArea";
+import { useAuthSession } from "@/hooks/useAuthSession";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { envClient } from "@/lib/env/clientEnv";
 
 function Colors({
     text_color,
@@ -748,6 +752,7 @@ export const AreaConfig: ChartConfigComponentType = ({
     notion_table_id,
     chart_id,
 }) => {
+    const path = usePathname();
     const { mutate: updateChart } = useUpdateAreaChart({
         onSuccess: () => {
             toast({
@@ -801,8 +806,6 @@ export const AreaConfig: ChartConfigComponentType = ({
             window.removeEventListener("keydown", handleKeyDown);
         };
     });
-
-    const { data: schema, isLoading } = useGetDatabaseSchema(notion_table_id);
 
     const {
         addColor,
@@ -897,7 +900,24 @@ export const AreaConfig: ChartConfigComponentType = ({
         setGlobalOmitZeroValues(omitZeroValues);
     };
 
-    if (isLoading) {
+    const {
+        session,
+        isLoading: isAuthLoading,
+        isAuthenticated,
+    } = useAuthSession();
+
+    const user_id = session ? session.user?.id : undefined;
+
+    const {
+        data: schema,
+        isLoading,
+        error,
+    } = useGetDatabaseSchema({
+        notion_table_id,
+        user_id,
+    });
+
+    if (isLoading || isAuthLoading || !isAuthenticated) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="mb-6 flex items-center justify-between">
@@ -915,7 +935,7 @@ export const AreaConfig: ChartConfigComponentType = ({
         );
     }
 
-    if (!schema) {
+    if (!schema || error) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="flex h-60 flex-col items-center justify-center rounded-lg border bg-muted/5 text-center">
@@ -935,14 +955,24 @@ export const AreaConfig: ChartConfigComponentType = ({
         <div className="px-4 py-8">
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Area Chart Configuration</h1>
-                <Button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="flex items-center gap-2"
-                >
-                    <Save className="h-4 w-4" />
-                    Save Chart
-                </Button>
+                <div className="flex items-center gap-2">
+                    <CopyButton
+                        textToCopy={
+                            envClient.NEXT_PUBLIC_APP_URL +
+                            path +
+                            "/view?user_id=" +
+                            user_id
+                        }
+                    />
+                    <Button
+                        type="button"
+                        onClick={handleUpdate}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        Save Chart
+                    </Button>
+                </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[350px_1fr]">

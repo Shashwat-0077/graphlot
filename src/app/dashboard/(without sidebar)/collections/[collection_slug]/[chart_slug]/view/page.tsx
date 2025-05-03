@@ -1,5 +1,6 @@
 "use client";
 import { use } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { ChartViewComponentType, StateProviderType } from "@/constants";
 import { AreaChartView } from "@/modules/Area/components/AreaChartView";
@@ -25,6 +26,8 @@ type Props = {
 
 export default function ChatConfigs({ params }: Props) {
     const { chart_slug, collection_slug } = use(params);
+    const searchParams = useSearchParams();
+    const user_id = searchParams.get("user_id");
 
     const { id: chart_id } = parseSlug(chart_slug);
     const { id: collection_id } = parseSlug(collection_slug);
@@ -34,6 +37,10 @@ export default function ChatConfigs({ params }: Props) {
         isLoading: isChartLoading,
         error: chartError,
     } = useGetChartWithId(chart_id);
+
+    if (!user_id) {
+        return <div>Invalid User ID</div>;
+    }
 
     if (!chart_id) {
         return <div>Invalid Chart ID</div>;
@@ -78,6 +85,7 @@ export default function ChatConfigs({ params }: Props) {
                 <ChartView
                     notion_table_id={chart.notion_database_id}
                     chartName={chart.name}
+                    user_id={user_id}
                 />
             </StoreProvider>
         </div>

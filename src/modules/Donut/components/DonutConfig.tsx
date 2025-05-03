@@ -10,6 +10,7 @@ import {
     Layout,
     BarChart,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
@@ -45,6 +46,9 @@ import {
     SelectFieldsForDonut,
     XAxisType,
 } from "@/modules/Donut/utils/selectFieldsForDonut";
+import { useAuthSession } from "@/hooks/useAuthSession";
+import { envClient } from "@/lib/env/clientEnv";
+import { CopyButton } from "@/components/ui/CopyButton";
 
 function Colors({
     text_color,
@@ -538,6 +542,8 @@ export const DonutConfig: ChartConfigComponentType = ({
     notion_table_id,
     chart_id,
 }) => {
+    const path = usePathname();
+
     const { mutate: updateChart } = useUpdateDonutChart({
         onSuccess: () => {
             toast({
@@ -583,8 +589,6 @@ export const DonutConfig: ChartConfigComponentType = ({
             window.removeEventListener("keydown", handleKeyDown);
         };
     });
-
-    const { data, isLoading } = useGetDatabaseSchema(notion_table_id);
 
     const {
         addColor,
@@ -663,7 +667,24 @@ export const DonutConfig: ChartConfigComponentType = ({
         setGlobalOmitZeroValues(omitZeroValues);
     };
 
-    if (isLoading) {
+    const {
+        session,
+        isLoading: isAuthLoading,
+        isAuthenticated,
+    } = useAuthSession();
+
+    const user_id = session ? session.user?.id : undefined;
+
+    const {
+        data: schema,
+        isLoading,
+        error,
+    } = useGetDatabaseSchema({
+        notion_table_id,
+        user_id,
+    });
+
+    if (isLoading || isAuthLoading || !isAuthenticated) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="mb-6 flex items-center justify-between">
@@ -681,7 +702,7 @@ export const DonutConfig: ChartConfigComponentType = ({
         );
     }
 
-    if (!data) {
+    if (!schema || error) {
         return (
             <div className="mx-auto px-4 py-8">
                 <div className="flex h-60 flex-col items-center justify-center rounded-lg border bg-muted/5 text-center">
@@ -695,7 +716,7 @@ export const DonutConfig: ChartConfigComponentType = ({
         );
     }
 
-    const { XAxisColumns } = SelectFieldsForDonut(data);
+    const { XAxisColumns } = SelectFieldsForDonut(schema);
 
     return (
         <div className="px-4 py-8">
@@ -703,14 +724,24 @@ export const DonutConfig: ChartConfigComponentType = ({
                 <h1 className="text-2xl font-bold">
                     Donut Chart Configuration
                 </h1>
-                <Button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="flex items-center gap-2"
-                >
-                    <Save className="h-4 w-4" />
-                    Save Chart
-                </Button>
+                <div className="flex items-center gap-2">
+                    <CopyButton
+                        textToCopy={
+                            envClient.NEXT_PUBLIC_APP_URL +
+                            path +
+                            "/view?user_id=" +
+                            user_id
+                        }
+                    />
+                    <Button
+                        type="button"
+                        onClick={handleUpdate}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        Save Chart
+                    </Button>
+                </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
