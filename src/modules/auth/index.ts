@@ -12,8 +12,8 @@ import { Accounts, Users } from "@/db/schema";
 
 // TODO : Change here when deploying to production
 const client = createClient({
-    url: "http://127.0.0.1:8080",
-    // authToken: "DATABASE_AUTH_TOKEN",
+    url: process.env.TURSO_CONNECTION_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN!,
 });
 export const db = drizzle(client);
 
