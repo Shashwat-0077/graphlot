@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, FilterType } from "@/constants";
+import { ColorType, FilterType, SortOptionsType } from "@/constants";
 import defaultConfig from "@/modules/Radar/default.config";
 
 export const RadarCharts = sqliteTable("radar_charts", {
@@ -35,16 +35,22 @@ export const RadarCharts = sqliteTable("radar_charts", {
         .$type<ColorType[]>(),
     // in the format of [{ r: 255, g: 255, b: 255, a: 1 }, { r: 255, g: 255, b: 255, a: 1 }]
 
-    x_axis: text("x_axis").default(defaultConfig.x_axis),
-    y_axis: text("y_axis").default(defaultConfig.y_axis),
-    group_by: text("group_by").default(defaultConfig.group_by),
-    sort_by: text("sort_by").default(defaultConfig.sort_by),
+    x_axis: text("x_axis").notNull().default(defaultConfig.x_axis),
+    y_axis: text("y_axis").notNull().default(defaultConfig.y_axis),
+    sort_x: text("sort_x")
+        .notNull()
+        .default(defaultConfig.sort_x)
+        .$type<SortOptionsType>(),
+    sort_y: text("sort_y")
+        .notNull()
+        .default(defaultConfig.sort_y)
+        .$type<SortOptionsType>(),
     omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.omit_zero_values),
-    cumulative: integer("cumulative", { mode: "boolean" }).default(
-        defaultConfig.cumulative
-    ),
+    cumulative: integer("cumulative", { mode: "boolean" })
+        .notNull()
+        .default(defaultConfig.cumulative),
     filters: text("filters", { mode: "json" })
         .notNull()
         .default(defaultConfig.filters)

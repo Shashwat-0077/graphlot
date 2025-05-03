@@ -1,5 +1,3 @@
-import "server-only";
-
 import { z } from "zod";
 
 // Define server-only environment variables

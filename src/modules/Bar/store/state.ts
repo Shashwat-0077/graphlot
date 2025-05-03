@@ -2,7 +2,8 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { BarSelect } from "@/modules/Bar/schema";
-import { ColorType, FilterType, GRID_HORIZONTAL, GridType } from "@/constants";
+import { ColorType, FilterType, GridType, SortOptionsType } from "@/constants";
+import defaultBarChartConfig from "@/modules/Bar/default.config";
 
 export type BarChartState = Omit<BarSelect, "chart_id">;
 
@@ -23,10 +24,10 @@ export type BarChartActions = {
     clearColorPalette: () => void;
 
     // Axis operations
-    setXAxis: (axis: string | null) => void;
-    setYAxis: (axis: string | null) => void;
-    setGroupBy: (field: string | null) => void;
-    setSortBy: (field: string | null) => void;
+    setXAxis: (axis: string) => void;
+    setYAxis: (axis: string) => void;
+    setSortX: (sort: SortOptionsType) => void;
+    setSortY: (sort: SortOptionsType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
@@ -55,37 +56,11 @@ export type BarChartActions = {
 
 export type BarChartStore = BarChartState & BarChartActions;
 
-export const defaultBarChartState: BarChartState = {
-    background_color: { r: 25, g: 25, b: 25, a: 1 },
-    text_color: { r: 255, g: 255, b: 255, a: 1 },
-    tooltip_enabled: true,
-    label_enabled: true,
-    legend_enabled: true,
-    has_border: true,
-    color_palette: [],
-    x_axis: null,
-    y_axis: null,
-    group_by: null,
-    sort_by: null,
-    omit_zero_values: false,
-    cumulative: false,
-    filters: [],
-    grid_color: {
-        r: 224,
-        g: 224,
-        b: 224,
-        a: 1,
-    },
-    grid_type: GRID_HORIZONTAL,
-    bar_gap: 20,
-    bar_size: 5,
-};
-
 export const initBarChartStore = (data?: BarChartState): BarChartState => {
     if (data) {
         return data;
     }
-    return defaultBarChartState;
+    return defaultBarChartConfig;
 };
 
 export const createBarChartStore = (
@@ -93,7 +68,7 @@ export const createBarChartStore = (
 ) => {
     return createStore<BarChartStore>()(
         immer((set) => ({
-            ...defaultBarChartState,
+            ...defaultBarChartConfig,
             ...initialState,
 
             // Basic appearance
@@ -164,13 +139,13 @@ export const createBarChartStore = (
                 set((state) => {
                     state.y_axis = axis;
                 }),
-            setGroupBy: (field) =>
+            setSortX: (sort) =>
                 set((state) => {
-                    state.group_by = field;
+                    state.sort_x = sort;
                 }),
-            setSortBy: (field) =>
+            setSortY: (sort) =>
                 set((state) => {
-                    state.sort_by = field;
+                    state.sort_y = sort;
                 }),
 
             // Data display options
@@ -238,7 +213,7 @@ export const createBarChartStore = (
                 }),
 
             // State operations
-            reset: () => set(() => ({ ...defaultBarChartState })),
+            reset: () => set(() => ({ ...defaultBarChartConfig })),
         }))
     );
 };

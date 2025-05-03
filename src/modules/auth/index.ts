@@ -8,6 +8,9 @@ import { drizzle } from "drizzle-orm/libsql";
 // import { db } from "@/db";
 import { Accounts, Users } from "@/db/schema";
 
+// TODO : Implement the account linking
+
+// TODO : Change here when deploying to production
 const client = createClient({
     url: "http://127.0.0.1:8080",
     // authToken: "DATABASE_AUTH_TOKEN",

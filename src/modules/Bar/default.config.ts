@@ -1,4 +1,10 @@
-import { ColorType, FilterType, GRID_HORIZONTAL, GridType } from "@/constants";
+import {
+    ColorType,
+    FilterType,
+    GRID_HORIZONTAL,
+    GridType,
+    SORT_DEFAULT,
+} from "@/constants";
 
 const defaultBarChartConfig = {
     background_color: { r: 25, g: 25, b: 25, a: 1 } as ColorType,
@@ -10,8 +16,8 @@ const defaultBarChartConfig = {
     color_palette: [] as ColorType[],
     x_axis: "",
     y_axis: "",
-    group_by: "",
-    sort_by: "",
+    sort_x: SORT_DEFAULT,
+    sort_y: SORT_DEFAULT,
     omit_zero_values: false,
     cumulative: false,
     filters: [] as FilterType[],

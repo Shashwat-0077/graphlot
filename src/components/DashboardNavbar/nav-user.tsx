@@ -1,6 +1,7 @@
 "use client";
+
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,7 +20,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "@/modules/auth";
 
 export function NavUser() {
     const router = useRouter();
@@ -36,7 +36,16 @@ export function NavUser() {
         );
     }
 
-    if (status === "unauthenticated" || !userData || !userData.user) {
+    if (status === "unauthenticated") {
+        router.push("/");
+        return null;
+    }
+
+    if (!userData) {
+        router.push("/");
+        return null;
+    }
+    if (!userData.user) {
         router.push("/");
         return null;
     }
@@ -103,7 +112,6 @@ export function NavUser() {
                         <DropdownMenuItem
                             onClick={() => {
                                 signOut();
-                                router.push("/");
                             }}
                         >
                             <LogOut />

@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+    GetDatabaseResponse,
+    PageObjectResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 
 export const AREA = "Area" as const;
 export const BAR = "Bar" as const;
@@ -71,3 +75,21 @@ export type StateProviderType = ({
     children: React.ReactNode;
     char_id: string;
 }) => React.JSX.Element;
+
+export type NotionSchemaType = GetDatabaseResponse["properties"];
+export type NotionDataType = PageObjectResponse["properties"];
+
+export const SORT_ALPHABETICALLY_ASC = "Alphabetically - ASC" as const;
+export const SORT_ALPHABETICALLY_DESC = "Alphabetically- DSC" as const;
+export const SORT_NUMERICALLY_ASC = "Numerically - ASC" as const;
+export const SORT_NUMERICALLY_DESC = "Numerically - DSC" as const;
+export const SORT_DEFAULT = "None" as const;
+
+export const SORT_OPTIONS = [
+    SORT_ALPHABETICALLY_ASC,
+    SORT_ALPHABETICALLY_DESC,
+    SORT_NUMERICALLY_ASC,
+    SORT_NUMERICALLY_DESC,
+    SORT_DEFAULT,
+] as const;
+export type SortOptionsType = (typeof SORT_OPTIONS)[number];

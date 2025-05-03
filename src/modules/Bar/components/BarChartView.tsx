@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
     ChartContainer,
@@ -10,14 +10,12 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useBarChartStore } from "@/modules/Bar/store";
-import { processChartData } from "@/utils/processChartData";
 import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
 import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
+import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 
 export const BarChartView: ChartViewComponentType = ({
     chartName,
@@ -38,31 +36,24 @@ export const BarChartView: ChartViewComponentType = ({
         label_enabled,
         bar_size,
         bar_gap,
+        sort_x,
+        sort_y,
     } = useBarChartStore((state) => state);
 
-    const { data: schema, isLoading: schemaLoading } =
-        useGetDatabaseSchema(notion_table_id);
-    const {
-        data: tableData,
-        error,
-        isLoading: dataLoading,
-    } = useGetTableData(notion_table_id);
-
-    const { radarChartConfig, radarChartData } = useMemo(() => {
-        if (!schema || !tableData?.data || !x_axis || !y_axis) {
-            return { radarChartConfig: [], radarChartData: [] };
-        }
-        return processChartData(tableData.data, schema, x_axis, y_axis);
-    }, [schema, tableData, x_axis, y_axis]);
+    const { data, config, isLoading, error, schema } = useGetProcessData({
+        notion_table_id,
+        x_axis,
+        y_axis,
+        sort_x,
+        sort_y,
+    });
 
     const limitedRadarChartData = useMemo(() => {
-        return radarChartData.length > LIMIT
-            ? radarChartData.slice(0, LIMIT)
-            : radarChartData;
-    }, [radarChartData]);
+        return data.length > LIMIT ? data.slice(0, LIMIT) : data;
+    }, [data]);
 
     // Loading state
-    if (schemaLoading || dataLoading) {
+    if (isLoading) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -79,7 +70,7 @@ export const BarChartView: ChartViewComponentType = ({
     }
 
     // Error state
-    if (error || !schema || !tableData) {
+    if (error || !data) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -193,8 +184,8 @@ export const BarChartView: ChartViewComponentType = ({
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
 
-    for (let idx = 0; idx < radarChartConfig.length; idx++) {
-        const data_label = radarChartConfig[idx];
+    for (let idx = 0; idx < config.length; idx++) {
+        const data_label = config[idx];
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
@@ -203,7 +194,7 @@ export const BarChartView: ChartViewComponentType = ({
                 : "rgb(255, 255, 255)",
             alpha: color_palette[idx]
                 ? color_palette[idx].a
-                : Math.min(1 / radarChartConfig.length, 0.5),
+                : Math.min(1 / config.length, 0.5),
         };
     }
 
@@ -263,6 +254,7 @@ export const BarChartView: ChartViewComponentType = ({
                         tickFormatter={(value) => value}
                         stroke={getRGBAString(text_color)}
                     />
+                    <YAxis tickMargin={10} axisLine={false} />
 
                     {tooltip_enabled && (
                         <ChartTooltip
@@ -271,7 +263,7 @@ export const BarChartView: ChartViewComponentType = ({
                         />
                     )}
 
-                    {radarChartConfig.map((data_label) => (
+                    {config.map((data_label) => (
                         <Bar
                             key={data_label}
                             dataKey={data_label}

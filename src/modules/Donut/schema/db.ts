@@ -2,7 +2,7 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import defaultConfig from "@/modules/Donut/default.config";
 import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, FilterType } from "@/constants";
+import { ColorType, FilterType, SortOptionsType } from "@/constants";
 
 export const DonutCharts = sqliteTable("donut_charts", {
     chart_id: text("chart_id")
@@ -34,8 +34,11 @@ export const DonutCharts = sqliteTable("donut_charts", {
         .default(defaultConfig.color_palette)
         .$type<ColorType[]>(),
 
-    x_axis: text("x_axis").default(defaultConfig.x_axis),
-    sort_by: text("sort_by").default(defaultConfig.sort_by),
+    x_axis: text("x_axis").notNull().default(defaultConfig.x_axis),
+    sort_by: text("sort_by")
+        .notNull()
+        .default(defaultConfig.sort_by)
+        .$type<SortOptionsType>(),
     omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.omit_zero_values),

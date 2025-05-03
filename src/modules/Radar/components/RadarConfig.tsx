@@ -23,10 +23,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChartConfigComponentType, ColorType, FilterType } from "@/constants";
+import {
+    ChartConfigComponentType,
+    ColorType,
+    FilterType,
+    SORT_OPTIONS,
+    SortOptionsType,
+} from "@/constants";
 import { useRadarChartStore } from "@/modules/Radar/store";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
@@ -35,6 +40,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getRGBAString } from "@/utils/colors";
 import { useUpdateRadarChart } from "@/modules/Radar/api/client/useUpdateAreaChart";
+import {
+    SelectFieldsForRadar,
+    XAxisType,
+    YAxisType,
+} from "@/modules/Radar/util/selectFieldsForRadar";
 
 function Colors({
     text_color,
@@ -326,10 +336,10 @@ function DataSection({
     setXAxis,
     yAxis,
     setYAxis,
-    sortBy,
-    setSortBy,
-    groupBy,
-    setGroupBy,
+    sortX,
+    setSortX,
+    sortY,
+    setSortY,
     omitZeroValues,
     setOmitZeroValues,
     cumulative,
@@ -349,10 +359,10 @@ function DataSection({
     setXAxis: (value: string) => void;
     yAxis: string;
     setYAxis: (value: string) => void;
-    sortBy: string;
-    setSortBy: (value: string) => void;
-    groupBy: string;
-    setGroupBy: (value: string) => void;
+    sortX: SortOptionsType;
+    setSortX: (value: SortOptionsType) => void;
+    sortY: SortOptionsType;
+    setSortY: (value: SortOptionsType) => void;
     omitZeroValues: boolean;
     setOmitZeroValues: (value: boolean) => void;
     cumulative: boolean;
@@ -365,8 +375,8 @@ function DataSection({
     setFilterValue: (value: string, index: number) => void;
     clearFilters: () => void;
     onApply: () => void;
-    XAxisColumns: string[];
-    YAxisColumns: string[];
+    XAxisColumns: XAxisType;
+    YAxisColumns: YAxisType;
 }) {
     return (
         <div className="space-y-6">
@@ -403,41 +413,83 @@ function DataSection({
                                         onValueChange={setXAxis}
                                         value={xAxis}
                                     >
-                                        <SelectTrigger className="h-8 text-xs">
+                                        <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
                                             <SelectValue placeholder="Select a Column" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            {XAxisColumns.map((col, index) => (
-                                                <SelectItem
-                                                    key={index}
-                                                    value={col}
-                                                >
-                                                    {col}
-                                                </SelectItem>
-                                            ))}
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {Object.keys(XAxisColumns).map(
+                                                (key) => {
+                                                    return (
+                                                        <div
+                                                            className="mt-1 space-y-0.5"
+                                                            key={key}
+                                                        >
+                                                            {XAxisColumns[
+                                                                key as keyof XAxisType
+                                                            ].map(
+                                                                (
+                                                                    col,
+                                                                    index
+                                                                ) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        value={
+                                                                            col
+                                                                        }
+                                                                        className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                                    >
+                                                                        <span className="block truncate text-left">
+                                                                            {
+                                                                                col
+                                                                            }
+                                                                        </span>
+                                                                        <span className="block truncate text-left text-xs text-muted-foreground">
+                                                                            {
+                                                                                key
+                                                                            }
+                                                                        </span>
+                                                                    </SelectItem>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
                                     <Label className="text-xs text-muted-foreground">
-                                        Sort By
+                                        Sort
                                     </Label>
                                     <Select
-                                        onValueChange={setSortBy}
-                                        value={sortBy}
+                                        onValueChange={setSortX}
+                                        value={sortX}
                                     >
-                                        <SelectTrigger className="h-8 text-xs">
-                                            <SelectValue placeholder="Select a Column" />
+                                        <SelectTrigger className="h-8 w-full rounded-md border border-input px-3 py-1 text-xs shadow-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                                            <div className="relative flex items-start [&>span]:flex [&>span]:flex-col [&>span]:items-start [&>span]:justify-start">
+                                                <SelectValue
+                                                    placeholder="Select a Column"
+                                                    className="relative flex items-start justify-start text-xs"
+                                                />
+                                            </div>
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem key={0} value="None">
-                                                None
-                                            </SelectItem>
-                                            <Separator className="my-1" />
-                                            {XAxisColumns.map((col, index) => (
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {SORT_OPTIONS.map((col, index) => (
                                                 <SelectItem
-                                                    key={index + 1}
+                                                    key={index}
                                                     value={col}
+                                                    className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-xs outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 >
                                                     {col}
                                                 </SelectItem>
@@ -483,44 +535,72 @@ function DataSection({
                                         onValueChange={setYAxis}
                                         value={yAxis}
                                     >
-                                        <SelectTrigger className="h-8 text-xs">
+                                        <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
                                             <SelectValue placeholder="Select a Column" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem key={0} value="count">
-                                                count
-                                            </SelectItem>
-                                            <Separator className="my-1" />
-                                            {YAxisColumns.map((col, index) => (
-                                                <SelectItem
-                                                    key={index + 1}
-                                                    value={col}
-                                                >
-                                                    {col}
-                                                </SelectItem>
-                                            ))}
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {Object.keys(YAxisColumns).map(
+                                                (key) => {
+                                                    return (
+                                                        <div
+                                                            className="mt-1 space-y-0.5"
+                                                            key={key}
+                                                        >
+                                                            {YAxisColumns[
+                                                                key as keyof YAxisType
+                                                            ].map(
+                                                                (
+                                                                    col,
+                                                                    index
+                                                                ) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        value={
+                                                                            col
+                                                                        }
+                                                                        className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                                    >
+                                                                        <span className="block truncate text-left">
+                                                                            {
+                                                                                col
+                                                                            }
+                                                                        </span>
+                                                                        <span className="block truncate text-left text-xs text-muted-foreground">
+                                                                            {
+                                                                                key
+                                                                            }
+                                                                        </span>
+                                                                    </SelectItem>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
                                     <Label className="text-xs text-muted-foreground">
-                                        Group By
+                                        Sort
                                     </Label>
                                     <Select
-                                        onValueChange={setGroupBy}
-                                        value={groupBy}
+                                        onValueChange={setSortY}
+                                        value={sortY}
                                     >
                                         <SelectTrigger className="h-8 text-xs">
                                             <SelectValue placeholder="Select a Column" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem key={0} value="None">
-                                                None
-                                            </SelectItem>
-                                            <Separator className="my-1" />
-                                            {YAxisColumns.map((col, index) => (
+                                            {SORT_OPTIONS.map((col, index) => (
                                                 <SelectItem
-                                                    key={index + 1}
+                                                    key={index}
                                                     value={col}
                                                 >
                                                     {col}
@@ -675,8 +755,8 @@ export const RadarConfig: ChartConfigComponentType = ({
             json: {
                 x_axis: xAxis,
                 y_axis: yAxis,
-                group_by: groupBy,
-                sort_by: sortBy,
+                sort_x: sortX,
+                sort_y: sortY,
                 omit_zero_values: omitZeroValues,
                 cumulative: cumulative,
                 filters: filters,
@@ -709,14 +789,52 @@ export const RadarConfig: ChartConfigComponentType = ({
 
     const { data, isLoading } = useGetDatabaseSchema(notion_table_id);
 
+    const {
+        // states
+        background_color,
+        color_palette,
+        text_color,
+        grid_color,
+        grid_enabled,
+        tooltip_enabled,
+        legend_enabled,
+        label_enabled,
+        x_axis,
+        y_axis,
+        sort_x,
+        sort_y,
+        omit_zero_values: globalOmitZeroValues,
+        cumulative: globalCumulative,
+        filters: globalFilters,
+
+        // actions
+        updateColor,
+        setTextColor,
+        setBackgroundColor,
+        setGridColor,
+        toggleLegend,
+        toggleGrid,
+        toggleLabel,
+        toggleTooltip,
+        addColor,
+        removeColor,
+        clearColorPalette,
+
+        setXAxis: setGlobalXAxis,
+        setYAxis: setGlobalYAxis,
+        setSortX: setGlobalSortX,
+        setSortY: setGlobalSortY,
+        setFilters: setGlobalFilters,
+    } = useRadarChartStore((state) => state);
+
     // local states
-    const [xAxis, setXAxis] = useState("");
-    const [yAxis, setYAxis] = useState("");
-    const [sortBy, setSortBy] = useState("");
-    const [groupBy, setGroupBy] = useState("");
-    const [omitZeroValues, setOmitZeroValues] = useState(false);
-    const [cumulative, setCumulative] = useState(false);
-    const [filters, setFilters] = useState<FilterType[]>([]);
+    const [xAxis, setXAxis] = useState(x_axis);
+    const [yAxis, setYAxis] = useState(y_axis);
+    const [sortX, setSortX] = useState(sort_x);
+    const [sortY, setSortY] = useState(sort_y);
+    const [omitZeroValues, setOmitZeroValues] = useState(globalOmitZeroValues);
+    const [cumulative, setCumulative] = useState(globalCumulative);
+    const [filters, setFilters] = useState<FilterType[]>(globalFilters);
 
     const addFilter = (filter: FilterType) => {
         setFilters((prevFilters) => [...prevFilters, filter]);
@@ -756,42 +874,11 @@ export const RadarConfig: ChartConfigComponentType = ({
         });
     };
 
-    const {
-        // states
-        background_color,
-        color_palette,
-        text_color,
-        grid_color,
-        grid_enabled,
-        tooltip_enabled,
-        legend_enabled,
-        label_enabled,
-
-        // actions
-        updateColor,
-        setTextColor,
-        setBackgroundColor,
-        setGridColor,
-        toggleLegend,
-        toggleGrid,
-        toggleLabel,
-        toggleTooltip,
-        addColor,
-        removeColor,
-        clearColorPalette,
-
-        setXAxis: setGlobalXAxis,
-        setYAxis: setGlobalYAxis,
-        setGroupBy: setGlobalGroupBy,
-        setSortBy: setGlobalSortBy,
-        setFilters: setGlobalFilters,
-    } = useRadarChartStore((state) => state);
-
     const onApply = () => {
         setGlobalXAxis(xAxis);
         setGlobalYAxis(yAxis);
-        setGlobalGroupBy(groupBy);
-        setGlobalSortBy(sortBy);
+        setGlobalSortX(sortY);
+        setGlobalSortY(sortX);
         setGlobalFilters(filters);
     };
 
@@ -827,15 +914,7 @@ export const RadarConfig: ChartConfigComponentType = ({
         );
     }
 
-    const XAxisColumns: string[] = [];
-    const YAxisColumns: string[] = [];
-
-    Object.keys(data).forEach((col) => {
-        if (["status", "select", "multi_select"].includes(data[col].type)) {
-            XAxisColumns.push(col);
-            YAxisColumns.push(col);
-        }
-    });
+    const { XAxisColumns, YAxisColumns } = SelectFieldsForRadar(data);
 
     return (
         <div className="px-4 py-8">
@@ -914,10 +993,10 @@ export const RadarConfig: ChartConfigComponentType = ({
                     setXAxis={setXAxis}
                     yAxis={yAxis}
                     setYAxis={setYAxis}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    groupBy={groupBy}
-                    setGroupBy={setGroupBy}
+                    sortX={sortX}
+                    setSortX={setSortX}
+                    sortY={sortY}
+                    setSortY={setSortY}
                     omitZeroValues={omitZeroValues}
                     setOmitZeroValues={setOmitZeroValues}
                     cumulative={cumulative}

@@ -25,7 +25,7 @@ Types like these are not considered
 - Number
 - Text
 
-# Bar, line
+# Bar, area
 ### X-Axis
 we can only have types like
 - Number

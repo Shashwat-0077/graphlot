@@ -2,7 +2,8 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { RadarSelect } from "@/modules/Radar/schema";
-import { ColorType, FilterType } from "@/constants";
+import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import defaultRadarChartState from "@/modules/Radar/default.config";
 
 export type RadarChartState = Omit<RadarSelect, "chart_id">;
 
@@ -24,10 +25,10 @@ export type RadarChartActions = {
     clearColorPalette: () => void;
 
     // Axis operations
-    setXAxis: (axis: string | null) => void;
-    setYAxis: (axis: string | null) => void;
-    setGroupBy: (field: string | null) => void;
-    setSortBy: (field: string | null) => void;
+    setXAxis: (axis: string) => void;
+    setYAxis: (axis: string) => void;
+    setSortX: (sort: SortOptionsType) => void;
+    setSortY: (sort: SortOptionsType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
@@ -48,30 +49,6 @@ export type RadarChartActions = {
 };
 
 export type RadarChartStore = RadarChartState & RadarChartActions;
-
-export const defaultRadarChartState: RadarChartState = {
-    background_color: { r: 25, g: 25, b: 25, a: 1 },
-    label_enabled: true,
-    text_color: { r: 255, g: 255, b: 255, a: 1 },
-    tooltip_enabled: true,
-    legend_enabled: true,
-    has_border: false,
-    color_palette: [],
-    x_axis: null,
-    y_axis: null,
-    group_by: null,
-    sort_by: null,
-    omit_zero_values: false,
-    cumulative: false,
-    filters: [],
-    grid_color: {
-        r: 224,
-        g: 224,
-        b: 224,
-        a: 1,
-    },
-    grid_enabled: true,
-};
 
 export const initRadarChartStore = (
     data?: RadarChartState
@@ -158,13 +135,13 @@ export const createRadarChartStore = (
                 set((state) => {
                     state.y_axis = axis;
                 }),
-            setGroupBy: (field) =>
+            setSortX: (sort) =>
                 set((state) => {
-                    state.group_by = field;
+                    state.sort_x = sort;
                 }),
-            setSortBy: (field) =>
+            setSortY: (sort) =>
                 set((state) => {
-                    state.sort_by = field;
+                    state.sort_y = sort;
                 }),
 
             // Data display options

@@ -9,6 +9,7 @@ import {
     SquareStack,
     Zap,
 } from "lucide-react";
+import { useEffect } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,14 +27,23 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
+import { useUpdateHeatmap } from "@/modules/Heatmap/api/client/useUpdateHeatmap";
+import { toast } from "@/hooks/use-toast";
 
-export const HeatmapConfig = () => {
+export const HeatmapConfig = ({ chart_id }: { chart_id: string }) => {
     const {
         label_enabled,
         has_border,
         button_hover_enabled,
         tooltip_enabled,
         accent,
+        streak,
+        average_of_all_entries,
+        days_to_include_in_streak,
+        longest_streak,
+        metric,
+        number_of_entries,
+        sum_of_all_entries,
         background_color,
         default_box_color,
         text_color,
@@ -69,6 +79,70 @@ export const HeatmapConfig = () => {
         isDayIncludedInStreak,
         toggleDaysToIncludeInStreak,
     } = useHeatmapChartStore((state) => state);
+
+    const { mutate: updateChart } = useUpdateHeatmap({
+        onSuccess: () => {
+            toast({
+                title: "Chart updated successfully",
+                description: "Your changes have been saved",
+            });
+        },
+    });
+
+    const handleUpdate = () => {
+        toast({
+            title: "Saving chart...",
+            description: "Please wait while we update your chart",
+        });
+
+        updateChart({
+            param: {
+                chart_id: chart_id,
+            },
+            json: {
+                background_color,
+                text_color,
+                tooltip_enabled,
+                label_enabled,
+                has_border,
+                button_hover_enabled,
+                default_box_color,
+                accent,
+                average_of_all_entries_color,
+                number_of_entries_color,
+                sum_of_all_entries_color,
+                longest_streak_color,
+                streak_color,
+                metric,
+                streak,
+                longest_streak,
+                sum_of_all_entries,
+                average_of_all_entries,
+                number_of_entries,
+                streak_enabled,
+                longest_streak_enabled,
+                sum_of_all_entries_enabled,
+                average_of_all_entries_enabled,
+                number_of_entries_enabled,
+                days_to_include_in_streak,
+            },
+        });
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+                e.preventDefault();
+                handleUpdate();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    });
 
     return (
         <div className="mx-auto space-y-8 py-8">

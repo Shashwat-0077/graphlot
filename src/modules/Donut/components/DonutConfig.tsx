@@ -24,10 +24,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { ChartConfigComponentType, FilterType } from "@/constants";
+import {
+    SORT_OPTIONS,
+    type ChartConfigComponentType,
+    type FilterType,
+} from "@/constants";
 import { useDonutChartStore } from "@/modules/Donut/store";
 import ClearAll from "@/modules/BasicChart/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
@@ -37,6 +40,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getRGBAString } from "@/utils/colors";
 import { useUpdateDonutChart } from "@/modules/Donut/api/client/useUpdateDonutChart";
+import {
+    SelectFieldsForDonut,
+    XAxisType,
+} from "@/modules/Donut/utils/selectFieldsForDonut";
 
 function Colors({
     text_color,
@@ -307,7 +314,7 @@ function DataSection({
     setFilterValue: (value: string, index: number) => void;
     clearFilters: () => void;
     onApply: () => void;
-    XAxisColumns: string[];
+    XAxisColumns: XAxisType;
 }) {
     return (
         <div className="space-y-6">
@@ -336,15 +343,41 @@ function DataSection({
                                     Column
                                 </Label>
                                 <Select onValueChange={setXAxis} value={xAxis}>
-                                    <SelectTrigger className="h-8 text-xs">
+                                    <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
                                         <SelectValue placeholder="Select a Column" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        {XAxisColumns.map((col, index) => (
-                                            <SelectItem key={index} value={col}>
-                                                {col}
-                                            </SelectItem>
-                                        ))}
+                                    <SelectContent
+                                        className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                        position="popper"
+                                        sideOffset={4}
+                                    >
+                                        {Object.keys(XAxisColumns).map(
+                                            (key) => {
+                                                return (
+                                                    <div
+                                                        className="mt-1 space-y-0.5"
+                                                        key={key}
+                                                    >
+                                                        {XAxisColumns[
+                                                            key as keyof XAxisType
+                                                        ].map((col, index) => (
+                                                            <SelectItem
+                                                                key={index}
+                                                                value={col}
+                                                                className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                            >
+                                                                <span className="block truncate text-left">
+                                                                    {col}
+                                                                </span>
+                                                                <span className="block truncate text-left text-xs text-muted-foreground">
+                                                                    {key}
+                                                                </span>
+                                                            </SelectItem>
+                                                        ))}
+                                                    </div>
+                                                );
+                                            }
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -356,18 +389,24 @@ function DataSection({
                                     onValueChange={setSortBy}
                                     value={sortBy}
                                 >
-                                    <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue placeholder="Select a Column" />
+                                    <SelectTrigger className="h-8 w-full rounded-md border border-input px-3 py-1 text-xs shadow-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                                        <div className="relative flex items-start [&>span]:flex [&>span]:flex-col [&>span]:items-start [&>span]:justify-start">
+                                            <SelectValue
+                                                placeholder="Select a Column"
+                                                className="relative flex items-start justify-start text-xs"
+                                            />
+                                        </div>
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem key={0} value="None">
-                                            None
-                                        </SelectItem>
-                                        <Separator className="my-1" />
-                                        {XAxisColumns.map((col, index) => (
+                                    <SelectContent
+                                        className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                        position="popper"
+                                        sideOffset={4}
+                                    >
+                                        {SORT_OPTIONS.map((col, index) => (
                                             <SelectItem
-                                                key={index + 1}
+                                                key={index}
                                                 value={col}
+                                                className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-xs outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                             >
                                                 {col}
                                             </SelectItem>
@@ -546,11 +585,37 @@ export const DonutConfig: ChartConfigComponentType = ({
 
     const { data, isLoading } = useGetDatabaseSchema(notion_table_id);
 
+    const {
+        addColor,
+        removeColor,
+        background_color,
+        clearColorPalette,
+        color_palette,
+        label_enabled,
+        legend_enabled,
+        setBackgroundColor,
+        setTextColor,
+        text_color,
+        toggleLegend,
+        toggleTooltip,
+        tooltip_enabled,
+        updateColor,
+        toggleLabel,
+        x_axis,
+        sort_by,
+        omit_zero_values: globalOmitZeroValues,
+        filters: globalFilters,
+        setXAxis: setGlobalXAxis,
+        setSortBy: setGlobalSortBy,
+        setFilters: setGlobalFilters,
+        setOmitZeroValues: setGlobalOmitZeroValues,
+    } = useDonutChartStore((state) => state);
+
     // local states
-    const [xAxis, setXAxis] = useState("");
-    const [sortBy, setSortBy] = useState("");
-    const [omitZeroValues, setOmitZeroValues] = useState(false);
-    const [filters, setFilters] = useState<FilterType[]>([]);
+    const [xAxis, setXAxis] = useState(x_axis);
+    const [sortBy, setSortBy] = useState(sort_by);
+    const [omitZeroValues, setOmitZeroValues] = useState(globalOmitZeroValues);
+    const [filters, setFilters] = useState<FilterType[]>(globalFilters);
 
     const addFilter = (filter: FilterType) => {
         setFilters((prevFilters) => [...prevFilters, filter]);
@@ -589,28 +654,6 @@ export const DonutConfig: ChartConfigComponentType = ({
             return newFilters;
         });
     };
-
-    const {
-        addColor,
-        removeColor,
-        background_color,
-        clearColorPalette,
-        color_palette,
-        label_enabled,
-        legend_enabled,
-        setBackgroundColor,
-        setTextColor,
-        text_color,
-        toggleLegend,
-        toggleTooltip,
-        tooltip_enabled,
-        updateColor,
-        toggleLabel,
-        setXAxis: setGlobalXAxis,
-        setSortBy: setGlobalSortBy,
-        setFilters: setGlobalFilters,
-        setOmitZeroValues: setGlobalOmitZeroValues,
-    } = useDonutChartStore((state) => state);
 
     const onApply = () => {
         setGlobalXAxis(xAxis);
@@ -651,13 +694,7 @@ export const DonutConfig: ChartConfigComponentType = ({
         );
     }
 
-    const XAxisColumns: string[] = [];
-
-    Object.keys(data).forEach((col) => {
-        if (["status", "select", "multi_select"].includes(data[col].type)) {
-            XAxisColumns.push(col);
-        }
-    });
+    const { XAxisColumns } = SelectFieldsForDonut(data);
 
     return (
         <div className="px-4 py-8">

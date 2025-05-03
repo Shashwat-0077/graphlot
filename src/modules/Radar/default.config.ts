@@ -1,4 +1,9 @@
-import { ColorType, FilterType } from "@/constants";
+import {
+    ColorType,
+    FilterType,
+    SORT_DEFAULT,
+    SortOptionsType,
+} from "@/constants";
 
 const defaultRadarChartConfig = {
     background_color: { r: 25, g: 25, b: 25, a: 1 } as ColorType,
@@ -10,8 +15,8 @@ const defaultRadarChartConfig = {
     color_palette: [] as ColorType[],
     x_axis: "",
     y_axis: "",
-    group_by: "",
-    sort_by: "",
+    sort_x: SORT_DEFAULT as SortOptionsType,
+    sort_y: SORT_DEFAULT as SortOptionsType,
     omit_zero_values: false,
     cumulative: false,
     filters: [] as FilterType[],

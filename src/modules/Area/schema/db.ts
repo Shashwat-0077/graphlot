@@ -3,7 +3,13 @@ import { sql } from "drizzle-orm";
 
 import defaultAreaChartConfig from "@/modules/Area/default.config";
 import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, FilterType, GRID_TYPE, GridType } from "@/constants";
+import {
+    ColorType,
+    FilterType,
+    GRID_TYPE,
+    GridType,
+    SortOptionsType,
+} from "@/constants";
 
 export const AreaCharts = sqliteTable(
     "area_charts",
@@ -38,16 +44,24 @@ export const AreaCharts = sqliteTable(
             .$type<ColorType[]>(),
         // in the format of [{ r : 255, g : 255, b : 255, a : 1 }, { r : 255, g : 255, b : 255, a : 1 }]
 
-        x_axis: text("x_axis").default(defaultAreaChartConfig.x_axis),
-        y_axis: text("y_axis").default(defaultAreaChartConfig.y_axis),
-        group_by: text("group_by").default(defaultAreaChartConfig.group_by),
-        sort_by: text("sort_by").default(defaultAreaChartConfig.sort_by),
+        x_axis: text("x_axis").default(defaultAreaChartConfig.x_axis).notNull(),
+        y_axis: text("y_axis").default(defaultAreaChartConfig.y_axis).notNull(),
+        sort_x: text("sort_x")
+            .default(defaultAreaChartConfig.sort_x)
+            .notNull()
+            .$type<SortOptionsType>(),
+        sort_y: text("sort_y")
+            .default(defaultAreaChartConfig.sort_y)
+            .notNull()
+            .$type<SortOptionsType>(),
         omit_zero_values: integer("omit_zero_values", {
             mode: "boolean",
         })
             .notNull()
             .default(defaultAreaChartConfig.omit_zero_values),
-        cumulative: integer("cumulative", { mode: "boolean" }).default(false),
+        cumulative: integer("cumulative", { mode: "boolean" })
+            .notNull()
+            .default(false),
         filters: text("filters", { mode: "json" })
             .notNull()
             .default(defaultAreaChartConfig.filters)

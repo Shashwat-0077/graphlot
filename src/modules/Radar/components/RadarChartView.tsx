@@ -10,14 +10,12 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useRadarChartStore } from "@/modules/Radar/store";
-import { processChartData } from "@/utils/processChartData";
 import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
 import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
+import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 
 export const RadarChartView: ChartViewComponentType = ({
     chartName,
@@ -36,31 +34,24 @@ export const RadarChartView: ChartViewComponentType = ({
         background_color,
         x_axis,
         y_axis,
+        sort_x,
+        sort_y,
     } = useRadarChartStore((state) => state);
 
-    const { data: schema, isLoading: schemaLoading } =
-        useGetDatabaseSchema(notion_table_id);
-    const {
-        data: tableData,
-        error,
-        isLoading: dataLoading,
-    } = useGetTableData(notion_table_id);
-
-    const { radarChartConfig, radarChartData } = useMemo(() => {
-        if (!schema || !tableData?.data || !x_axis || !y_axis) {
-            return { radarChartConfig: [], radarChartData: [] };
-        }
-        return processChartData(tableData.data, schema, x_axis, y_axis);
-    }, [schema, tableData, x_axis, y_axis]);
+    const { data, config, isLoading, error, schema } = useGetProcessData({
+        notion_table_id,
+        x_axis,
+        y_axis,
+        sort_x,
+        sort_y,
+    });
 
     const limitedRadarChartData = useMemo(() => {
-        return radarChartData.length > LIMIT
-            ? radarChartData.slice(0, LIMIT)
-            : radarChartData;
-    }, [radarChartData]);
+        return data.length > LIMIT ? data.slice(0, LIMIT) : data;
+    }, [data]);
 
     // Loading state
-    if (schemaLoading || dataLoading) {
+    if (isLoading) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -112,7 +103,7 @@ export const RadarChartView: ChartViewComponentType = ({
     }
 
     // Error state
-    if (error || !schema || !tableData) {
+    if (error || !data) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -191,8 +182,8 @@ export const RadarChartView: ChartViewComponentType = ({
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
 
-    for (let idx = 0; idx < radarChartConfig.length; idx++) {
-        const data_label = radarChartConfig[idx];
+    for (let idx = 0; idx < config.length; idx++) {
+        const data_label = config[idx];
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
@@ -201,7 +192,7 @@ export const RadarChartView: ChartViewComponentType = ({
                 : "rgb(255, 255, 255)",
             alpha: color_palette[idx]
                 ? color_palette[idx].a
-                : Math.min(1 / radarChartConfig.length, 0.5),
+                : Math.min(1 / config.length, 0.5),
         };
     }
 
@@ -240,23 +231,26 @@ export const RadarChartView: ChartViewComponentType = ({
                     <PolarAngleAxis
                         dataKey="class"
                         stroke={getRGBAString(text_color)}
+                        fill={getRGBAString(text_color)}
+                        tickLine={false}
+                        axisLine={false}
                     />
 
                     {grid_enabled && (
                         <PolarGrid
-                            stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
-                            fill={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
+                            stroke={getRGBAString(grid_color)}
+                            fill={getRGBAString(grid_color)}
                         />
                     )}
 
-                    {radarChartConfig.map((data_label) => (
+                    {config.map((data_label) => (
                         <Radar
                             key={data_label}
                             dataKey={data_label}
                             fill={configData[data_label].color}
                             fillOpacity={configData[data_label].alpha}
                             dot={{
-                                r: 4,
+                                r: 2,
                                 fillOpacity: 1,
                             }}
                             strokeWidth={2}

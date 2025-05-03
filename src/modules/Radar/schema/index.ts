@@ -6,7 +6,7 @@ import {
 } from "drizzle-zod";
 
 import { RadarCharts } from "@/modules/Radar/schema/db";
-import { RADAR } from "@/constants";
+import { RADAR, SORT_OPTIONS } from "@/constants";
 import { ChartSchema } from "@/modules/BasicChart/schema";
 
 // Create base schemas from the Drizzle table
@@ -16,11 +16,22 @@ const baseUpdateSchema = createUpdateSchema(RadarCharts);
 
 // Refine the schemas to properly handle JSON fields
 export const RadarSchema = {
-    Insert: baseInsertSchema,
-    Select: baseSelectSchema,
-    Update: baseUpdateSchema.omit({
-        chart_id: true,
+    Insert: baseInsertSchema.extend({
+        sort_x: z.enum(SORT_OPTIONS),
+        sort_y: z.enum(SORT_OPTIONS),
     }),
+    Select: baseSelectSchema.extend({
+        sort_x: z.enum(SORT_OPTIONS),
+        sort_y: z.enum(SORT_OPTIONS),
+    }),
+    Update: baseUpdateSchema
+        .extend({
+            sort_x: z.enum(SORT_OPTIONS),
+            sort_y: z.enum(SORT_OPTIONS),
+        })
+        .omit({
+            chart_id: true,
+        }),
 };
 
 export const FullRadarSchema = {

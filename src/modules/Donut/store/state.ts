@@ -2,7 +2,8 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { DonutSelect } from "@/modules/Donut/schema";
-import { ColorType, FilterType } from "@/constants";
+import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import defaultDonutChartState from "@/modules/Donut/default.config";
 
 export type DonutChartState = Omit<DonutSelect, "chart_id">;
 
@@ -23,8 +24,8 @@ export type DonutChartActions = {
     clearColorPalette: () => void;
 
     // Axis operations
-    setXAxis: (axis: string | null) => void;
-    setSortBy: (field: string | null) => void;
+    setXAxis: (axis: string) => void;
+    setSortBy: (field: SortOptionsType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
@@ -42,20 +43,6 @@ export type DonutChartActions = {
 };
 
 export type DonutChartStore = DonutChartState & DonutChartActions;
-
-export const defaultDonutChartState: DonutChartState = {
-    background_color: { r: 25, g: 25, b: 25, a: 1 },
-    text_color: { r: 255, g: 255, b: 255, a: 1 },
-    tooltip_enabled: true,
-    label_enabled: true,
-    legend_enabled: true,
-    has_border: false,
-    color_palette: [],
-    x_axis: null,
-    sort_by: null,
-    omit_zero_values: false,
-    filters: [],
-};
 
 export const initDonutChartStore = (data: DonutChartState): DonutChartState => {
     if (data) {

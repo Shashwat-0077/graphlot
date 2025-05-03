@@ -1,19 +1,16 @@
 import { LabelList, RadialBar, RadialBarChart } from "recharts";
-import { useMemo } from "react";
 
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useDonutChartStore } from "@/modules/Donut/store";
-import { processChartData } from "@/utils/processChartData";
 import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
-import { ChartViewComponentType } from "@/constants";
+import { ChartViewComponentType, SORT_DEFAULT } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
 import { getRGBAString } from "@/utils/colors";
+import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 
 export const DonutChartView: ChartViewComponentType = ({
     chartName,
@@ -27,25 +24,19 @@ export const DonutChartView: ChartViewComponentType = ({
         label_enabled,
         tooltip_enabled,
         legend_enabled,
+        sort_by,
     } = useDonutChartStore((state) => state);
 
-    const { data: schema, isLoading: schemaLoading } =
-        useGetDatabaseSchema(notion_table_id);
-    const {
-        data: tableData,
-        error,
-        isLoading: dataLoading,
-    } = useGetTableData(notion_table_id);
-
-    const { radarChartConfig, radarChartData } = useMemo(() => {
-        if (!schema || !tableData?.data || !x_axis) {
-            return { radarChartConfig: [], radarChartData: [] };
-        }
-        return processChartData(tableData.data, schema, x_axis, "count");
-    }, [schema, tableData, x_axis]);
+    const { data, config, isLoading, error, schema } = useGetProcessData({
+        notion_table_id,
+        x_axis,
+        y_axis: "count",
+        sort_x: sort_by,
+        sort_y: SORT_DEFAULT,
+    });
 
     // Loading state
-    if (schemaLoading || dataLoading) {
+    if (isLoading) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -62,7 +53,7 @@ export const DonutChartView: ChartViewComponentType = ({
     }
 
     // Error state
-    if (error || !schema || !tableData) {
+    if (error || !data) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -174,20 +165,20 @@ export const DonutChartView: ChartViewComponentType = ({
         [key: string]: { label: string };
     } = {};
 
-    for (let idx = 0; idx < radarChartConfig.length; idx++) {
-        const data_label = radarChartConfig[idx];
+    for (let idx = 0; idx < config.length; idx++) {
+        const data_label = config[idx];
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
         };
     }
 
-    const data = radarChartData.map((data, idx) => {
-        configData[data.class] = {
-            label: data.class,
+    const renderData = data.map((d, idx) => {
+        configData[d.class] = {
+            label: d.class,
         };
         return {
-            ...data,
+            ...d,
             fill: color_palette[idx]
                 ? `rgb(${color_palette[idx].r}, ${color_palette[idx].g}, ${color_palette[idx].b}`
                 : "rgb(255, 255, 255)",
@@ -200,7 +191,13 @@ export const DonutChartView: ChartViewComponentType = ({
                 config={configData}
                 className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
             >
-                <RadialBarChart data={data} innerRadius={40} outerRadius={120}>
+                <RadialBarChart
+                    data={renderData}
+                    innerRadius={40}
+                    outerRadius={120}
+                    startAngle={270}
+                    endAngle={360 + 270}
+                >
                     {label_enabled && (
                         <text
                             x="50%"
@@ -230,7 +227,7 @@ export const DonutChartView: ChartViewComponentType = ({
                     <RadialBar dataKey="count" background cornerRadius={10}>
                         {legend_enabled && (
                             <LabelList
-                                position="insideStart"
+                                position="end"
                                 dataKey="class"
                                 className="fill-white capitalize mix-blend-luminosity"
                                 fontSize={11}

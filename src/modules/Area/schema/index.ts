@@ -6,7 +6,7 @@ import {
 } from "drizzle-zod";
 
 import { AreaCharts } from "@/modules/Area/schema/db";
-import { AREA, GRID_TYPE } from "@/constants";
+import { AREA, GRID_TYPE, SORT_OPTIONS } from "@/constants";
 import { ChartSchema } from "@/modules/BasicChart/schema";
 
 // Create base schemas from the Drizzle table
@@ -17,13 +17,19 @@ const baseUpdateSchema = createUpdateSchema(AreaCharts);
 // Refine the schemas to properly handle JSON fields
 export const AreaSchema = {
     Insert: baseInsertSchema.extend({
+        sort_x: z.enum(SORT_OPTIONS),
+        sort_y: z.enum(SORT_OPTIONS),
         grid_type: z.enum(GRID_TYPE),
     }),
     Select: baseSelectSchema.extend({
+        sort_x: z.enum(SORT_OPTIONS),
+        sort_y: z.enum(SORT_OPTIONS),
         grid_type: z.enum(GRID_TYPE),
     }),
     Update: baseUpdateSchema
         .extend({
+            sort_x: z.enum(SORT_OPTIONS).optional(),
+            sort_y: z.enum(SORT_OPTIONS).optional(),
             grid_type: z.enum(GRID_TYPE).optional(),
         })
         .omit({

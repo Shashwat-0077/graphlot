@@ -1,4 +1,3 @@
-import "server-only";
 import path from "path";
 
 import { migrate } from "drizzle-orm/libsql/migrator";

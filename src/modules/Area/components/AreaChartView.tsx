@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
     ChartContainer,
@@ -10,14 +10,12 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
-import { useGetTableData } from "@/modules/notion/api/client/useGetTableData";
 import { useAreaChartStore } from "@/modules/Area/store";
-import { processChartData } from "@/utils/processChartData";
 import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
 import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
+import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 
 export const AreaChartView: ChartViewComponentType = ({
     chartName,
@@ -36,31 +34,25 @@ export const AreaChartView: ChartViewComponentType = ({
         text_color,
         background_color,
         label_enabled,
+        sort_x,
+        sort_y,
+        cumulative,
     } = useAreaChartStore((state) => state);
 
-    const { data: schema, isLoading: schemaLoading } =
-        useGetDatabaseSchema(notion_table_id);
-    const {
-        data: tableData,
-        error,
-        isLoading: dataLoading,
-    } = useGetTableData(notion_table_id);
-
-    const { radarChartConfig, radarChartData } = useMemo(() => {
-        if (!schema || !tableData?.data || !x_axis || !y_axis) {
-            return { radarChartConfig: [], radarChartData: [] };
-        }
-        return processChartData(tableData.data, schema, x_axis, y_axis);
-    }, [schema, tableData, x_axis, y_axis]);
+    const { data, config, isLoading, error, schema } = useGetProcessData({
+        notion_table_id,
+        x_axis,
+        y_axis,
+        sort_x,
+        sort_y,
+    });
 
     const limitedRadarChartData = useMemo(() => {
-        return radarChartData.length > LIMIT
-            ? radarChartData.slice(0, LIMIT)
-            : radarChartData;
-    }, [radarChartData]);
+        return data.length > LIMIT ? data.slice(0, LIMIT) : data;
+    }, [data]);
 
     // Loading state
-    if (schemaLoading || dataLoading) {
+    if (isLoading) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -77,7 +69,7 @@ export const AreaChartView: ChartViewComponentType = ({
     }
 
     // Error state
-    if (error || !schema || !tableData) {
+    if (error || !data) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -191,8 +183,8 @@ export const AreaChartView: ChartViewComponentType = ({
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
 
-    for (let idx = 0; idx < radarChartConfig.length; idx++) {
-        const data_label = radarChartConfig[idx];
+    for (let idx = 0; idx < config.length; idx++) {
+        const data_label = config[idx];
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
@@ -201,7 +193,7 @@ export const AreaChartView: ChartViewComponentType = ({
                 : "rgb(255, 255, 255)",
             alpha: color_palette[idx]
                 ? color_palette[idx].a
-                : Math.min(1 / radarChartConfig.length, 0.5),
+                : Math.min(1 / config.length, 0.5),
         };
     }
 
@@ -214,7 +206,7 @@ export const AreaChartView: ChartViewComponentType = ({
                 <AreaChart
                     accessibilityLayer
                     data={limitedRadarChartData}
-                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                    margin={{ top: 40, right: 0, left: 0, bottom: 100 }}
                 >
                     {label_enabled && (
                         <text
@@ -258,6 +250,7 @@ export const AreaChartView: ChartViewComponentType = ({
                         tickFormatter={(value) => value}
                         stroke={getRGBAString(text_color)}
                     />
+                    <YAxis tickMargin={10} axisLine={false} />
 
                     {tooltip_enabled && (
                         <ChartTooltip
@@ -267,7 +260,7 @@ export const AreaChartView: ChartViewComponentType = ({
                     )}
 
                     <defs>
-                        {radarChartConfig.map((data_label, idx) => (
+                        {config.map((data_label, idx) => (
                             <linearGradient
                                 key={idx}
                                 id={`fill${data_label.replace(/\s+/g, "")}`}
@@ -290,16 +283,16 @@ export const AreaChartView: ChartViewComponentType = ({
                         ))}
                     </defs>
 
-                    {radarChartConfig.map((data_label) => (
+                    {config.map((data_label) => (
                         <Area
                             key={data_label}
                             dataKey={data_label}
-                            type="natural"
+                            type="monotone"
                             fill={`url(#fill${data_label.replace(/\s+/g, "")})`}
                             fillOpacity={0.4}
                             stroke={configData[data_label].color}
                             strokeWidth={2}
-                            stackId="a"
+                            stackId={cumulative ? "1" : undefined}
                         />
                     ))}
                 </AreaChart>

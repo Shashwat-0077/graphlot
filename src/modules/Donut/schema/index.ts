@@ -6,8 +6,8 @@ import {
 } from "drizzle-zod";
 
 import { DonutCharts } from "@/modules/Donut/schema/db";
-import { DONUT } from "@/constants";
 import { ChartSchema } from "@/modules/BasicChart/schema";
+import { DONUT, SORT_OPTIONS } from "@/constants";
 
 // Create base schemas from the Drizzle table
 const baseInsertSchema = createInsertSchema(DonutCharts);
@@ -16,11 +16,19 @@ const baseUpdateSchema = createUpdateSchema(DonutCharts);
 
 // Refine the schemas to properly handle JSON fields
 export const DonutSchema = {
-    Insert: baseInsertSchema.omit({}),
-    Select: baseSelectSchema,
-    Update: baseUpdateSchema.omit({
-        chart_id: true,
+    Insert: baseInsertSchema.extend({
+        sort_by: z.enum(SORT_OPTIONS),
     }),
+    Select: baseSelectSchema.extend({
+        sort_by: z.enum(SORT_OPTIONS),
+    }),
+    Update: baseUpdateSchema
+        .extend({
+            sort_by: z.enum(SORT_OPTIONS).optional(),
+        })
+        .omit({
+            chart_id: true,
+        }),
 };
 
 export const FullDonutSchema = {
