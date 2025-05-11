@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { sql } from "drizzle-orm";
-import { sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { real, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 import { Collections } from "@/modules/Collection/schema/db";
 import { ChartType } from "@/constants";
@@ -18,10 +17,11 @@ export const Charts = sqliteTable(
             }),
         name: text("name").notNull(),
         description: text("description").notNull(),
-        created_at: text().default(sql`(CURRENT_TIMESTAMP)`),
         notion_database_id: text("notion_database_id").notNull(),
         notion_database_name: text("notion_database_name").notNull(),
         type: text("type").notNull().$type<ChartType>(),
+        created_at: real("created_at").notNull().$type<Date>(),
+        updated_at: real("updated_at").notNull().$type<Date>(),
     },
     (table) => [
         unique("charts_collection_name_unique").on(

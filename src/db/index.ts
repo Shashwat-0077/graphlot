@@ -6,7 +6,7 @@ import { envServer } from "@/lib/env/serverEnv";
 
 const client = createClient({
     url: envServer.TURSO_CONNECTION_URL,
-    authToken: envServer.TURSO_AUTH_TOKEN, // TODO : Uncomment this line if you are pushing it to production
+    // authToken: envServer.TURSO_AUTH_TOKEN, // TODO : Uncomment this line if you are pushing it to production
 });
 
 export const db = drizzle(client, { schema });

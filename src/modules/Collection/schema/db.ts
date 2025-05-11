@@ -1,6 +1,11 @@
 import { v4 as uuid } from "uuid";
-import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+    integer,
+    real,
+    sqliteTable,
+    text,
+    unique,
+} from "drizzle-orm/sqlite-core";
 
 import { Users } from "@/db/schema";
 
@@ -18,7 +23,7 @@ export const Collections = sqliteTable(
         chart_count: integer("chartCount", { mode: "number" })
             .notNull()
             .default(0),
-        created_at: text().default(sql`(CURRENT_TIMESTAMP)`),
+        created_at: real("createdAt").notNull().$type<Date>(),
     },
     (table) => [
         unique("collections_user_name_unique").on(table.user_id, table.name),

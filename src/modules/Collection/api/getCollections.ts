@@ -5,11 +5,7 @@ import { db } from "@/db";
 import { Collections } from "@/db/schema";
 import { CollectionSchema } from "@/modules/Collection/schema";
 
-export async function getCollection({
-    collectionId,
-}: {
-    collectionId: string;
-}): Promise<
+export async function getCollectionById(collection_id: string): Promise<
     | {
           ok: true;
           collection: Zod.infer<typeof CollectionSchema.Select>;
@@ -24,7 +20,7 @@ export async function getCollection({
         const collection = await db
             .select()
             .from(Collections)
-            .where(eq(Collections.collection_id, collectionId))
+            .where(eq(Collections.collection_id, collection_id))
             .then(([rows]) => rows);
 
         if (!collection) {

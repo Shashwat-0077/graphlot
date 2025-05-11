@@ -16,40 +16,27 @@ const baseUpdateSchema = createUpdateSchema(Charts);
 export const ChartSchema = {
     Insert: baseInsertSchema
         .extend({
-            collection_id: z
-                .string()
-                .min(1, { message: "Collection ID is required" }),
-            name: z.string().min(1, { message: "Name is required" }),
-            description: z
-                .string()
-                .min(1, { message: "Description is required" }),
-            notion_database_id: z
-                .string()
-                .min(1, { message: "Notion Database ID is required" }),
-            notion_database_name: z
-                .string()
-                .min(1, { message: "Notion Database Name is required" }),
             type: z.enum(CHART_TYPES),
+            created_at: z.date(),
+            updated_at: z.date(),
         })
         .omit({
             chart_id: true,
             created_at: true,
+            updated_at: true,
         }),
     Select: baseSelectSchema.extend({
         type: z.enum(CHART_TYPES),
     }),
     Update: baseUpdateSchema
         .extend({
-            collection_id: z.string().optional(),
-            name: z.string().optional(),
-            description: z.string().optional(),
-            notion_database_id: z.string().optional(),
-            notion_database_name: z.string().optional(),
             type: z.enum(CHART_TYPES).optional(),
+            update_at: z.date().optional(),
         })
         .omit({
             chart_id: true,
             created_at: true,
+            updated_at: true,
         }),
 };
 

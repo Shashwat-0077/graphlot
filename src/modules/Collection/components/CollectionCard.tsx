@@ -1,46 +1,49 @@
-import { MoveRight } from "lucide-react";
+import { MoveRight, BarChart3 } from "lucide-react";
 import Link from "next/link";
-
-import { cn } from "@/lib/utils";
 
 export default function CollectionCard({
     path,
     name,
     chartCount,
-    size = 150,
 }: {
     path: string;
     name: string;
     chartCount: number;
-    size?: number;
 }) {
-    const circleSize = size;
     return (
         <Link
             href={path}
-            className="relative flex cursor-pointer rounded-2xl bg-gradient-to-br from-[#E44048] from-20% to-[#ABABAB] font-play-write"
-            style={{ height: size * 1.3 }}
+            className="group relative flex h-[280px] flex-col overflow-hidden rounded-2xl bg-card shadow-sm"
         >
-            {/* Body */}
-            <div className="flex h-full flex-col justify-between p-3">
-                <span className="flex items-center gap-2">
-                    <span className="text-xs">View</span>
-                    <MoveRight size={10} className="mt-1" />
-                </span>
-                <h1>{name}</h1>
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent" />
+
+            {/* Decorative elements */}
+            <div className="absolute -right-16 -top-16 h-32 w-32 rounded-full bg-primary/5 transition-all group-hover:scale-110" />
+            <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-primary/5 transition-all group-hover:scale-110" />
+            <div className="absolute bottom-6 right-6 rotate-12 text-primary/10">
+                <BarChart3 className="h-20 w-20 transition-all group-hover:scale-105" />
             </div>
-            {/* Circle */}
-            <div
-                className={cn(
-                    "absolute right-0 top-0 aspect-square rounded-full bg-background"
-                )}
-                style={{
-                    width: circleSize,
-                    transform: `translate(${circleSize / 4}px, -${circleSize / 4}px)`,
-                }}
-            >
-                <div className="absolute left-1/2 top-1/2 grid h-[90%] w-[90%] -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full border-2 border-primary text-2xl">
-                    {chartCount}
+
+            {/* Chart count badge */}
+            <div className="absolute right-6 top-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary backdrop-blur-sm">
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold">{chartCount}</span>
+                    <span className="text-xs font-medium">Charts</span>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="z-10 mt-auto flex flex-col p-6">
+                <h3 className="mb-2 line-clamp-2 text-2xl font-bold leading-tight">
+                    {name}
+                </h3>
+                <div className="mt-2 flex items-center gap-1.5 text-sm font-medium text-primary">
+                    <span>View collection</span>
+                    <MoveRight
+                        size={16}
+                        className="transition-transform group-hover:translate-x-1"
+                    />
                 </div>
             </div>
         </Link>

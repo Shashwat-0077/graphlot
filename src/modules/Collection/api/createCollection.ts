@@ -51,6 +51,7 @@ export const createCollection = async ({
                 user_id: userId,
                 name: newCollection.name,
                 description: newCollection.description,
+                created_at: new Date(),
             })
             .returning({
                 id: Collections.collection_id,
@@ -59,6 +60,7 @@ export const createCollection = async ({
 
         return { ok: true, newCollection: { id, name } };
     } catch (error) {
+        console.log({ error });
         throw new HTTPException(500, {
             message:
                 error instanceof Error

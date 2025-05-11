@@ -95,3 +95,9 @@ export const SORT_OPTIONS = [
     SORT_DEFAULT,
 ] as const;
 export type SortOptionsType = (typeof SORT_OPTIONS)[number];
+
+export const LAYOUT_GRID = "GRID" as const;
+export const LAYOUT_CAROUSEL = "CAROUSEL" as const;
+
+export const LAYOUT_OPTIONS = [LAYOUT_GRID, LAYOUT_CAROUSEL] as const;
+export type LayoutOptionsType = (typeof LAYOUT_OPTIONS)[number];

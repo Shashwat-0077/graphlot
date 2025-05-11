@@ -1,6 +1,6 @@
 "use client";
 
-import { MousePointer2, Settings2 } from "lucide-react";
+import { MousePointer2, Settings2, LayoutDashboard } from "lucide-react";
 
 import {
     Sidebar,
@@ -12,18 +12,14 @@ import { NavMain } from "@/components/DashboardNavbar/nav-main";
 import { NavUser } from "@/components/DashboardNavbar/nav-user";
 import { SidebarLogo } from "@/components/DashboardNavbar/SidebarLogo";
 
-// IMPORTANT: Refer this
-// https://ui.shadcn.com/blocks
-
 // This is sample data.
 const data = {
-    user: {
-        name: "Shashwat Gupta",
-        email: "shashwat0077@gmail.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-
     navMain: [
+        {
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: <LayoutDashboard className="text-primary" />,
+        },
         {
             title: "Collections",
             url: "/dashboard/collections",
@@ -41,7 +37,7 @@ export function DashboardNavbar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
     return (
-        <Sidebar collapsible="icon" {...props} className="!border-0">
+        <Sidebar collapsible="icon" {...props} className="!border-0 shadow-sm">
             <SidebarHeader>
                 <SidebarLogo />
             </SidebarHeader>

@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
-import { db } from "@/db";
-import { Collections } from "@/db/schema";
 import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
-import { getAllCollections } from "@/modules/Collection/api/getCollections";
+import {
+    getAllCollections,
+    getCollectionById,
+} from "@/modules/Collection/api/getCollections";
 import { CollectionSchema } from "@/modules/Collection/schema";
 import { createCollection } from "@/modules/Collection/api/createCollection";
 import UpdateCollection from "@/modules/Collection/api/updateCollection";
@@ -34,10 +34,13 @@ const app = new Hono<{ Variables: variables }>()
         zValidator("param", z.object({ id: z.string().nonempty() })),
         async (c) => {
             const { id } = c.req.valid("param");
-            const [collection] = await db
-                .select()
-                .from(Collections)
-                .where(eq(Collections.collection_id, id));
+            const response = await getCollectionById(id);
+            if (!response.ok) {
+                throw new HTTPException(500, {
+                    res: c.json({ error: response.error }, 500),
+                });
+            }
+            const { collection } = response;
             return c.json({ collection }, 200);
         }
     )
@@ -48,6 +51,7 @@ const app = new Hono<{ Variables: variables }>()
         async (c) => {
             const userId = c.get("userId");
             const { name, description } = c.req.valid("form");
+
             const response = await createCollection({
                 userId: userId,
                 newCollection: {

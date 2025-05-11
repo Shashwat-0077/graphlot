@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,13 +20,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 export function NavUser() {
-    const router = useRouter();
     const { isMobile } = useSidebar();
-    const { data: userData, status } = useSession();
+    const { session: userData, isLoading } = useAuthSession();
 
-    if (status === "loading") {
+    if (isLoading) {
         return (
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -36,17 +36,10 @@ export function NavUser() {
         );
     }
 
-    if (status === "unauthenticated") {
-        router.push("/");
-        return null;
-    }
-
     if (!userData) {
-        router.push("/");
         return null;
     }
     if (!userData.user) {
-        router.push("/");
         return null;
     }
 

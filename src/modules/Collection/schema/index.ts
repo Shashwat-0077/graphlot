@@ -34,9 +34,9 @@ export const CollectionSchema = {
         })
         .omit({
             collection_id: true,
-            created_at: true,
             chart_count: true,
             user_id: true,
+            created_at: true,
         }),
     Select: baseSelectSchema,
     Update: baseUpdateSchema

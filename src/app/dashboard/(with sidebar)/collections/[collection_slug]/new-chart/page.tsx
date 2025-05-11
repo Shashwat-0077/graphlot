@@ -1,4 +1,4 @@
-import { NewChartForm } from "@/modules/BasicChart/components/NewChartForm";
+import { NewChartForm } from "@/components/forms/NewChartForm";
 
 type Props = {
     params: Promise<{

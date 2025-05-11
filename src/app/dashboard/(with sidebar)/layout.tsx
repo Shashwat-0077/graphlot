@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { parseSlug } from "@/utils/pathSlugsOps";
 
-export default function RootLayout({
+export default function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -31,7 +31,6 @@ export default function RootLayout({
         .split("/")
         .filter((path) => !(!path || path === ""));
 
-    // TODO : Use encoding and decoding of the paths and names for the breadcrumbs
     const breadCrumbs: { path: string; name: string; isLast: boolean }[] =
         paramList.map((path, index) => {
             const slug = parseSlug(path);
@@ -49,8 +48,8 @@ export default function RootLayout({
     return (
         <SidebarProvider>
             <DashboardNavbar />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <SidebarInset className="bg-gradient-to-br from-background to-background/95">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background/80 backdrop-blur-sm transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
@@ -58,33 +57,27 @@ export default function RootLayout({
                             className="mr-2 h-4"
                         />
 
-                        {/* 
-                        // BUG : These breadcrumbs are throwing unexpected error need to looks into it
-                        errors like :
-                            Console error while creating a new collection
-                          */}
                         <Breadcrumb>
                             <BreadcrumbList>
                                 {breadCrumbs.map((breadcrumb, index) => {
                                     if (!breadcrumb.isLast) {
                                         return (
                                             <Fragment key={index}>
-                                                <BreadcrumbItem key={index}>
+                                                <BreadcrumbItem>
                                                     <BreadcrumbLink
                                                         href={breadcrumb.path}
                                                     >
                                                         {breadcrumb.name}
                                                     </BreadcrumbLink>
                                                 </BreadcrumbItem>
-                                                <BreadcrumbSeparator
-                                                    key={`${index}-separator`}
-                                                />
+                                                <BreadcrumbSeparator />
                                             </Fragment>
                                         );
                                     }
+                                    return null;
                                 })}
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage className="text-primary">
+                                    <BreadcrumbPage className="font-medium text-primary">
                                         {
                                             breadCrumbs[breadCrumbs.length - 1]
                                                 .name
@@ -95,7 +88,7 @@ export default function RootLayout({
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="px-7 pt-10">{children}</div>
+                <div className="min-h-[calc(100vh-4rem)]">{children}</div>
             </SidebarInset>
         </SidebarProvider>
     );

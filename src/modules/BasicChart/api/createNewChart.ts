@@ -62,6 +62,8 @@ export async function createNewChart({
         }
 
         const newChart = await db.transaction(async (tx) => {
+            const date = new Date();
+
             const newChart = await tx
                 .insert(Charts)
                 .values({
@@ -71,6 +73,8 @@ export async function createNewChart({
                     description: chart.description,
                     notion_database_id: chart.notion_database_id,
                     notion_database_name: chart.notion_database_name,
+                    created_at: date,
+                    updated_at: date,
                 })
                 .returning()
                 .then(([record]) => record);

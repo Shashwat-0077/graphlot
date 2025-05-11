@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { RadarCharts } from "@/db/schema";
+import { Charts, RadarCharts } from "@/db/schema";
 import { RadarUpdate } from "@/modules/Radar/schema";
 
 export async function updateRadarChart({
@@ -17,29 +17,40 @@ export async function updateRadarChart({
     | { ok: false; error: string }
 > {
     try {
-        const updated = await db
-            .update(RadarCharts)
-            .set({
-                background_color: data.background_color,
-                text_color: data.text_color,
-                tooltip_enabled: data.tooltip_enabled,
-                legend_enabled: data.legend_enabled,
-                has_border: data.has_border,
-                color_palette: data.color_palette,
-                x_axis: data.x_axis,
-                y_axis: data.y_axis,
-                sort_x: data.sort_x,
-                sort_y: data.sort_y,
-                label_enabled: data.label_enabled,
-                omit_zero_values: data.omit_zero_values,
-                cumulative: data.cumulative,
-                filters: data.filters,
-                grid_color: data.grid_color,
-                grid_enabled: data.grid_enabled,
-            })
-            .where(eq(RadarCharts.chart_id, chart_id))
-            .returning({ chart_id: RadarCharts.chart_id })
-            .then((res) => res[0]);
+        const updated = await db.transaction(async (tx) => {
+            const updated = await tx
+                .update(RadarCharts)
+                .set({
+                    background_color: data.background_color,
+                    text_color: data.text_color,
+                    tooltip_enabled: data.tooltip_enabled,
+                    legend_enabled: data.legend_enabled,
+                    has_border: data.has_border,
+                    color_palette: data.color_palette,
+                    x_axis: data.x_axis,
+                    y_axis: data.y_axis,
+                    sort_x: data.sort_x,
+                    sort_y: data.sort_y,
+                    label_enabled: data.label_enabled,
+                    omit_zero_values: data.omit_zero_values,
+                    cumulative: data.cumulative,
+                    filters: data.filters,
+                    grid_color: data.grid_color,
+                    grid_enabled: data.grid_enabled,
+                })
+                .where(eq(RadarCharts.chart_id, chart_id))
+                .returning({ chart_id: RadarCharts.chart_id })
+                .then(([res]) => res);
+
+            await tx
+                .update(Charts)
+                .set({
+                    updated_at: new Date(),
+                })
+                .where(eq(Charts.chart_id, chart_id));
+
+            return updated;
+        });
 
         if (!updated) {
             return { ok: false, error: "Radar chart not found" };

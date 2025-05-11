@@ -117,7 +117,7 @@ export async function updateChartType({
         await db.transaction(async (tx) => {
             await tx
                 .update(Charts)
-                .set({ type })
+                .set({ type, updated_at: new Date() })
                 .where(eq(Charts.chart_id, chart_id));
 
             await tx
@@ -238,6 +238,7 @@ export async function updateChart({
             .set({
                 name: newChart.name,
                 description: newChart.description,
+                updated_at: new Date(),
             })
             .where(eq(Charts.chart_id, chart_id));
 

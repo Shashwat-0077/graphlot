@@ -1,6 +1,6 @@
 import React from "react";
 
-import { NewCollectionForm } from "@/modules/Collection/components/NewCollectionForm";
+import { NewCollectionForm } from "@/components/forms/NewCollectionForm";
 
 export default function NewCollection() {
     return (
