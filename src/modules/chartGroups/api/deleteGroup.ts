@@ -4,11 +4,9 @@ import { HTTPException } from "hono/http-exception";
 import { db } from "@/db";
 import { ChartGroup } from "@/modules/chartGroups/schema/db";
 
-export const deleteGroup = async ({
-    group_id,
-}: {
-    group_id: string;
-}): Promise<{ ok: true; group_id: string } | { ok: false; error: string }> => {
+export const deleteGroup = async (
+    group_id: string
+): Promise<{ ok: true; group_id: string } | { ok: false; error: string }> => {
     try {
         const { group_id: deletedGroupId } = await db
             .delete(ChartGroup)

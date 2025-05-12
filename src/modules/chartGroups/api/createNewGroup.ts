@@ -38,18 +38,14 @@ export async function createNewGroup({
                 .returning({ group_id: ChartGroup.group_id })
                 .then(([res]) => res);
 
-            await db
-                .insert(ChartGroupCharts)
-                .values(
-                    chart_ids.map((chart_id) => ({
-                        group_id,
-                        chart_id,
-                        created_at: date,
-                        updated_at: date,
-                    }))
-                )
-                .returning({ chart_id: ChartGroupCharts.chart_id })
-                .then((res) => res.map((r) => r.chart_id));
+            await tx.insert(ChartGroupCharts).values(
+                chart_ids.map((chart_id) => ({
+                    group_id,
+                    chart_id,
+                    created_at: date,
+                    updated_at: date,
+                }))
+            );
 
             return group_id;
         });

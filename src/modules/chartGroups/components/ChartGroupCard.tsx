@@ -29,12 +29,10 @@ type ChartGroup = {
 
 export function ChartGroupCard({
     group,
-    collection_slug,
     onEdit,
     onDelete,
 }: {
     group: ChartGroup;
-    collection_slug: string;
     onEdit?: (group: ChartGroup) => void;
     onDelete?: (group: ChartGroup) => void;
 }) {

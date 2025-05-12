@@ -11,16 +11,16 @@ export const updateGroup = async ({
     layout_type,
 }: {
     group_id: string;
-    name: string;
-    layout_type: LayoutOptionsType;
+    name?: string;
+    layout_type?: LayoutOptionsType;
 }): Promise<{ ok: true; group_id: string } | { ok: false; error: string }> => {
     try {
         const date = new Date();
         const { group_id: updatedGroupId } = await db
             .update(ChartGroup)
             .set({
-                name,
-                layout_type,
+                name: name,
+                layout_type: layout_type,
                 updated_at: date,
             })
             .where(eq(ChartGroup.group_id, group_id))

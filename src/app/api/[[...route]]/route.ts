@@ -10,10 +10,14 @@ import area from "@/modules/Area/server/route";
 import bar from "@/modules/Bar/server/route";
 import heatmap from "@/modules/Heatmap/server/route";
 import donut from "@/modules/Donut/server/route";
+import chartGroups from "@/modules/chartGroups/server/route";
 
 const app = new Hono().basePath("/api");
 
 app.onError((err, c) => {
+    // eslint-disable-next-line no-console
+    console.error(err.message);
+
     if (err instanceof HTTPException) {
         return err.getResponse();
     }
@@ -28,7 +32,8 @@ const _routes = app
     .route("/area-chart", area)
     .route("/bar-chart", bar)
     .route("/heatmap-chart", heatmap)
-    .route("/donut-chart", donut);
+    .route("/donut-chart", donut)
+    .route("/chart-groups", chartGroups);
 
 export const GET = handle(app);
 export const POST = handle(app);

@@ -3,15 +3,14 @@ import Link from "next/link";
 import { getAllChartsWithCollectionId } from "@/modules/BasicChart/api/getCharts";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { Button } from "@/components/ui/button";
-import { getCollectionById } from "@/modules/Collection/api/getCollections";
-import { ChartGroupsPage } from "@/components/pages/ChartGroupsPage";
+import ChartGroupsPage from "@/components/pages/ChartGroupsPage";
 
 export default async function GroupsPage({
     params,
 }: {
-    params: { collection_slug: string };
+    params: Promise<{ collection_slug: string }>;
 }) {
-    const { collection_slug } = params;
+    const { collection_slug } = await params;
     const { id: collection_id } = parseSlug(collection_slug);
 
     if (!collection_slug) {
@@ -35,12 +34,9 @@ export default async function GroupsPage({
         );
     }
 
-    const [chartsResponse, collectionResponse] = await Promise.all([
-        getAllChartsWithCollectionId(collection_id),
-        getCollectionById(collection_id),
-    ]);
+    const chartsResponse = await getAllChartsWithCollectionId(collection_id);
 
-    if (!chartsResponse.ok || !collectionResponse.ok) {
+    if (!chartsResponse.ok) {
         return (
             <div className="flex h-[70vh] items-center justify-center">
                 <div className="rounded-xl border bg-card p-8 text-center shadow-md">
@@ -61,13 +57,8 @@ export default async function GroupsPage({
     }
 
     const { charts } = chartsResponse;
-    const { collection } = collectionResponse;
 
     return (
-        <ChartGroupsPage
-            collection_slug={collection_slug}
-            charts={charts}
-            collection={collection}
-        />
+        <ChartGroupsPage collection_slug={collection_slug} charts={charts} />
     );
 }

@@ -6,6 +6,7 @@ import { RadarCharts } from "@/modules/Radar/schema/db";
 import { Collections } from "@/modules/Collection/schema/db";
 import { Charts } from "@/modules/BasicChart/schema/db";
 import { Users, Accounts } from "@/modules/auth/schema/db";
+import { ChartGroup, ChartGroupCharts } from "@/modules/chartGroups/schema/db";
 
 export {
     AreaCharts,
@@ -18,4 +19,6 @@ export {
     HeatmapData,
     Users,
     Accounts,
+    ChartGroup,
+    ChartGroupCharts,
 };

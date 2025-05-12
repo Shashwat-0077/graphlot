@@ -10,11 +10,12 @@ import ChartCardLoader from "@/modules/BasicChart/components/ChartCardLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreateChartGroupButton } from "@/modules/BasicChart/components/CreateChartGroupButton";
 import { ChartTypeFilter } from "@/modules/BasicChart/components/ChartTypeFilter";
 import { EmptyCharts } from "@/modules/BasicChart/components/EmptyCharts";
-import { ChartGroups } from "@/modules/BasicChart/components/ChartGroup";
 import type { ChartType } from "@/constants";
+
+import { ChartGroups } from "@/modules/BasicChart/components/ChartGroup";
+import { CreateChartGroupButton } from "@/modules/BasicChart/components/CreateChartGroupButton";
 
 type Chart = {
     chart_id: string;

@@ -64,3 +64,43 @@ export const removeChartsFromGroup = async (
         });
     }
 };
+
+export const setChartsInGroup = async (
+    group_id: string,
+    chart_ids: string[]
+): Promise<
+    { ok: true; chart_ids: string[] } | { ok: false; error: string }
+> => {
+    try {
+        const date = new Date();
+        const charts = await db
+            .transaction(async (tx) => {
+                await tx
+                    .delete(ChartGroupCharts)
+                    .where(eq(ChartGroupCharts.group_id, group_id));
+
+                return tx
+                    .insert(ChartGroupCharts)
+                    .values(
+                        chart_ids.map((chart_id) => ({
+                            group_id,
+                            chart_id,
+                            created_at: date,
+                            updated_at: date,
+                        }))
+                    )
+                    .returning({ chart_id: ChartGroupCharts.chart_id })
+                    .then((res) => res.map((r) => r.chart_id));
+            })
+            .then((res) => res);
+
+        return { ok: true, chart_ids: charts };
+    } catch (error) {
+        throw new HTTPException(500, {
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
+        });
+    }
+};
