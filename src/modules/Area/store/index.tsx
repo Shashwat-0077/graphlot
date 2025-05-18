@@ -8,21 +8,21 @@ import {
     createAreaChartStore,
     initAreaChartStore,
 } from "@/modules/Area/store/state";
-import { StateProviderType } from "@/constants";
-import { useGetAreaChartWithId } from "@/modules/Area/api/client/useGetAreaChart";
+import { useAreaChart } from "@/modules/Area/api/client/user-area-charts";
 import { BoxLoader } from "@/components/ui/Loader";
+import { ChartStateProvider } from "@/constants";
 
 export type AreaChartStoreApi = ReturnType<typeof createAreaChartStore>;
 export const AreaChartStoreContext = createContext<
     AreaChartStoreApi | undefined
 >(undefined);
 
-export const AreaChartStoreProvider: StateProviderType = ({
+export const AreaChartStoreProvider: ChartStateProvider = ({
     children,
-    char_id,
+    chartId,
 }) => {
     const storeRef = useRef<AreaChartStoreApi>(null);
-    const { data, isLoading, error, isError } = useGetAreaChartWithId(char_id);
+    const { data, isLoading, error, isError } = useAreaChart(chartId);
 
     if (!data || isLoading) {
         return (

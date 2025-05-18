@@ -6,7 +6,7 @@ import {
 } from "drizzle-zod";
 
 import { HeatmapCharts } from "@/modules/Heatmap/schema/db";
-import { ChartSchema } from "@/modules/BasicChart/schema";
+import { ChartSchema } from "@/modules/ChartMetaData/schema";
 import { HEATMAP } from "@/constants";
 
 // Create base schemas from the Drizzle table

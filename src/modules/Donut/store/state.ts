@@ -2,39 +2,39 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { DonutSelect } from "@/modules/Donut/schema";
-import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import { RGBAColor, ChartFilter, SortType } from "@/constants";
 import defaultDonutChartState from "@/modules/Donut/default.config";
 
 export type DonutChartState = Omit<DonutSelect, "chart_id">;
 
 export type DonutChartActions = {
     // Basic appearance
-    setBackgroundColor: (color: ColorType) => void;
-    setTextColor: (color: ColorType) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
     toggleLegend: () => void;
     toggleBorder: () => void;
     toggleLabel: () => void;
 
     // Color palette operations
-    setColorPalette: (palette: ColorType[]) => void;
-    addColor: (color?: ColorType) => void;
-    updateColor: (color: ColorType, index: number) => void;
+    setColorPalette: (palette: RGBAColor[]) => void;
+    addColor: (color?: RGBAColor) => void;
+    updateColor: (color: RGBAColor, index: number) => void;
     removeColor: (index: number) => void;
     clearColorPalette: () => void;
 
     // Axis operations
     setXAxis: (axis: string) => void;
-    setSortBy: (field: SortOptionsType) => void;
+    setSortBy: (field: SortType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
     setOmitZeroValues: (omit: boolean) => void;
 
     // Filter operations
-    setFilters: (filters: FilterType[]) => void;
-    addFilter: (filter: FilterType) => void;
-    updateFilter: (index: number, filter: FilterType) => void;
+    setFilters: (filters: ChartFilter[]) => void;
+    addFilter: (filter: ChartFilter) => void;
+    updateFilter: (index: number, filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     clearFilters: () => void;
 

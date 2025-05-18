@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import { Charts } from "@/modules/ChartMetaData/schema/db";
+import { RGBAColor, ChartFilter, SortType } from "@/constants";
 import defaultConfig from "@/modules/Radar/default.config";
 
 export const RadarCharts = sqliteTable("radar_charts", {
@@ -12,11 +12,11 @@ export const RadarCharts = sqliteTable("radar_charts", {
     background_color: text("background_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.background_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     text_color: text("text_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.text_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     tooltip_enabled: integer("tooltip_enabled", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.tooltip_enabled),
@@ -32,7 +32,7 @@ export const RadarCharts = sqliteTable("radar_charts", {
     color_palette: text("color_palette", { mode: "json" })
         .notNull()
         .default(defaultConfig.color_palette)
-        .$type<ColorType[]>(),
+        .$type<RGBAColor[]>(),
     // in the format of [{ r: 255, g: 255, b: 255, a: 1 }, { r: 255, g: 255, b: 255, a: 1 }]
 
     x_axis: text("x_axis").notNull().default(defaultConfig.x_axis),
@@ -40,11 +40,11 @@ export const RadarCharts = sqliteTable("radar_charts", {
     sort_x: text("sort_x")
         .notNull()
         .default(defaultConfig.sort_x)
-        .$type<SortOptionsType>(),
+        .$type<SortType>(),
     sort_y: text("sort_y")
         .notNull()
         .default(defaultConfig.sort_y)
-        .$type<SortOptionsType>(),
+        .$type<SortType>(),
     omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.omit_zero_values),
@@ -54,13 +54,13 @@ export const RadarCharts = sqliteTable("radar_charts", {
     filters: text("filters", { mode: "json" })
         .notNull()
         .default(defaultConfig.filters)
-        .$type<FilterType[]>(),
+        .$type<ChartFilter[]>(),
     // in the format of { column: string; operation: string; value: string; }
 
     grid_color: text("grid_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.grid_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     grid_enabled: integer("grid_type", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.grid_enabled),

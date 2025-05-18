@@ -1,8 +1,8 @@
 import { v4 as uuid } from "uuid";
 import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 
-import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, DayOfWeek } from "@/constants";
+import { Charts } from "@/modules/ChartMetaData/schema/db";
+import { RGBAColor, DayOfWeek } from "@/constants";
 import defaultConfig from "@/modules/Heatmap/default.config";
 
 export const HeatmapCharts = sqliteTable("heatmap_charts", {
@@ -13,11 +13,11 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     background_color: text("background_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.background_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     text_color: text("text_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.text_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     tooltip_enabled: integer("tooltip_enabled", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.tooltip_enabled),
@@ -33,7 +33,7 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     streak_color: text("streak_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.streak_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     streak_enabled: integer("streak_enabled", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.streak_enabled),
@@ -50,7 +50,7 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     longest_streak_color: text("longest_streak_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.longest_streak_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     longest_streak_enabled: integer("long_streak_enabled", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.longest_streak_enabled),
@@ -61,7 +61,7 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     sum_of_all_entries_color: text("sum_of_all_entries_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.sum_of_all_entries_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     sum_of_all_entries_enabled: integer("sum_of_all_entries_enabled", {
         mode: "boolean",
     })
@@ -76,7 +76,7 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     })
         .notNull()
         .default(defaultConfig.average_of_all_entries_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     average_of_all_entries_enabled: integer("average_of_all_entries_enabled", {
         mode: "boolean",
     })
@@ -89,7 +89,7 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     number_of_entries_color: text("number_of_entries_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.number_of_entries_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     number_of_entries_enabled: integer("number_of_entries_enabled", {
         mode: "boolean",
     })
@@ -103,11 +103,11 @@ export const HeatmapCharts = sqliteTable("heatmap_charts", {
     default_box_color: text("default_box_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.default_box_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     accent: text("accent", { mode: "json" })
         .notNull()
         .default(defaultConfig.accent)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
 });
 
 export const HeatmapData = sqliteTable("heatmap_data", {

@@ -6,7 +6,7 @@ import {
     GRID_HORIZONTAL,
     GRID_NONE,
     GRID_VERTICAL,
-    type GridType,
+    type GridOrientation,
 } from "@/constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
@@ -14,15 +14,15 @@ const GridSelect = ({
     grid_type,
     setGridType,
 }: {
-    grid_type: GridType;
-    setGridType: (grid_type: GridType) => void;
+    grid_type: GridOrientation;
+    setGridType: (grid_type: GridOrientation) => void;
 }) => {
     return (
         <div className="flex items-center">
             <ToggleGroup
                 type="single"
                 value={grid_type}
-                onValueChange={(val: GridType) => {
+                onValueChange={(val: GridOrientation) => {
                     if (
                         val === GRID_HORIZONTAL ||
                         val === GRID_VERTICAL ||

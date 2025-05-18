@@ -28,13 +28,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-    SORT_OPTIONS,
-    SortOptionsType,
+    SortType,
+    SortType,
     type ChartConfigComponentType,
-    type FilterType,
+    type ChartFilter,
 } from "@/constants";
 import { useDonutChartStore } from "@/modules/Donut/store";
-import ClearAll from "@/modules/BasicChart/components/ClearAll";
+import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import type { DonutSelect } from "@/modules/Donut/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,7 +46,7 @@ import {
     SelectFieldsForDonut,
     XAxisType,
 } from "@/modules/Donut/utils/selectFieldsForDonut";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 import { envClient } from "@/lib/env/clientEnv";
 import { CopyButton } from "@/components/ui/CopyButton";
 
@@ -307,12 +307,12 @@ function DataSection({
 }: {
     xAxis: string;
     setXAxis: (value: string) => void;
-    sortBy: SortOptionsType;
-    setSortBy: (value: SortOptionsType) => void;
+    sortBy: SortType;
+    setSortBy: (value: SortType) => void;
     omitZeroValues: boolean;
     setOmitZeroValues: (value: boolean) => void;
-    filters: FilterType[];
-    addFilter: (filter: FilterType) => void;
+    filters: ChartFilter[];
+    addFilter: (filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     setFilterColumn: (value: string, index: number) => void;
     setFilterOperation: (value: string, index: number) => void;
@@ -407,7 +407,7 @@ function DataSection({
                                         position="popper"
                                         sideOffset={4}
                                     >
-                                        {SORT_OPTIONS.map((col, index) => (
+                                        {SortOption.map((col, index) => (
                                             <SelectItem
                                                 key={index}
                                                 value={col}
@@ -620,9 +620,9 @@ export const DonutConfig: ChartConfigComponentType = ({
     const [xAxis, setXAxis] = useState(x_axis);
     const [sortBy, setSortBy] = useState(sort_by);
     const [omitZeroValues, setOmitZeroValues] = useState(globalOmitZeroValues);
-    const [filters, setFilters] = useState<FilterType[]>(globalFilters);
+    const [filters, setFilters] = useState<ChartFilter[]>(globalFilters);
 
-    const addFilter = (filter: FilterType) => {
+    const addFilter = (filter: ChartFilter) => {
         setFilters((prevFilters) => [...prevFilters, filter]);
     };
 

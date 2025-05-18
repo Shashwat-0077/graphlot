@@ -5,13 +5,13 @@ import { useParams } from "next/navigation";
 import { Plus, LayoutGrid, Layers, Search, Filter } from "lucide-react";
 import Link from "next/link";
 
-import { ChartCard } from "@/modules/BasicChart/components/ChartCard";
+import { ChartCard } from "@/modules/ChartMetaData/components/ChartCard";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import ChartCardLoader from "@/modules/BasicChart/components/ChartCardLoader";
+import ChartCardLoader from "@/modules/ChartMetaData/components/ChartCardLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChartTypeFilter } from "@/modules/BasicChart/components/ChartTypeFilter";
-import { EmptyCharts } from "@/modules/BasicChart/components/EmptyCharts";
+import { ChartTypeFilter } from "@/modules/ChartMetaData/components/ChartTypeFilter";
+import { EmptyCharts } from "@/modules/ChartMetaData/components/EmptyCharts";
 import {
     Card,
     CardContent,
@@ -25,10 +25,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetAllChartsWithCollectionId } from "@/modules/BasicChart/api/client/useGetChart";
+import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/useGetChart";
 import { useGetCollectionById } from "@/modules/Collection/api/client/useGetCollections";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 
 export default function SingleCollectionPage() {
     const { session } = useAuthSession();

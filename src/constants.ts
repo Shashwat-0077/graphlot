@@ -4,44 +4,65 @@ import {
     PageObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
-export const AREA = "Area" as const;
-export const BAR = "Bar" as const;
-export const DONUT = "Donut" as const;
-export const RADAR = "Radar" as const;
-export const HEATMAP = "Heatmap" as const;
+// === Chart Types ===
+export const CHART_TYPE_AREA = "Area" as const;
+export const CHART_TYPE_BAR = "Bar" as const;
+export const CHART_TYPE_DONUT = "Donut" as const;
+export const CHART_TYPE_RADAR = "Radar" as const;
+export const CHART_TYPE_HEATMAP = "Heatmap" as const;
 
-export const CHART_TYPES = [AREA, BAR, DONUT, HEATMAP, RADAR] as const;
+export const CHART_TYPES = [
+    CHART_TYPE_AREA,
+    CHART_TYPE_BAR,
+    CHART_TYPE_DONUT,
+    CHART_TYPE_HEATMAP,
+    CHART_TYPE_RADAR,
+] as const;
 export type ChartType = (typeof CHART_TYPES)[number];
 
-export const GRID_NONE = "NONE" as const;
-export const GRID_HORIZONTAL = "HORIZONTAL" as const;
-export const GRID_VERTICAL = "VERTICAL" as const;
-export const GRID_BOTH = "BOTH" as const;
-export const GRID_TYPE = [
-    GRID_NONE,
-    GRID_HORIZONTAL,
-    GRID_VERTICAL,
-    GRID_BOTH,
-] as const;
-export type GridType = (typeof GRID_TYPE)[number];
+// === Grid Types ===
+export const GRID_ORIENTATION_NONE = "NONE" as const;
+export const GRID_ORIENTATION_HORIZONTAL = "HORIZONTAL" as const;
+export const GRID_ORIENTATION_VERTICAL = "VERTICAL" as const;
+export const GRID_ORIENTATION_BOTH = "BOTH" as const;
 
+export const GRID_ORIENTATION_OPTIONS = [
+    GRID_ORIENTATION_NONE,
+    GRID_ORIENTATION_HORIZONTAL,
+    GRID_ORIENTATION_VERTICAL,
+    GRID_ORIENTATION_BOTH,
+] as const;
+export type GridOrientation = (typeof GRID_ORIENTATION_OPTIONS)[number];
+
+export const GRID_TYPE_DASHED = "dashed" as const;
+export const GRID_TYPE_DOTTED = "dotted" as const;
+export const GRID_TYPE_SOLID = "solid" as const;
+export const GRID_TYPE_OPTIONS = [
+    GRID_TYPE_DASHED,
+    GRID_TYPE_DOTTED,
+    GRID_TYPE_SOLID,
+] as const;
+export type GridType = (typeof GRID_TYPE_OPTIONS)[number];
+
+// === Color Type ===
 export const ColorSchema = z.object({
     r: z.number().min(0).max(255),
     g: z.number().min(0).max(255),
     b: z.number().min(0).max(255),
     a: z.number().min(0).max(1),
 });
+export type RGBAColor = z.infer<typeof ColorSchema>;
 
-export type ColorType = z.infer<typeof ColorSchema>;
-
+// === Filter Type ===
 export const FilterSchema = z.object({
     column: z.string(),
     operation: z.string(),
     value: z.string(),
 });
-export type FilterType = z.infer<typeof FilterSchema>;
+export type ChartFilter = z.infer<typeof FilterSchema>;
 
-export const DAY_OF_WEEK = [
+// === Days of Week ===
+export const DAYS_OF_WEEK = [
     "Mon",
     "Tue",
     "Wed",
@@ -50,54 +71,123 @@ export const DAY_OF_WEEK = [
     "Sat",
     "Sun",
 ] as const;
-export type DayOfWeek = (typeof DAY_OF_WEEK)[number];
+export type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
 
-export type ChartViewComponentType = ({
-    chartName,
-    notion_table_id,
-    user_id,
-}: {
+// === Component Types ===
+export type ChartViewComponent = (props: {
     chartName: string;
-    notion_table_id: string;
-    user_id: string;
+    notionTableId: string;
+    userId: string;
 }) => React.JSX.Element;
 
-export type ChartConfigComponentType = ({
-    notion_table_id,
-    chart_id,
-}: {
-    notion_table_id: string;
-    chart_id: string;
+export type ChartConfigComponent = (props: {
+    notionTableId: string;
+    chartId: string;
 }) => React.JSX.Element;
 
-export type StateProviderType = ({
-    children,
-    char_id,
-}: {
+export type ChartStateProvider = (props: {
     children: React.ReactNode;
-    char_id: string;
+    chartId: string;
 }) => React.JSX.Element;
 
-export type NotionSchemaType = GetDatabaseResponse["properties"];
-export type NotionDataType = PageObjectResponse["properties"];
+// === Notion Types ===
+export type NotionPropertySchema = GetDatabaseResponse["properties"];
+export type NotionPropertyData = PageObjectResponse["properties"];
 
-export const SORT_ALPHABETICALLY_ASC = "Alphabetically - ASC" as const;
-export const SORT_ALPHABETICALLY_DESC = "Alphabetically- DSC" as const;
-export const SORT_NUMERICALLY_ASC = "Numerically - ASC" as const;
-export const SORT_NUMERICALLY_DESC = "Numerically - DSC" as const;
-export const SORT_DEFAULT = "None" as const;
+// === Sort Options ===
+export const SORT_ALPHA_ASC = "Alphabetically - ASC" as const;
+export const SORT_ALPHA_DESC = "Alphabetically - DSC" as const;
+export const SORT_NUMERIC_ASC = "Numerically - ASC" as const;
+export const SORT_NUMERIC_DESC = "Numerically - DSC" as const;
+export const SORT_NONE = "None" as const;
 
 export const SORT_OPTIONS = [
-    SORT_ALPHABETICALLY_ASC,
-    SORT_ALPHABETICALLY_DESC,
-    SORT_NUMERICALLY_ASC,
-    SORT_NUMERICALLY_DESC,
-    SORT_DEFAULT,
+    SORT_ALPHA_ASC,
+    SORT_ALPHA_DESC,
+    SORT_NUMERIC_ASC,
+    SORT_NUMERIC_DESC,
+    SORT_NONE,
 ] as const;
-export type SortOptionsType = (typeof SORT_OPTIONS)[number];
+export type SortType = (typeof SORT_OPTIONS)[number];
 
-export const LAYOUT_GRID = "GRID" as const;
-export const LAYOUT_CAROUSEL = "CAROUSEL" as const;
+// === Layout Options ===
+export const LAYOUT_TYPE_GRID = "GRID" as const;
+export const LAYOUT_TYPE_CAROUSEL = "CAROUSEL" as const;
 
-export const LAYOUT_OPTIONS = [LAYOUT_GRID, LAYOUT_CAROUSEL] as const;
-export type LayoutOptionsType = (typeof LAYOUT_OPTIONS)[number];
+export const LAYOUT_OPTIONS = [LAYOUT_TYPE_GRID, LAYOUT_TYPE_CAROUSEL] as const;
+export type LayoutType = (typeof LAYOUT_OPTIONS)[number];
+
+// === Tooltips types ===
+const TOOLTIP_TYPE_DASHED = "dashed" as const;
+const TOOLTIP_TYPE_DOT = "dot" as const;
+const TOOLTIP_TYPE_LINE = "line" as const;
+
+export const TOOLTIP_OPTIONS = [
+    TOOLTIP_TYPE_DASHED,
+    TOOLTIP_TYPE_DOT,
+    TOOLTIP_TYPE_LINE,
+] as const;
+export type TooltipType = (typeof TOOLTIP_OPTIONS)[number];
+
+// === Area Chart Types ===
+export const AREA_CHART_TYPE_LINEAR = "linear" as const;
+export const AREA_CHART_TYPE_STEP = "step" as const;
+export const AREA_CHART_TYPE_BUMP = "bump" as const;
+export const AREA_CHART_TYPE_MONOTONE = "monotone" as const;
+export const AREA_CHART_TYPE_NATURAL = "natural" as const;
+
+export const AREA_CHART_TYPES_OPTIONS = [
+    AREA_CHART_TYPE_LINEAR,
+    AREA_CHART_TYPE_STEP,
+    AREA_CHART_TYPE_BUMP,
+    AREA_CHART_TYPE_MONOTONE,
+    AREA_CHART_TYPE_NATURAL,
+] as const;
+
+export type AreaChartType = (typeof AREA_CHART_TYPES_OPTIONS)[number];
+
+// === RANGES ===
+export const MIN_BORDER_WIDTH = 0;
+export const MAX_BORDER_WIDTH = 5;
+
+export const MIN_STROKE_WIDTH = 1;
+export const MAX_STROKE_WIDTH = 5;
+
+export const MIN_OPACITY = 0;
+export const MAX_OPACITY = 1;
+
+export const MIN_TEXT_SIZE = 0;
+export const MAX_TEXT_SIZE = 40;
+
+// === ANCHOR ===
+export const ANCHOR_START = "start" as const;
+export const ANCHOR_MIDDLE = "middle" as const;
+export const ANCHOR_END = "end" as const;
+export const ANCHOR_OPTIONS = [
+    ANCHOR_START,
+    ANCHOR_MIDDLE,
+    ANCHOR_END,
+] as const;
+export type AnchorType = (typeof ANCHOR_OPTIONS)[number];
+
+// === FONTS ===
+export const FONT_OPTIONS = [
+    "Arial",
+    "Courier New",
+    "Georgia",
+    "Times New Roman",
+    "Trebuchet MS",
+] as const;
+export const FONT_STYLES_BOLD = "bold" as const;
+export const FONT_STYLES_ITALIC = "italic" as const;
+export const FONT_STYLES_NORMAL = "normal" as const;
+export const FONT_STYLES_UNDERLINE = "underline" as const;
+export const FONT_STYLES_STRIKETHROUGH = "strikethrough" as const;
+export const FONT_STYLES_OPTIONS = [
+    FONT_STYLES_BOLD,
+    FONT_STYLES_ITALIC,
+    FONT_STYLES_NORMAL,
+    FONT_STYLES_UNDERLINE,
+    FONT_STYLES_STRIKETHROUGH,
+] as const;
+export type FontStyleType = (typeof FONT_STYLES_OPTIONS)[number];

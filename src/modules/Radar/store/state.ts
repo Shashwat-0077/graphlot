@@ -2,15 +2,15 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { RadarSelect } from "@/modules/Radar/schema";
-import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import { RGBAColor, ChartFilter, SortType } from "@/constants";
 import defaultRadarChartState from "@/modules/Radar/default.config";
 
 export type RadarChartState = Omit<RadarSelect, "chart_id">;
 
 export type RadarChartActions = {
     // Basic appearance
-    setBackgroundColor: (color: ColorType) => void;
-    setTextColor: (color: ColorType) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
     toggleLegend: () => void;
     toggleBorder: () => void;
@@ -18,31 +18,31 @@ export type RadarChartActions = {
     toggleGrid: () => void;
 
     // Color palette operations
-    setColorPalette: (palette: ColorType[]) => void;
-    addColor: (color?: ColorType) => void;
-    updateColor: (color: ColorType, index: number) => void;
+    setColorPalette: (palette: RGBAColor[]) => void;
+    addColor: (color?: RGBAColor) => void;
+    updateColor: (color: RGBAColor, index: number) => void;
     removeColor: (index: number) => void;
     clearColorPalette: () => void;
 
     // Axis operations
     setXAxis: (axis: string) => void;
     setYAxis: (axis: string) => void;
-    setSortX: (sort: SortOptionsType) => void;
-    setSortY: (sort: SortOptionsType) => void;
+    setSortX: (sort: SortType) => void;
+    setSortY: (sort: SortType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
     toggleCumulative: () => void;
 
     // Filter operations
-    setFilters: (filters: FilterType[]) => void;
-    addFilter: (filter: FilterType) => void;
-    updateFilter: (index: number, filter: FilterType) => void;
+    setFilters: (filters: ChartFilter[]) => void;
+    addFilter: (filter: ChartFilter) => void;
+    updateFilter: (index: number, filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     clearFilters: () => void;
 
     // Grid operations
-    setGridColor: (color: ColorType) => void;
+    setGridColor: (color: RGBAColor) => void;
 
     // State operations
     reset: () => void;

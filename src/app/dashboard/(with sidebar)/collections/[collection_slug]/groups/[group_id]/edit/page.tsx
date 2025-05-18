@@ -39,10 +39,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { useGetGroupWithId } from "@/modules/chartGroups/api/client/useGetGroups";
-import { useGetChartsInGroups } from "@/modules/chartGroups/api/client/useGetChartsInGroups";
-import { useUpdateGroup } from "@/modules/chartGroups/api/client/useUpdateGroup";
-import { useSetChartsInGroup } from "@/modules/chartGroups/api/client/useChartsAndGroupsOps";
+import { useGetGroupWithId } from "@/modules/ChartGroup/api/client/useGetGroups";
+import { useGetChartsInGroups } from "@/modules/ChartGroup/api/client/useGetChartsInGroups";
+import { useUpdateGroup } from "@/modules/ChartGroup/api/client/useUpdateGroup";
+import { useSetChartsInGroup } from "@/modules/ChartGroup/api/client/useChartsAndGroupsOps";
 import { LAYOUT_CAROUSEL, LAYOUT_GRID, LayoutOptionsType } from "@/constants";
 
 export default function EditChartGroupPage({

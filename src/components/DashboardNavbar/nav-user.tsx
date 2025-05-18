@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 
 export function NavUser() {
     const { isMobile } = useSidebar();

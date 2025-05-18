@@ -10,7 +10,7 @@ import {
 } from "@/modules/Bar/store/state";
 import { StateProviderType } from "@/constants";
 import { BoxLoader } from "@/components/ui/Loader";
-import { useGetBarChartWithId } from "@/modules/Bar/api/client/useGetBarChart";
+import { useBarCharts } from "@/modules/Bar/api/client/useGetBarChart";
 
 export type BarChartStoreApi = ReturnType<typeof createBarChartStore>;
 export const BarChartStoreContext = createContext<BarChartStoreApi | undefined>(
@@ -22,7 +22,7 @@ export const BarChartStoreProvider: StateProviderType = ({
     char_id,
 }) => {
     const storeRef = useRef<BarChartStoreApi>(null);
-    const { data, isLoading, error, isError } = useGetBarChartWithId(char_id);
+    const { data, isLoading, error, isError } = useBarCharts(char_id);
 
     if (!data || isLoading) {
         return (

@@ -29,14 +29,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-    SORT_OPTIONS,
+    SortType,
     type ChartConfigComponentType,
-    type FilterType,
-    type SortOptionsType,
+    type ChartFilter,
+    type SortType,
 } from "@/constants";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { GridSelect } from "@/components/ui/grid-select";
-import ClearAll from "@/modules/BasicChart/components/ClearAll";
+import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import { useUpdateBarChart } from "@/modules/Bar/api/client/useUpdateBarChart";
 import type { BarSelect } from "@/modules/Bar/schema";
@@ -50,7 +50,7 @@ import {
     YAxisType,
 } from "@/modules/Bar/util/selectFieldsForBar";
 import { Slider } from "@/components/ui/slider";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { envClient } from "@/lib/env/clientEnv";
 
@@ -430,17 +430,17 @@ function DataSection({
     setXAxis: (value: string) => void;
     yAxis: string;
     setYAxis: (value: string) => void;
-    sortX: SortOptionsType;
-    setSortX: (value: SortOptionsType) => void;
-    sortY: SortOptionsType;
-    setSortY: (value: SortOptionsType) => void;
+    sortX: SortType;
+    setSortX: (value: SortType) => void;
+    sortY: SortType;
+    setSortY: (value: SortType) => void;
     omitZeroValues: boolean;
     setOmitZeroValues: (value: boolean) => void;
     cumulative: boolean;
     setCumulative: (value: boolean) => void;
-    filters: FilterType[];
-    setFilters: (filters: FilterType[]) => void;
-    addFilter: (filter: FilterType) => void;
+    filters: ChartFilter[];
+    setFilters: (filters: ChartFilter[]) => void;
+    addFilter: (filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     setFilterColumn: (value: string, index: number) => void;
     setFilterOperation: (value: string, index: number) => void;
@@ -557,7 +557,7 @@ function DataSection({
                                             position="popper"
                                             sideOffset={4}
                                         >
-                                            {SORT_OPTIONS.map((col, index) => (
+                                            {SortOption.map((col, index) => (
                                                 <SelectItem
                                                     key={index}
                                                     value={col}
@@ -670,7 +670,7 @@ function DataSection({
                                             <SelectValue placeholder="Select a Column" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {SORT_OPTIONS.map((col, index) => (
+                                            {SortOption.map((col, index) => (
                                                 <SelectItem
                                                     key={index}
                                                     value={col}
@@ -904,13 +904,13 @@ export const BarConfig: ChartConfigComponentType = ({
     // local states
     const [xAxis, setXAxis] = useState(x_axis);
     const [yAxis, setYAxis] = useState(y_axis);
-    const [sortX, setSortX] = useState<SortOptionsType>(sort_x);
-    const [sortY, setSortY] = useState<SortOptionsType>(sort_y);
+    const [sortX, setSortX] = useState<SortType>(sort_x);
+    const [sortY, setSortY] = useState<SortType>(sort_y);
     const [omitZeroValues, setOmitZeroValues] = useState(globalOmitZeroValues);
     const [cumulative, setCumulative] = useState(globalCumulative);
-    const [filters, setFilters] = useState<FilterType[]>(globalFilters);
+    const [filters, setFilters] = useState<ChartFilter[]>(globalFilters);
 
-    const addFilter = (filter: FilterType) => {
+    const addFilter = (filter: ChartFilter) => {
         setFilters((prevFilters) => [...prevFilters, filter]);
     };
 

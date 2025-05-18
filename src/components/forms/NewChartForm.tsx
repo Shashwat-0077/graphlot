@@ -27,13 +27,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useGetAllDatabases } from "@/modules/notion/api/client/useGetAllDatabases";
-import { ChartSchema } from "@/modules/BasicChart/schema";
-import { useCreateNewChart } from "@/modules/BasicChart/api/client/useCreateNewChart";
+import { ChartSchema } from "@/modules/ChartMetaData/schema";
+import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/useCreateNewChart";
 import { AREA, CHART_TYPES } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSlug, parseSlug } from "@/utils/pathSlugsOps";
 import { toast } from "@/hooks/use-toast";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 import {
     Card,
     CardContent,
@@ -52,7 +52,7 @@ const FormType = ChartSchema.Insert.pick({
 
 const chartTypeIcons: Record<string, React.ReactNode> = {
     AREA: <BarChart2 className="h-4 w-4" />,
-    BAR: <BarChart2 className="h-4 w-4" />,
+    CHART_TYPE_BAR: <BarChart2 className="h-4 w-4" />,
     LINE: <BarChart2 className="h-4 w-4" />,
     PIE: <PieChart className="h-4 w-4" />,
 };

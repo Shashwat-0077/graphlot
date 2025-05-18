@@ -6,54 +6,81 @@ import {
 } from "drizzle-zod";
 
 import { AreaCharts } from "@/modules/Area/schema/db";
-import { AREA, GRID_TYPE, SORT_OPTIONS } from "@/constants";
-import { ChartSchema } from "@/modules/BasicChart/schema";
+import {
+    ANCHOR_OPTIONS,
+    AREA_CHART_TYPES_OPTIONS,
+    CHART_TYPE_AREA,
+    FONT_STYLES_OPTIONS,
+    GRID_ORIENTATION_OPTIONS,
+    GRID_TYPE_OPTIONS,
+    SORT_OPTIONS,
+} from "@/constants";
+import { ChartSchema } from "@/modules/ChartMetaData/schema";
 
-// Create base schemas from the Drizzle table
-const baseInsertSchema = createInsertSchema(AreaCharts);
-const baseSelectSchema = createSelectSchema(AreaCharts);
-const baseUpdateSchema = createUpdateSchema(AreaCharts);
+// Base schemas from AreaCharts table
+const areaInsertBase = createInsertSchema(AreaCharts);
+const areaSelectBase = createSelectSchema(AreaCharts);
+const areaUpdateBase = createUpdateSchema(AreaCharts);
 
-// Refine the schemas to properly handle JSON fields
-export const AreaSchema = {
-    Insert: baseInsertSchema.extend({
-        sort_x: z.enum(SORT_OPTIONS),
-        sort_y: z.enum(SORT_OPTIONS),
-        grid_type: z.enum(GRID_TYPE),
+// Core schema extensions for AreaCharts
+export const AreaChartSchema = {
+    Insert: areaInsertBase.extend({
+        label_anchor: z.enum(ANCHOR_OPTIONS),
+        label_font_style: z.enum(FONT_STYLES_OPTIONS),
+        x_sort_order: z.enum(SORT_OPTIONS),
+        y_sort_order: z.enum(SORT_OPTIONS),
+        grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
+        grid_type: z.enum(GRID_TYPE_OPTIONS),
+        area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
     }),
-    Select: baseSelectSchema.extend({
-        sort_x: z.enum(SORT_OPTIONS),
-        sort_y: z.enum(SORT_OPTIONS),
-        grid_type: z.enum(GRID_TYPE),
+    Select: areaSelectBase.extend({
+        label_anchor: z.enum(ANCHOR_OPTIONS),
+        label_font_style: z.enum(FONT_STYLES_OPTIONS),
+        x_sort_order: z.enum(SORT_OPTIONS),
+        y_sort_order: z.enum(SORT_OPTIONS),
+        grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
+        grid_type: z.enum(GRID_TYPE_OPTIONS),
+        area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
     }),
-    Update: baseUpdateSchema
+    Update: areaUpdateBase
         .extend({
-            sort_x: z.enum(SORT_OPTIONS).optional(),
-            sort_y: z.enum(SORT_OPTIONS).optional(),
-            grid_type: z.enum(GRID_TYPE).optional(),
+            label_anchor: z.enum(ANCHOR_OPTIONS),
+            label_font_style: z.enum(FONT_STYLES_OPTIONS),
+            x_sort_order: z.enum(SORT_OPTIONS),
+            y_sort_order: z.enum(SORT_OPTIONS),
+            grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
+            grid_type: z.enum(GRID_TYPE_OPTIONS),
+            area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
         })
         .omit({
             chart_id: true,
         }),
 };
 
-export const FullAreaSchema = {
-    Insert: AreaSchema.Insert.extend(ChartSchema.Insert.shape).extend({
-        type: z.literal(AREA),
+// Combined schema with metadata from BasicChart
+export const AreaChartWithMetaSchema = {
+    Insert: AreaChartSchema.Insert.merge(ChartSchema.Insert).extend({
+        type: z.literal(CHART_TYPE_AREA),
     }),
-    Select: AreaSchema.Select.extend(ChartSchema.Select.shape).extend({
-        type: z.literal(AREA),
+    Select: AreaChartSchema.Select.merge(ChartSchema.Select).extend({
+        type: z.literal(CHART_TYPE_AREA),
     }),
-    Update: AreaSchema.Update.extend(ChartSchema.Update.shape).extend({
-        type: z.literal(AREA),
+    Update: AreaChartSchema.Update.merge(ChartSchema.Update).extend({
+        type: z.literal(CHART_TYPE_AREA),
     }),
 };
 
-// Types for the schemas
-export type AreaInsert = z.infer<typeof AreaSchema.Insert>;
-export type AreaSelect = z.infer<typeof AreaSchema.Select>;
-export type AreaUpdate = z.infer<typeof AreaSchema.Update>;
+// Inferred Types
+export type AreaChartInsert = z.infer<typeof AreaChartSchema.Insert>;
+export type AreaChartSelect = z.infer<typeof AreaChartSchema.Select>;
+export type AreaChartUpdate = z.infer<typeof AreaChartSchema.Update>;
 
-export type FullAreaInsert = z.infer<typeof FullAreaSchema.Insert>;
-export type FullAreaSelect = z.infer<typeof FullAreaSchema.Select>;
-export type FullAreaUpdate = z.infer<typeof FullAreaSchema.Update>;
+export type AreaChartWithMetaInsert = z.infer<
+    typeof AreaChartWithMetaSchema.Insert
+>;
+export type AreaChartWithMetaSelect = z.infer<
+    typeof AreaChartWithMetaSchema.Select
+>;
+export type AreaChartWithMetaUpdate = z.infer<
+    typeof AreaChartWithMetaSchema.Update
+>;

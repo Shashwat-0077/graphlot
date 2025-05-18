@@ -39,9 +39,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateNewGroup } from "@/modules/chartGroups/api/client/useCreateNewGroup";
+import { useCreateNewGroup } from "@/modules/ChartGroup/api/client/useCreateNewGroup";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import { useGetAllChartsWithCollectionId } from "@/modules/BasicChart/api/client/useGetChart";
+import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/useGetChart";
 import { LAYOUT_CAROUSEL, LAYOUT_GRID, LayoutOptionsType } from "@/constants";
 
 export default function NewChartGroupPage() {

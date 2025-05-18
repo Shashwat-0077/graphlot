@@ -4,14 +4,14 @@ import {
     SORT_DEFAULT,
     SORT_NUMERICALLY_ASC,
     SORT_NUMERICALLY_DESC,
-    SortOptionsType,
+    SortType,
 } from "@/constants";
 
 export const sortDataAndConfig = (
     config: string[],
     data: { class: string; [key: string]: string | number }[],
-    x_sort: SortOptionsType,
-    y_sort: SortOptionsType
+    x_sort: SortType,
+    y_sort: SortType
 ): {
     sortedData: { class: string; [key: string]: string | number }[];
     sortedConfig: string[];

@@ -8,7 +8,7 @@ type ResponseType = InferResponseType<
     200
 >;
 
-export const useGetBarChartWithId = (chart_id: string) => {
+export const useBarCharts = (chart_id: string) => {
     return useQuery<ResponseType, Error>({
         queryKey: ["bar-chart", chart_id], // Unique cache key
         queryFn: async () => {

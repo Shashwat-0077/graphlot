@@ -7,12 +7,12 @@ import {
     StateProviderType,
 } from "@/constants";
 import { AreaChartView } from "@/modules/Area/components/AreaChartView";
-import { AreaConfig } from "@/modules/Area/components/AreaConfig";
+import { AreaChartConfig } from "@/modules/Area/components/AreaChartConfig";
 import { AreaChartStoreProvider } from "@/modules/Area/store";
 import { BarChartView } from "@/modules/Bar/components/BarChartView";
 import { BarConfig } from "@/modules/Bar/components/BarConfig";
 import { BarChartStoreProvider } from "@/modules/Bar/store";
-import { useGetChartWithId } from "@/modules/BasicChart/api/client/useGetChart";
+import { useGetChartWithId } from "@/modules/ChartMetaData/api/client/useGetChart";
 import { DonutChartView } from "@/modules/Donut/components/DonutChartView";
 import { DonutConfig } from "@/modules/Donut/components/DonutConfig";
 import { DonutChartStoreProvider } from "@/modules/Donut/store";
@@ -24,7 +24,7 @@ import { RadarConfig } from "@/modules/Radar/components/RadarConfig";
 import { RadarChartStoreProvider } from "@/modules/Radar/store";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { BoxLoader } from "@/components/ui/Loader";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 
 type Props = {
     params: Promise<{
@@ -90,7 +90,7 @@ export default function ChatConfigs({ params }: Props) {
     } = {
         Bar: [BarChartView, BarConfig, BarChartStoreProvider],
         Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
-        Area: [AreaChartView, AreaConfig, AreaChartStoreProvider],
+        Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
         Donut: [DonutChartView, DonutConfig, DonutChartStoreProvider],
         Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
     };

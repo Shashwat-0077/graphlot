@@ -2,14 +2,14 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { HeatmapSelect } from "@/modules/Heatmap/schema";
-import { ColorType, DayOfWeek } from "@/constants";
+import { RGBAColor, DayOfWeek } from "@/constants";
 
 export type HeatmapChartState = Omit<HeatmapSelect, "chart_id">;
 
 export type HeatmapChartActions = {
     // Basic appearance
-    setBackgroundColor: (color: ColorType) => void;
-    setTextColor: (color: ColorType) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
     toggleLegend: () => void;
     toggleBorder: () => void;
@@ -30,13 +30,13 @@ export type HeatmapChartActions = {
     toggleButtonHover: () => void;
 
     // Color operations
-    setDefaultBoxColor: (color: ColorType) => void;
-    setAccent: (color: ColorType) => void;
-    setLongestStreakColor: (color: ColorType) => void;
-    setNumberOfEntriesColor: (color: ColorType) => void;
-    setStreakColor: (color: ColorType) => void;
-    setSumOfAllEntriesColor: (color: ColorType) => void;
-    setAverageOfAllEntriesColor: (color: ColorType) => void;
+    setDefaultBoxColor: (color: RGBAColor) => void;
+    setAccent: (color: RGBAColor) => void;
+    setLongestStreakColor: (color: RGBAColor) => void;
+    setNumberOfEntriesColor: (color: RGBAColor) => void;
+    setStreakColor: (color: RGBAColor) => void;
+    setSumOfAllEntriesColor: (color: RGBAColor) => void;
+    setAverageOfAllEntriesColor: (color: RGBAColor) => void;
 
     toggleDaysToIncludeInStreak: (day: DayOfWeek) => void;
     setDaysToIncludeInStreak: (days: DayOfWeek[]) => void;

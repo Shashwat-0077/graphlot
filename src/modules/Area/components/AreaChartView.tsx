@@ -12,41 +12,48 @@ import {
 } from "@/components/ui/chart";
 import { useAreaChartStore } from "@/modules/Area/store";
 import { getRGBAString } from "@/utils/colors";
-import type { ChartViewComponentType } from "@/constants";
-import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
+import {
+    ChartViewComponent,
+    GRID_ORIENTATION_BOTH,
+    GRID_ORIENTATION_HORIZONTAL,
+    GRID_ORIENTATION_NONE,
+    GRID_ORIENTATION_VERTICAL,
+} from "@/constants";
+import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
 import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 
-export const AreaChartView: ChartViewComponentType = ({
+export const AreaChartView: ChartViewComponent = ({
     chartName,
-    notion_table_id,
-    user_id,
+    notionTableId,
+    userId,
 }) => {
     const LIMIT = 8;
 
     const {
-        x_axis,
-        y_axis,
+        x_axis_field,
+
+        y_axis_field,
         color_palette,
         legend_enabled,
-        grid_type,
+        grid_orientation,
         tooltip_enabled,
         grid_color,
         text_color,
         background_color,
         label_enabled,
-        sort_x,
-        sort_y,
-        cumulative,
+        x_sort_order,
+        y_sort_order,
+        cumulative_enabled,
     } = useAreaChartStore((state) => state);
 
     const { data, config, isLoading, error, schema } = useGetProcessData({
-        notion_table_id,
-        x_axis,
-        y_axis,
-        sort_x,
-        sort_y,
-        user_id,
+        notionTableId,
+        userId,
+        x_axis: x_axis_field,
+        y_axis: y_axis_field,
+        sort_x: x_sort_order,
+        sort_y: y_sort_order,
     });
 
     const limitedRadarChartData = useMemo(() => {
@@ -144,7 +151,7 @@ export const AreaChartView: ChartViewComponentType = ({
     }
 
     // No axis selected state
-    if (!x_axis || !y_axis) {
+    if (!x_axis_field || !y_axis_field) {
         return (
             <ChartViewWrapper
                 bgColor={background_color}
@@ -229,18 +236,20 @@ export const AreaChartView: ChartViewComponentType = ({
                         <ChartLegend content={<ChartLegendContent />} />
                     )}
 
-                    {grid_type !== "NONE" && (
+                    {grid_orientation !== GRID_ORIENTATION_NONE && (
                         <CartesianGrid
                             vertical={
-                                grid_type === "VERTICAL" || grid_type === "BOTH"
+                                grid_orientation ===
+                                    GRID_ORIENTATION_VERTICAL ||
+                                grid_orientation === GRID_ORIENTATION_BOTH
                             }
                             horizontal={
-                                grid_type === "HORIZONTAL" ||
-                                grid_type === "BOTH"
+                                grid_orientation ===
+                                    GRID_ORIENTATION_HORIZONTAL ||
+                                grid_orientation === GRID_ORIENTATION_BOTH
                             }
                             stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
                             strokeDasharray="3 3"
-                            strokeOpacity={0.6}
                         />
                     )}
 
@@ -294,7 +303,7 @@ export const AreaChartView: ChartViewComponentType = ({
                             fillOpacity={0.4}
                             stroke={configData[data_label].color}
                             strokeWidth={2}
-                            stackId={cumulative ? "1" : undefined}
+                            stackId={cumulative_enabled ? "1" : undefined}
                         />
                     ))}
                 </AreaChart>

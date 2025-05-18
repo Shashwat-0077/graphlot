@@ -1,62 +1,98 @@
 import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
-import { AreaSelect } from "@/modules/Area/schema";
-import { ColorType, FilterType, GridType, SortOptionsType } from "@/constants";
-import defaultAreaChartState from "@/modules/Area/default.config";
+import {
+    RGBAColor,
+    ChartFilter,
+    GridOrientation,
+    SortType,
+    AreaChartType,
+    GridType,
+    AnchorType,
+    FontStyleType,
+} from "@/constants";
+import defaultAreaChartConfig from "@/modules/Area/area-chart-default-config";
+import { AreaChartSelect } from "@/modules/Area/schema";
 
-export type AreaChartState = Omit<AreaSelect, "chart_id">;
+export type AreaChartState = Omit<AreaChartSelect, "chart_id">;
 
 export type AreaChartActions = {
     // Basic appearance
-    setBackgroundColor: (color: ColorType) => void;
-    setTextColor: (color: ColorType) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
+
+    // Label operations
+    setLabel: (label: string) => void;
+    toggleLabel: () => void;
+    setLabelSize: (size: number) => void;
+    setLabelAnchor: (anchor: AnchorType) => void;
+    setLabelColor: (color: RGBAColor) => void;
+    setLabelFontFamily: (fontFamily: string) => void;
+    setLabelFontStyle: (fontStyle: FontStyleType) => void;
+
+    // Legend and border
     toggleLegend: () => void;
     toggleBorder: () => void;
-    toggleLabel: () => void;
 
     // Color palette operations
-    setColorPalette: (palette: ColorType[]) => void;
-    addColor: (color?: ColorType) => void;
-    updateColor: (color: ColorType, index: number) => void;
+    setColorPalette: (palette: RGBAColor[]) => void;
+    addColor: (color?: RGBAColor) => void;
+    updateColor: (index: number, color: RGBAColor) => void;
     removeColor: (index: number) => void;
     clearColorPalette: () => void;
 
     // Axis operations
-    setXAxis: (axis: string) => void;
-    setYAxis: (axis: string) => void;
-    setSortX: (sort: SortOptionsType) => void;
-    setSortY: (sort: SortOptionsType) => void;
+    setXAxisField: (field: string) => void;
+    setYAxisField: (field: string) => void;
+    setXSortOrder: (order: SortType) => void;
+    setYSortOrder: (order: SortType) => void;
+    toggleXAxis: () => void;
+    toggleYAxis: () => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
     toggleCumulative: () => void;
+    setOmitZeroValues: (omit: boolean) => void;
     setCumulative: (cumulative: boolean) => void;
-    setOmitZeroValues: (omitZeroValues: boolean) => void;
+    toggleStacked: () => void;
 
     // Filter operations
-    setFilters: (filters: FilterType[]) => void;
-    addFilter: (filter: FilterType) => void;
-    updateFilter: (index: number, filter: FilterType) => void;
+    setFilters: (filters: ChartFilter[]) => void;
+    addFilter: (filter: ChartFilter) => void;
+    updateFilter: (index: number, filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     clearFilters: () => void;
 
     // Grid operations
-    setGridColor: (color: ColorType) => void;
+    setGridColor: (color: RGBAColor) => void;
+    setGridOrientation: (orientation: GridOrientation) => void;
     setGridType: (type: GridType) => void;
+    setGridWidth: (width: number) => void;
 
-    // State operations
+    // Area chart specific operations
+    setAreaStyle: (style: AreaChartType) => void;
+    setStrokeWidth: (width: number) => void;
+    setFillOpacity: (opacity: number) => void;
+    toggleIsAreaChart: () => void;
+
+    // Margin operations
+    setMarginTop: (margin: number) => void;
+    setMarginBottom: (margin: number) => void;
+    setMarginLeft: (margin: number) => void;
+    setMarginRight: (margin: number) => void;
+
+    // Reset operation
     reset: () => void;
 };
 
 export type AreaChartStore = AreaChartState & AreaChartActions;
 
 export const initAreaChartStore = (data?: AreaChartState): AreaChartState => {
-    if (!data) {
-        return defaultAreaChartState;
+    if (data) {
+        return data;
     }
-    return data;
+    return defaultAreaChartConfig;
 };
 
 export const createAreaChartStore = (
@@ -64,7 +100,7 @@ export const createAreaChartStore = (
 ) => {
     return createStore<AreaChartStore>()(
         immer((set) => ({
-            ...defaultAreaChartState,
+            ...defaultAreaChartConfig,
             ...initialState,
 
             // Basic appearance
@@ -80,17 +116,45 @@ export const createAreaChartStore = (
                 set((state) => {
                     state.tooltip_enabled = !state.tooltip_enabled;
                 }),
+
+            // Label operations
+            setLabel: (label) =>
+                set((state) => {
+                    state.label = label;
+                }),
+            toggleLabel: () =>
+                set((state) => {
+                    state.label_enabled = !state.label_enabled;
+                }),
+            setLabelSize: (size) =>
+                set((state) => {
+                    state.label_size = size;
+                }),
+            setLabelAnchor: (anchor) =>
+                set((state) => {
+                    state.label_anchor = anchor;
+                }),
+            setLabelColor: (color) =>
+                set((state) => {
+                    state.label_color = color;
+                }),
+            setLabelFontFamily: (fontFamily) =>
+                set((state) => {
+                    state.label_font_family = fontFamily;
+                }),
+            setLabelFontStyle: (fontStyle) =>
+                set((state) => {
+                    state.label_font_style = fontStyle;
+                }),
+
+            // Legend and border
             toggleLegend: () =>
                 set((state) => {
                     state.legend_enabled = !state.legend_enabled;
                 }),
             toggleBorder: () =>
                 set((state) => {
-                    state.has_border = !state.has_border;
-                }),
-            toggleLabel: () =>
-                set((state) => {
-                    state.label_enabled = !state.label_enabled;
+                    state.border_enabled = !state.border_enabled;
                 }),
 
             // Color palette operations
@@ -109,7 +173,7 @@ export const createAreaChartStore = (
                 set((state) => {
                     state.color_palette.push(color);
                 }),
-            updateColor: (color, index) =>
+            updateColor: (index, color) =>
                 set((state) => {
                     if (index >= 0 && index < state.color_palette.length) {
                         state.color_palette[index] = color;
@@ -127,39 +191,52 @@ export const createAreaChartStore = (
                 }),
 
             // Axis operations
-            setXAxis: (axis) =>
+            setXAxisField: (field) =>
                 set((state) => {
-                    state.x_axis = axis;
+                    state.x_axis_field = field;
                 }),
-            setYAxis: (axis) =>
+            setYAxisField: (field) =>
                 set((state) => {
-                    state.y_axis = axis;
+                    state.y_axis_field = field;
                 }),
-            setSortX: (sort) =>
+            setXSortOrder: (order) =>
                 set((state) => {
-                    state.sort_x = sort;
+                    state.x_sort_order = order;
                 }),
-            setSortY: (sort) =>
+            setYSortOrder: (order) =>
                 set((state) => {
-                    state.sort_y = sort;
+                    state.y_sort_order = order;
+                }),
+            toggleXAxis: () =>
+                set((state) => {
+                    state.x_axis_enabled = !state.x_axis_enabled;
+                }),
+            toggleYAxis: () =>
+                set((state) => {
+                    state.y_axis_enabled = !state.y_axis_enabled;
                 }),
 
             // Data display options
             toggleOmitZeroValues: () =>
                 set((state) => {
-                    state.omit_zero_values = !state.omit_zero_values;
+                    state.omit_zero_values_enabled =
+                        !state.omit_zero_values_enabled;
                 }),
             toggleCumulative: () =>
                 set((state) => {
-                    state.cumulative = !state.cumulative;
+                    state.cumulative_enabled = !state.cumulative_enabled;
+                }),
+            setOmitZeroValues: (omit) =>
+                set((state) => {
+                    state.omit_zero_values_enabled = omit;
                 }),
             setCumulative: (cumulative) =>
                 set((state) => {
-                    state.cumulative = cumulative;
+                    state.cumulative_enabled = cumulative;
                 }),
-            setOmitZeroValues: (omitZeroValues) =>
+            toggleStacked: () =>
                 set((state) => {
-                    state.omit_zero_values = omitZeroValues;
+                    state.stacked_enabled = !state.stacked_enabled;
                 }),
 
             // Filter operations
@@ -193,13 +270,57 @@ export const createAreaChartStore = (
                 set((state) => {
                     state.grid_color = color;
                 }),
+            setGridOrientation: (orientation) =>
+                set((state) => {
+                    state.grid_orientation = orientation;
+                }),
             setGridType: (type) =>
                 set((state) => {
                     state.grid_type = type;
                 }),
+            setGridWidth: (width) =>
+                set((state) => {
+                    state.grid_width = width;
+                }),
 
-            // State operations
-            reset: () => set(() => ({ ...defaultAreaChartState })),
+            // Area chart specific operations
+            setAreaStyle: (style) =>
+                set((state) => {
+                    state.area_style = style;
+                }),
+            setStrokeWidth: (width) =>
+                set((state) => {
+                    state.stroke_width = width;
+                }),
+            setFillOpacity: (opacity) =>
+                set((state) => {
+                    state.fill_opacity = opacity;
+                }),
+            toggleIsAreaChart: () =>
+                set((state) => {
+                    state.is_area_chart = !state.is_area_chart;
+                }),
+
+            // Margin operations
+            setMarginTop: (margin) =>
+                set((state) => {
+                    state.margin_top = margin;
+                }),
+            setMarginBottom: (margin) =>
+                set((state) => {
+                    state.margin_bottom = margin;
+                }),
+            setMarginLeft: (margin) =>
+                set((state) => {
+                    state.margin_left = margin;
+                }),
+            setMarginRight: (margin) =>
+                set((state) => {
+                    state.margin_right = margin;
+                }),
+
+            // Reset operation
+            reset: () => set(() => ({ ...defaultAreaChartConfig })),
         }))
     );
 };

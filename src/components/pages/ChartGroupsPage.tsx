@@ -46,13 +46,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { EmptyChartGroups } from "@/modules/chartGroups/components/EmptyChartGroups";
-import { useDeleteGroup } from "@/modules/chartGroups/api/client/useDeleteGroup";
-import { ChartSelect } from "@/modules/BasicChart/schema";
-import { ChartGroupSelect } from "@/modules/chartGroups/schema";
+import { EmptyChartGroups } from "@/modules/ChartGroup/components/EmptyChartGroups";
+import { useDeleteGroup } from "@/modules/ChartGroup/api/client/useDeleteGroup";
+import { ChartSelect } from "@/modules/ChartMetaData/schema";
+import { ChartGroupSelect } from "@/modules/ChartGroup/schema";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { LAYOUT_GRID } from "@/constants";
-import { useGetAllGroups } from "@/modules/chartGroups/api/client/useGetGroups";
+import { useGetAllGroups } from "@/modules/ChartGroup/api/client/useGetGroups";
 
 export default function ChartGroupsPage({
     collection_slug,

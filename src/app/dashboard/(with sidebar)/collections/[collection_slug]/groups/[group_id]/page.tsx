@@ -32,9 +32,9 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useGetFullChartsInGroups } from "@/modules/chartGroups/api/client/useGetChartsInGroups";
-import { useGetGroupWithId } from "@/modules/chartGroups/api/client/useGetGroups";
-import { useDeleteGroup } from "@/modules/chartGroups/api/client/useDeleteGroup";
+import { useGetFullChartsInGroups } from "@/modules/ChartGroup/api/client/useGetChartsInGroups";
+import { useGetGroupWithId } from "@/modules/ChartGroup/api/client/useGetGroups";
+import { useDeleteGroup } from "@/modules/ChartGroup/api/client/useDeleteGroup";
 import { LAYOUT_GRID } from "@/constants";
 
 export default function ChartGroupDetailPage() {

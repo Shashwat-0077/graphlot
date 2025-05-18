@@ -4,9 +4,9 @@ import { DonutCharts } from "@/modules/Donut/schema/db";
 import { HeatmapCharts, HeatmapData } from "@/modules/Heatmap/schema/db";
 import { RadarCharts } from "@/modules/Radar/schema/db";
 import { Collections } from "@/modules/Collection/schema/db";
-import { Charts } from "@/modules/BasicChart/schema/db";
+import { Charts } from "@/modules/ChartMetaData/schema/db";
 import { Users, Accounts } from "@/modules/auth/schema/db";
-import { ChartGroup, ChartGroupCharts } from "@/modules/chartGroups/schema/db";
+import { ChartGroup, ChartGroupCharts } from "@/modules/ChartGroup/schema/db";
 
 export {
     AreaCharts,

@@ -2,32 +2,32 @@ import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
 import { BarSelect } from "@/modules/Bar/schema";
-import { ColorType, FilterType, GridType, SortOptionsType } from "@/constants";
+import { RGBAColor, ChartFilter, GridOrientation, SortType } from "@/constants";
 import defaultBarChartConfig from "@/modules/Bar/default.config";
 
 export type BarChartState = Omit<BarSelect, "chart_id">;
 
 export type BarChartActions = {
     // Basic appearance
-    setBackgroundColor: (color: ColorType) => void;
-    setTextColor: (color: ColorType) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
     toggleLegend: () => void;
     toggleBorder: () => void;
     toggleLabel: () => void;
 
     // Color palette operations
-    setColorPalette: (palette: ColorType[]) => void;
-    addColor: (color?: ColorType) => void;
-    updateColor: (color: ColorType, index: number) => void;
+    setColorPalette: (palette: RGBAColor[]) => void;
+    addColor: (color?: RGBAColor) => void;
+    updateColor: (color: RGBAColor, index: number) => void;
     removeColor: (index: number) => void;
     clearColorPalette: () => void;
 
     // Axis operations
     setXAxis: (axis: string) => void;
     setYAxis: (axis: string) => void;
-    setSortX: (sort: SortOptionsType) => void;
-    setSortY: (sort: SortOptionsType) => void;
+    setSortX: (sort: SortType) => void;
+    setSortY: (sort: SortType) => void;
 
     // Data display options
     toggleOmitZeroValues: () => void;
@@ -36,15 +36,15 @@ export type BarChartActions = {
     setCumulative: (cumulative: boolean) => void;
 
     // Filter operations
-    setFilters: (filters: FilterType[]) => void;
-    addFilter: (filter: FilterType) => void;
-    updateFilter: (index: number, filter: FilterType) => void;
+    setFilters: (filters: ChartFilter[]) => void;
+    addFilter: (filter: ChartFilter) => void;
+    updateFilter: (index: number, filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     clearFilters: () => void;
 
     // Grid operations
-    setGridColor: (color: ColorType) => void;
-    setGridType: (type: GridType) => void;
+    setGridColor: (color: RGBAColor) => void;
+    setGridType: (type: GridOrientation) => void;
 
     // Bar-specific operations
     setBarGap: (gap: number) => void;

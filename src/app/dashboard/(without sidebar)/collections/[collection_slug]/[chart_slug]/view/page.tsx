@@ -7,7 +7,7 @@ import { AreaChartView } from "@/modules/Area/components/AreaChartView";
 import { AreaChartStoreProvider } from "@/modules/Area/store";
 import { BarChartView } from "@/modules/Bar/components/BarChartView";
 import { BarChartStoreProvider } from "@/modules/Bar/store";
-import { useGetChartWithId } from "@/modules/BasicChart/api/client/useGetChart";
+import { useGetChartWithId } from "@/modules/ChartMetaData/api/client/useGetChart";
 import { DonutChartView } from "@/modules/Donut/components/DonutChartView";
 import { DonutChartStoreProvider } from "@/modules/Donut/store";
 import { HeatmapChartView } from "@/modules/Heatmap/components/HeatmapChartView";

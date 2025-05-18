@@ -1,8 +1,8 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import defaultConfig from "@/modules/Donut/default.config";
-import { Charts } from "@/modules/BasicChart/schema/db";
-import { ColorType, FilterType, SortOptionsType } from "@/constants";
+import { Charts } from "@/modules/ChartMetaData/schema/db";
+import { RGBAColor, ChartFilter, SortType } from "@/constants";
 
 export const DonutCharts = sqliteTable("donut_charts", {
     chart_id: text("chart_id")
@@ -12,11 +12,11 @@ export const DonutCharts = sqliteTable("donut_charts", {
     background_color: text("background_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.background_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     text_color: text("text_color", { mode: "json" })
         .notNull()
         .default(defaultConfig.text_color)
-        .$type<ColorType>(),
+        .$type<RGBAColor>(),
     tooltip_enabled: integer("show_tooltip", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.tooltip_enabled),
@@ -32,18 +32,18 @@ export const DonutCharts = sqliteTable("donut_charts", {
     color_palette: text("color_palette", { mode: "json" })
         .notNull()
         .default(defaultConfig.color_palette)
-        .$type<ColorType[]>(),
+        .$type<RGBAColor[]>(),
 
     x_axis: text("x_axis").notNull().default(defaultConfig.x_axis),
     sort_by: text("sort_by")
         .notNull()
         .default(defaultConfig.sort_by)
-        .$type<SortOptionsType>(),
+        .$type<SortType>(),
     omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
         .notNull()
         .default(defaultConfig.omit_zero_values),
     filters: text("filters", { mode: "json" })
         .notNull()
         .default(defaultConfig.filters)
-        .$type<FilterType[]>(),
+        .$type<ChartFilter[]>(),
 });

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ColorType } from "@/constants";
+import { RGBAColor } from "@/constants";
 import { useHeatmapChartStore } from "@/modules/Heatmap/store";
 import { getShortMonth } from "@/utils/date";
 
@@ -65,7 +65,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
             name: string;
             value: number;
             icon: LucideIcon;
-            color: ColorType;
+            color: RGBAColor;
         };
     } = {
         ...(longest_streak_enabled

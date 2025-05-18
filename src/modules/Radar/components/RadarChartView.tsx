@@ -13,7 +13,7 @@ import {
 import { useRadarChartStore } from "@/modules/Radar/store";
 import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
-import { ChartViewWrapper } from "@/modules/BasicChart/components/ChartViewWrapperComponent";
+import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
 import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
 

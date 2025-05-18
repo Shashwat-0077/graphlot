@@ -28,13 +28,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
     ChartConfigComponentType,
-    ColorType,
-    FilterType,
-    SORT_OPTIONS,
-    SortOptionsType,
+    RGBAColor,
+    ChartFilter,
+    SortType,
+    SortType,
 } from "@/constants";
 import { useRadarChartStore } from "@/modules/Radar/store";
-import ClearAll from "@/modules/BasicChart/components/ClearAll";
+import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,7 +46,7 @@ import {
     XAxisType,
     YAxisType,
 } from "@/modules/Radar/util/selectFieldsForRadar";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { useAuthSession } from "@/hooks/use-auth-session";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { envClient } from "@/lib/env/clientEnv";
 
@@ -63,17 +63,17 @@ function Colors({
     clearColorPalette,
     updateColor,
 }: {
-    text_color: ColorType;
-    background_color: ColorType;
-    grid_color: ColorType;
-    color_palette: ColorType[];
-    setTextColor: (color: ColorType) => void;
-    setBackgroundColor: (color: ColorType) => void;
-    setGridColor: (color: ColorType) => void;
+    text_color: RGBAColor;
+    background_color: RGBAColor;
+    grid_color: RGBAColor;
+    color_palette: RGBAColor[];
+    setTextColor: (color: RGBAColor) => void;
+    setBackgroundColor: (color: RGBAColor) => void;
+    setGridColor: (color: RGBAColor) => void;
     addColor: () => void;
     removeColor: (index: number) => void;
     clearColorPalette: () => void;
-    updateColor: (color: ColorType, index: number) => void;
+    updateColor: (color: RGBAColor, index: number) => void;
 }) {
     return (
         <div className="space-y-6 p-2">
@@ -363,16 +363,16 @@ function DataSection({
     setXAxis: (value: string) => void;
     yAxis: string;
     setYAxis: (value: string) => void;
-    sortX: SortOptionsType;
-    setSortX: (value: SortOptionsType) => void;
-    sortY: SortOptionsType;
-    setSortY: (value: SortOptionsType) => void;
+    sortX: SortType;
+    setSortX: (value: SortType) => void;
+    sortY: SortType;
+    setSortY: (value: SortType) => void;
     omitZeroValues: boolean;
     setOmitZeroValues: (value: boolean) => void;
     cumulative: boolean;
     setCumulative: (value: boolean) => void;
-    filters: FilterType[];
-    addFilter: (filter: FilterType) => void;
+    filters: ChartFilter[];
+    addFilter: (filter: ChartFilter) => void;
     removeFilter: (index: number) => void;
     setFilterColumn: (value: string, index: number) => void;
     setFilterOperation: (value: string, index: number) => void;
@@ -489,7 +489,7 @@ function DataSection({
                                             position="popper"
                                             sideOffset={4}
                                         >
-                                            {SORT_OPTIONS.map((col, index) => (
+                                            {SortOption.map((col, index) => (
                                                 <SelectItem
                                                     key={index}
                                                     value={col}
@@ -602,7 +602,7 @@ function DataSection({
                                             <SelectValue placeholder="Select a Column" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {SORT_OPTIONS.map((col, index) => (
+                                            {SortOption.map((col, index) => (
                                                 <SelectItem
                                                     key={index}
                                                     value={col}
@@ -837,9 +837,9 @@ export const RadarConfig: ChartConfigComponentType = ({
     const [sortY, setSortY] = useState(sort_y);
     const [omitZeroValues, setOmitZeroValues] = useState(globalOmitZeroValues);
     const [cumulative, setCumulative] = useState(globalCumulative);
-    const [filters, setFilters] = useState<FilterType[]>(globalFilters);
+    const [filters, setFilters] = useState<ChartFilter[]>(globalFilters);
 
-    const addFilter = (filter: FilterType) => {
+    const addFilter = (filter: ChartFilter) => {
         setFilters((prevFilters) => [...prevFilters, filter]);
     };
 
