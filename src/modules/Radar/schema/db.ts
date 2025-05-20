@@ -1,67 +1,48 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { Charts } from "@/modules/ChartMetaData/schema/db";
-import { RGBAColor, ChartFilter, SortType } from "@/constants";
-import defaultConfig from "@/modules/Radar/default.config";
+import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartFilter, SortType } from "@/constants";
+import { defaultRadarChartConfig } from "@/modules/Radar/radar-chart-default-config";
 
-export const RadarCharts = sqliteTable("radar_charts", {
-    chart_id: text("chart_id")
+export const RADAR_CHARTS_TABLE_NAME = "radar_chart";
+export const RadarCharts = sqliteTable(RADAR_CHARTS_TABLE_NAME, {
+    chartId: text("chart_id")
         .primaryKey()
-        .references(() => Charts.chart_id, { onDelete: "cascade" }),
+        .references(() => ChartMetadata.chartId, { onDelete: "cascade" }),
 
-    background_color: text("background_color", { mode: "json" })
+    xAxisField: text("x_axis_field")
         .notNull()
-        .default(defaultConfig.background_color)
-        .$type<RGBAColor>(),
-    text_color: text("text_color", { mode: "json" })
+        .default(defaultRadarChartConfig.xAxisField),
+    yAxisField: text("y_axis_field")
         .notNull()
-        .default(defaultConfig.text_color)
-        .$type<RGBAColor>(),
-    tooltip_enabled: integer("tooltip_enabled", { mode: "boolean" })
+        .default(defaultRadarChartConfig.yAxisField),
+    xAxisSortOrder: text("x_sort_order")
         .notNull()
-        .default(defaultConfig.tooltip_enabled),
-    label_enabled: integer("label_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.label_enabled),
-    legend_enabled: integer("legend_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.legend_enabled),
-    has_border: integer("has_border", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.has_border),
-    color_palette: text("color_palette", { mode: "json" })
-        .notNull()
-        .default(defaultConfig.color_palette)
-        .$type<RGBAColor[]>(),
-    // in the format of [{ r: 255, g: 255, b: 255, a: 1 }, { r: 255, g: 255, b: 255, a: 1 }]
-
-    x_axis: text("x_axis").notNull().default(defaultConfig.x_axis),
-    y_axis: text("y_axis").notNull().default(defaultConfig.y_axis),
-    sort_x: text("sort_x")
-        .notNull()
-        .default(defaultConfig.sort_x)
+        .default(defaultRadarChartConfig.xAxisSortOrder)
         .$type<SortType>(),
-    sort_y: text("sort_y")
+    yAxisSortOrder: text("y_sort_order")
         .notNull()
-        .default(defaultConfig.sort_y)
+        .default(defaultRadarChartConfig.yAxisSortOrder)
         .$type<SortType>(),
-    omit_zero_values: integer("omit_zero_values", { mode: "boolean" })
+    omitZeroValuesEnabled: integer("omit_zero_values_enabled", {
+        mode: "boolean",
+    })
         .notNull()
-        .default(defaultConfig.omit_zero_values),
-    cumulative: integer("cumulative", { mode: "boolean" })
+        .default(defaultRadarChartConfig.omitZeroValuesEnabled),
+    cumulativeEnabled: integer("cumulative_enabled", { mode: "boolean" })
         .notNull()
-        .default(defaultConfig.cumulative),
+        .default(defaultRadarChartConfig.cumulativeEnabled),
     filters: text("filters", { mode: "json" })
         .notNull()
-        .default(defaultConfig.filters)
+        .default(defaultRadarChartConfig.filters)
         .$type<ChartFilter[]>(),
-    // in the format of { column: string; operation: string; value: string; }
-
-    grid_color: text("grid_color", { mode: "json" })
+    yAxisEnabled: integer("y_axis_enabled", { mode: "boolean" })
         .notNull()
-        .default(defaultConfig.grid_color)
-        .$type<RGBAColor>(),
-    grid_enabled: integer("grid_type", { mode: "boolean" })
+        .default(defaultRadarChartConfig.yAxisEnabled),
+    xAxisEnabled: integer("x_axis_enabled", { mode: "boolean" })
         .notNull()
-        .default(defaultConfig.grid_enabled),
+        .default(defaultRadarChartConfig.xAxisEnabled),
+    strokeWidth: real("stroke_width")
+        .notNull()
+        .default(defaultRadarChartConfig.strokeWidth),
 });

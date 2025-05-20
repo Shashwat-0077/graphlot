@@ -7,14 +7,14 @@ import {
 // === Chart Types ===
 export const CHART_TYPE_AREA = "Area" as const;
 export const CHART_TYPE_BAR = "Bar" as const;
-export const CHART_TYPE_DONUT = "Donut" as const;
+export const CHART_TYPE_RADIAL = "Radial" as const;
 export const CHART_TYPE_RADAR = "Radar" as const;
 export const CHART_TYPE_HEATMAP = "Heatmap" as const;
 
 export const CHART_TYPES = [
     CHART_TYPE_AREA,
     CHART_TYPE_BAR,
-    CHART_TYPE_DONUT,
+    CHART_TYPE_RADIAL,
     CHART_TYPE_HEATMAP,
     CHART_TYPE_RADAR,
 ] as const;
@@ -34,15 +34,15 @@ export const GRID_ORIENTATION_OPTIONS = [
 ] as const;
 export type GridOrientation = (typeof GRID_ORIENTATION_OPTIONS)[number];
 
-export const GRID_TYPE_DASHED = "dashed" as const;
-export const GRID_TYPE_DOTTED = "dotted" as const;
-export const GRID_TYPE_SOLID = "solid" as const;
-export const GRID_TYPE_OPTIONS = [
-    GRID_TYPE_DASHED,
-    GRID_TYPE_DOTTED,
-    GRID_TYPE_SOLID,
+export const GRID_STYLE_DASHED = "dashed" as const;
+export const GRID_STYLE_DOTTED = "dotted" as const;
+export const GRID_STYLE_SOLID = "solid" as const;
+export const GRID_STYLE_OPTIONS = [
+    GRID_STYLE_DASHED,
+    GRID_STYLE_DOTTED,
+    GRID_STYLE_SOLID,
 ] as const;
-export type GridType = (typeof GRID_TYPE_OPTIONS)[number];
+export type GridStyle = (typeof GRID_STYLE_OPTIONS)[number];
 
 // === Color Type ===
 export const ColorSchema = z.object({
@@ -118,33 +118,33 @@ export const LAYOUT_OPTIONS = [LAYOUT_TYPE_GRID, LAYOUT_TYPE_CAROUSEL] as const;
 export type LayoutType = (typeof LAYOUT_OPTIONS)[number];
 
 // === Tooltips types ===
-const TOOLTIP_TYPE_DASHED = "dashed" as const;
-const TOOLTIP_TYPE_DOT = "dot" as const;
-const TOOLTIP_TYPE_LINE = "line" as const;
+const TOOLTIP_STYLE_DASHED = "dashed" as const;
+const TOOLTIP_STYLE_DOT = "dot" as const;
+const TOOLTIP_STYLE_LINE = "line" as const;
 
-export const TOOLTIP_OPTIONS = [
-    TOOLTIP_TYPE_DASHED,
-    TOOLTIP_TYPE_DOT,
-    TOOLTIP_TYPE_LINE,
+export const TOOLTIP_STYLE_OPTIONS = [
+    TOOLTIP_STYLE_DASHED,
+    TOOLTIP_STYLE_DOT,
+    TOOLTIP_STYLE_LINE,
 ] as const;
-export type TooltipType = (typeof TOOLTIP_OPTIONS)[number];
+export type TooltipStyle = (typeof TOOLTIP_STYLE_OPTIONS)[number];
 
 // === Area Chart Types ===
-export const AREA_CHART_TYPE_LINEAR = "linear" as const;
-export const AREA_CHART_TYPE_STEP = "step" as const;
-export const AREA_CHART_TYPE_BUMP = "bump" as const;
-export const AREA_CHART_TYPE_MONOTONE = "monotone" as const;
-export const AREA_CHART_TYPE_NATURAL = "natural" as const;
+export const AREA_CHART_STYLE_LINEAR = "linear" as const;
+export const AREA_CHART_STYLE_STEP = "step" as const;
+export const AREA_CHART_STYLE_BUMP = "bump" as const;
+export const AREA_CHART_STYLE_MONOTONE = "monotone" as const;
+export const AREA_CHART_STYLE_NATURAL = "natural" as const;
 
-export const AREA_CHART_TYPES_OPTIONS = [
-    AREA_CHART_TYPE_LINEAR,
-    AREA_CHART_TYPE_STEP,
-    AREA_CHART_TYPE_BUMP,
-    AREA_CHART_TYPE_MONOTONE,
-    AREA_CHART_TYPE_NATURAL,
+export const AREA_CHART_STYLE_OPTIONS = [
+    AREA_CHART_STYLE_LINEAR,
+    AREA_CHART_STYLE_STEP,
+    AREA_CHART_STYLE_BUMP,
+    AREA_CHART_STYLE_MONOTONE,
+    AREA_CHART_STYLE_NATURAL,
 ] as const;
 
-export type AreaChartType = (typeof AREA_CHART_TYPES_OPTIONS)[number];
+export type AreaChartStyle = (typeof AREA_CHART_STYLE_OPTIONS)[number];
 
 // === RANGES ===
 export const MIN_BORDER_WIDTH = 0;
@@ -178,6 +178,8 @@ export const FONT_OPTIONS = [
     "Times New Roman",
     "Trebuchet MS",
 ] as const;
+export type FontType = (typeof FONT_OPTIONS)[number];
+
 export const FONT_STYLES_BOLD = "bold" as const;
 export const FONT_STYLES_ITALIC = "italic" as const;
 export const FONT_STYLES_NORMAL = "normal" as const;
@@ -191,3 +193,17 @@ export const FONT_STYLES_OPTIONS = [
     FONT_STYLES_STRIKETHROUGH,
 ] as const;
 export type FontStyleType = (typeof FONT_STYLES_OPTIONS)[number];
+
+export const RADIAL_LEGEND_POSITION_END = "end" as const;
+export const RADIAL_LEGEND_POSITION_INSIDE_START = "insideStart" as const;
+export const RADIAL_LEGEND_POSITION_INSIDE_END = "insideEnd" as const;
+export const RADIAL_LEGEND_POSITION_MIDDLE = "middle" as const;
+
+export const RADIAL_LEGEND_POSITION_OPTIONS = [
+    RADIAL_LEGEND_POSITION_END,
+    RADIAL_LEGEND_POSITION_INSIDE_START,
+    RADIAL_LEGEND_POSITION_INSIDE_END,
+    RADIAL_LEGEND_POSITION_MIDDLE,
+] as const;
+export type RadialLegendPositionType =
+    (typeof RADIAL_LEGEND_POSITION_OPTIONS)[number];

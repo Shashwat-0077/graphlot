@@ -40,7 +40,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getRGBAString } from "@/utils/colors";
-import { useUpdateRadarChart } from "@/modules/Radar/api/client/useUpdateAreaChart";
+import { useUpdateRadarChart } from "@/modules/Radar/api/client/use-update-radar-chart";
 import {
     SelectFieldsForRadar,
     XAxisType,

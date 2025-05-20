@@ -5,52 +5,74 @@ import {
     createUpdateSchema,
 } from "drizzle-zod";
 
-import { RadarCharts } from "@/modules/Radar/schema/db";
-import { RADAR, SortType } from "@/constants";
-import { ChartSchema } from "@/modules/ChartMetaData/schema";
+import {
+    RadarCharts,
+    RADAR_CHARTS_TABLE_NAME,
+} from "@/modules/Radar/schema/db"; // adjust if needed
+import { SORT_OPTIONS, CHART_TYPE_RADAR } from "@/constants";
+import {
+    CHART_BOX_MODEL_TABLE_NAME,
+    CHART_COLOR_TABLE_NAME,
+    CHART_TYPOGRAPHY_TABLE_NAME,
+    CHART_VISUAL_TABLE_NAME,
+    CHART_METADATA_TABLE_NAME,
+} from "@/modules/ChartMetaData/schema/db";
+import {
+    ChartBoxModelSchema,
+    ChartColorSchema,
+    ChartMetadataSchema,
+    ChartTypographySchema,
+    ChartVisualSchema,
+} from "@/modules/ChartMetaData/schema";
 
-// Create base schemas from the Drizzle table
-const baseInsertSchema = createInsertSchema(RadarCharts);
-const baseSelectSchema = createSelectSchema(RadarCharts);
-const baseUpdateSchema = createUpdateSchema(RadarCharts);
+// Base schemas
+const radarInsertBase = createInsertSchema(RadarCharts);
+const radarSelectBase = createSelectSchema(RadarCharts);
+const radarUpdateBase = createUpdateSchema(RadarCharts);
 
-// Refine the schemas to properly handle JSON fields
-export const RadarSchema = {
-    Insert: baseInsertSchema.extend({
-        sort_x: z.enum(SortOption),
-        sort_y: z.enum(SortOption),
+// Core schema extensions for RadarCharts
+export const RadarChartSchema = {
+    Insert: radarInsertBase.extend({
+        xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
     }),
-    Select: baseSelectSchema.extend({
-        sort_x: z.enum(SortOption),
-        sort_y: z.enum(SortOption),
+    Select: radarSelectBase.extend({
+        xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
     }),
-    Update: baseUpdateSchema
+    Update: radarUpdateBase
         .extend({
-            sort_x: z.enum(SortOption),
-            sort_y: z.enum(SortOption),
+            xAxisSortOrder: z.enum(SORT_OPTIONS).optional(),
+            yAxisSortOrder: z.enum(SORT_OPTIONS).optional(),
         })
         .omit({
-            chart_id: true,
+            chartId: true,
         }),
 };
 
-export const FullRadarSchema = {
-    Insert: RadarSchema.Insert.extend(ChartSchema.Insert.shape).extend({
-        type: z.literal(RADAR),
+// Full select & update schemas
+export const FullRadarSelect = z.object({
+    [RADAR_CHARTS_TABLE_NAME]: RadarChartSchema.Select,
+    [CHART_METADATA_TABLE_NAME]: ChartMetadataSchema.Select.extend({
+        type: z.literal(CHART_TYPE_RADAR),
     }),
-    Select: RadarSchema.Select.extend(ChartSchema.Select.shape).extend({
-        type: z.literal(RADAR),
-    }),
-    Update: RadarSchema.Update.extend(ChartSchema.Update.shape).extend({
-        type: z.literal(RADAR),
-    }),
-};
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Select,
+    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Select,
+    [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Select,
+    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Select,
+});
 
-// Types for the schemas
-export type RadarInsert = z.infer<typeof RadarSchema.Insert>;
-export type RadarSelect = z.infer<typeof RadarSchema.Select>;
-export type RadarUpdate = z.infer<typeof RadarSchema.Update>;
+export const FullRadarUpdate = z.object({
+    [RADAR_CHARTS_TABLE_NAME]: RadarChartSchema.Update.optional(),
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Update.optional(),
+    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Update.optional(),
+    [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Update.optional(),
+    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Update.optional(),
+});
 
-export type FullRadarInsert = z.infer<typeof FullRadarSchema.Insert>;
-export type FullRadarSelect = z.infer<typeof FullRadarSchema.Select>;
-export type FullRadarUpdate = z.infer<typeof FullRadarSchema.Update>;
+// Inferred Types
+export type RadarChartSelect = z.infer<typeof RadarChartSchema.Select>;
+export type RadarChartUpdate = z.infer<typeof RadarChartSchema.Update>;
+
+export type FullRadarChartSelect = z.infer<typeof FullRadarSelect>;
+export type FullRadarChartUpdate = z.infer<typeof FullRadarUpdate>;

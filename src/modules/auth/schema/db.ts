@@ -7,6 +7,7 @@ import {
 import type { AdapterAccountType } from "next-auth/adapters";
 import { v4 as uuid } from "uuid";
 
+// TODO : limit the number of charts per user to 25
 export const Users = sqliteTable("user", {
     id: text("id")
         .primaryKey()

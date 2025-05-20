@@ -8,22 +8,21 @@ import {
     createHeatmapChartStore,
     initHeatmapChartStore,
 } from "@/modules/Heatmap/store/state";
-import { StateProviderType } from "@/constants";
-import { useGetHeatMapChartWithId } from "@/modules/Heatmap/api/client/useGetHeatmap";
+import { ChartStateProvider } from "@/constants";
 import { BoxLoader } from "@/components/ui/Loader";
+import { useHeatmap } from "@/modules/Heatmap/api/client/use-heatmap";
 
 export type HeatmapChartStoreApi = ReturnType<typeof createHeatmapChartStore>;
 export const HeatmapChartStoreContext = createContext<
     HeatmapChartStoreApi | undefined
 >(undefined);
 
-export const HeatmapChartStoreProvider: StateProviderType = ({
+export const HeatmapChartStoreProvider: ChartStateProvider = ({
     children,
-    char_id,
+    chartId,
 }) => {
     const storeRef = useRef<HeatmapChartStoreApi>(null);
-    const { data, isLoading, error, isError } =
-        useGetHeatMapChartWithId(char_id);
+    const { data, isLoading, error, isError } = useHeatmap(chartId);
 
     if (!data || isLoading) {
         return (
@@ -44,9 +43,7 @@ export const HeatmapChartStoreProvider: StateProviderType = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createHeatmapChartStore(
-            initHeatmapChartStore(data.chart)
-        );
+        storeRef.current = createHeatmapChartStore(initHeatmapChartStore(data));
     }
 
     return (

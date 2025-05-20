@@ -6,11 +6,11 @@ import { HTTPException } from "hono/http-exception";
 import collectionRoutes from "@/modules/Collection/server/route";
 import chartRoutes from "@/modules/ChartMetaData/server/route";
 import notionRoutes from "@/modules/notion/server/route";
-import radarRoutes from "@/modules/Radar/server/route";
+import radarRoutes from "@/modules/Radar/api/server/route";
 import areaRoutes from "@/modules/Area/api/server/route";
 import barRoutes from "@/modules/Bar/api/server/route";
-import heatmapRoutes from "@/modules/Heatmap/server/route";
-import donutRoutes from "@/modules/Donut/server/route";
+import heatmapRoutes from "@/modules/Heatmap/api/server/route";
+import radialRoutes from "@/modules/Radial/api/server/route";
 import chartGroupRoutes from "@/modules/ChartGroup/server/route";
 
 const app = new Hono().basePath("/api");
@@ -40,7 +40,7 @@ const routes = app
     .route("/area-chart", areaRoutes)
     .route("/bar-chart", barRoutes)
     .route("/heatmap-chart", heatmapRoutes)
-    .route("/donut-chart", donutRoutes)
+    .route("/radial-chart", radialRoutes)
     .route("/chart-groups", chartGroupRoutes);
 
 // Export handlers and types

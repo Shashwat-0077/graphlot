@@ -27,7 +27,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
-import { useUpdateHeatmap } from "@/modules/Heatmap/api/client/useUpdateHeatmap";
+import { useUpdateHeatmap } from "@/modules/Heatmap/api/client/use-update-heatmap";
 import { toast } from "@/hooks/use-toast";
 
 export const HeatmapConfig = ({ chart_id }: { chart_id: string }) => {

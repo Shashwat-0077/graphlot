@@ -8,23 +8,23 @@ import {
     createBarChartStore,
     initBarChartStore,
 } from "@/modules/Bar/store/state";
-import { StateProviderType } from "@/constants";
 import { BoxLoader } from "@/components/ui/Loader";
-import { useBarCharts } from "@/modules/Bar/api/client/useGetBarChart";
+import { ChartStateProvider } from "@/constants";
+import { useBarChart } from "@/modules/Bar/api/client/use-bar-chart";
 
 export type BarChartStoreApi = ReturnType<typeof createBarChartStore>;
 export const BarChartStoreContext = createContext<BarChartStoreApi | undefined>(
     undefined
 );
 
-export const BarChartStoreProvider: StateProviderType = ({
+export const BarChartStoreProvider: ChartStateProvider = ({
     children,
-    char_id,
+    chartId,
 }) => {
     const storeRef = useRef<BarChartStoreApi>(null);
-    const { data, isLoading, error, isError } = useBarCharts(char_id);
+    const { data: chart, isLoading, error, isError } = useBarChart(chartId);
 
-    if (!data || isLoading) {
+    if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
                 <BoxLoader />
@@ -43,7 +43,7 @@ export const BarChartStoreProvider: StateProviderType = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createBarChartStore(initBarChartStore(data.chart));
+        storeRef.current = createBarChartStore(initBarChartStore(chart));
     }
 
     return (

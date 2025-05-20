@@ -3,7 +3,10 @@ import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import { AREA, CHART_TYPE_BAR, DONUT, HEATMAP, RADAR } from "@/constants";
-import { ChartInsert, ChartSelect } from "@/modules/ChartMetaData/schema";
+import {
+    ChartMetadataInsert,
+    ChartMetadataSelect,
+} from "@/modules/ChartMetaData/schema";
 import {
     Charts,
     BarCharts,
@@ -17,16 +20,16 @@ import {
 export async function createNewChart({
     chart,
 }: {
-    chart: ChartInsert;
+    chart: ChartMetadataInsert;
 }): Promise<
     | {
           ok: true;
-          newChart: ChartSelect;
+          newChart: ChartMetadataSelect;
       }
     | {
           ok: false;
           error: string;
-          field: keyof ChartSelect | "root";
+          field: keyof ChartMetadataSelect | "root";
       }
 > {
     try {
@@ -35,7 +38,7 @@ export async function createNewChart({
             .from(Charts)
             .where(
                 and(
-                    eq(Charts.collection_id, chart.collection_id),
+                    eq(Charts.collectionId, chart.collection_id),
                     eq(Charts.name, chart.name)
                 )
             );

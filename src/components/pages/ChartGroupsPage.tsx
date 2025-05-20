@@ -48,7 +48,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { EmptyChartGroups } from "@/modules/ChartGroup/components/EmptyChartGroups";
 import { useDeleteGroup } from "@/modules/ChartGroup/api/client/useDeleteGroup";
-import { ChartSelect } from "@/modules/ChartMetaData/schema";
+import { ChartMetadataSelect } from "@/modules/ChartMetaData/schema";
 import { ChartGroupSelect } from "@/modules/ChartGroup/schema";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { LAYOUT_GRID } from "@/constants";
@@ -58,7 +58,7 @@ export default function ChartGroupsPage({
     collection_slug,
 }: {
     collection_slug: string;
-    charts: ChartSelect[];
+    charts: ChartMetadataSelect[];
 }) {
     const router = useRouter();
     const { toast } = useToast();

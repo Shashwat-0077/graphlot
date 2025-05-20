@@ -5,75 +5,74 @@ import {
     createUpdateSchema,
 } from "drizzle-zod";
 
-import { BarCharts } from "@/modules/Bar/schema/db";
 import {
-    ANCHOR_OPTIONS,
-    AREA_CHART_TYPES_OPTIONS,
-    CHART_TYPE_BAR,
-    FONT_STYLES_OPTIONS,
-    GRID_ORIENTATION_OPTIONS,
-    GRID_TYPE_OPTIONS,
-    SORT_OPTIONS,
-} from "@/constants";
-import { ChartSchema } from "@/modules/ChartMetaData/schema";
+    CHART_BOX_MODEL_TABLE_NAME,
+    CHART_COLOR_TABLE_NAME,
+    CHART_TYPOGRAPHY_TABLE_NAME,
+    CHART_VISUAL_TABLE_NAME,
+    CHART_METADATA_TABLE_NAME,
+} from "@/modules/ChartMetaData/schema/db";
+import {
+    ChartBoxModelSchema,
+    ChartColorSchema,
+    ChartMetadataSchema,
+    ChartTypographySchema,
+    ChartVisualSchema,
+} from "@/modules/ChartMetaData/schema";
+import { CHART_TYPE_BAR, SORT_OPTIONS } from "@/constants";
+import { FilterSchema } from "@/constants";
+import { BAR_CHARTS_TABLE_NAME, BarCharts } from "@/modules/Bar/schema/db";
 
-// Create base schemas from the Drizzle table
-const baseInsertSchema = createInsertSchema(BarCharts);
-const baseSelectSchema = createSelectSchema(BarCharts);
-const baseUpdateSchema = createUpdateSchema(BarCharts);
+// Base schemas from BarCharts table
+const barInsertBase = createInsertSchema(BarCharts);
+const barSelectBase = createSelectSchema(BarCharts);
+const barUpdateBase = createUpdateSchema(BarCharts);
 
-// Refine the schemas to properly handle JSON fields
-export const BarSchema = {
-    Insert: baseInsertSchema.extend({
-        label_anchor: z.enum(ANCHOR_OPTIONS),
-        label_font_style: z.enum(FONT_STYLES_OPTIONS),
-        x_sort_order: z.enum(SORT_OPTIONS),
-        y_sort_order: z.enum(SORT_OPTIONS),
-        grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
-        grid_type: z.enum(GRID_TYPE_OPTIONS),
-        area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
+// Core schema extensions for BarCharts
+export const BarChartSchema = {
+    Insert: barInsertBase.extend({
+        xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
+        filters: z.array(FilterSchema),
     }),
-    Select: baseSelectSchema.extend({
-        label_anchor: z.enum(ANCHOR_OPTIONS),
-        label_font_style: z.enum(FONT_STYLES_OPTIONS),
-        x_sort_order: z.enum(SORT_OPTIONS),
-        y_sort_order: z.enum(SORT_OPTIONS),
-        grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
-        grid_type: z.enum(GRID_TYPE_OPTIONS),
-        area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
+    Select: barSelectBase.extend({
+        xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
+        filters: z.array(FilterSchema),
     }),
-    Update: baseUpdateSchema
+    Update: barUpdateBase
         .extend({
-            label_anchor: z.enum(ANCHOR_OPTIONS),
-            label_font_style: z.enum(FONT_STYLES_OPTIONS),
-            x_sort_order: z.enum(SORT_OPTIONS),
-            y_sort_order: z.enum(SORT_OPTIONS),
-            grid_orientation: z.enum(GRID_ORIENTATION_OPTIONS),
-            grid_type: z.enum(GRID_TYPE_OPTIONS),
-            area_style: z.enum(AREA_CHART_TYPES_OPTIONS),
+            xAxisSortOrder: z.enum(SORT_OPTIONS).optional(),
+            yAxisSortOrder: z.enum(SORT_OPTIONS).optional(),
+            filters: z.array(FilterSchema).optional(),
         })
         .omit({
-            chart_id: true,
+            chartId: true,
         }),
 };
 
-export const FullBarSchema = {
-    Insert: BarSchema.Insert.extend(ChartSchema.Insert.shape).extend({
+export const FullBarSelect = z.object({
+    [BAR_CHARTS_TABLE_NAME]: BarChartSchema.Select,
+    [CHART_METADATA_TABLE_NAME]: ChartMetadataSchema.Select.extend({
         type: z.literal(CHART_TYPE_BAR),
     }),
-    Select: BarSchema.Select.extend(ChartSchema.Select.shape).extend({
-        type: z.literal(CHART_TYPE_BAR),
-    }),
-    Update: BarSchema.Update.extend(ChartSchema.Update.shape).extend({
-        type: z.literal(CHART_TYPE_BAR),
-    }),
-};
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Select,
+    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Select,
+    [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Select,
+    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Select,
+});
 
-// Types for the schemas
-export type BarInsert = z.infer<typeof BarSchema.Insert>;
-export type BarSelect = z.infer<typeof BarSchema.Select>;
-export type BarUpdate = z.infer<typeof BarSchema.Update>;
+export const FullBarUpdate = z.object({
+    [BAR_CHARTS_TABLE_NAME]: BarChartSchema.Update.optional(),
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Update.optional(),
+    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Update.optional(),
+    [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Update.optional(),
+    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Update.optional(),
+});
 
-export type FullBarInsert = z.infer<typeof FullBarSchema.Insert>;
-export type FullBarSelect = z.infer<typeof FullBarSchema.Select>;
-export type FullBarUpdate = z.infer<typeof FullBarSchema.Update>;
+// Inferred Types
+export type BarChartSelect = z.infer<typeof BarChartSchema.Select>;
+export type BarChartUpdate = z.infer<typeof BarChartSchema.Update>;
+
+export type FullBarChartSelect = z.infer<typeof FullBarSelect>;
+export type FullBarChartUpdate = z.infer<typeof FullBarUpdate>;

@@ -1,6 +1,6 @@
 import { Client } from "@notionhq/client";
 
-import { getNotionAccessToken } from "@/modules/auth/api/getNotionAccessToken";
+import { getNotionAccessToken } from "@/modules/auth/api/get-notion-access-token";
 
 type returnType =
     | { success: true; client: Client }

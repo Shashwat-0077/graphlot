@@ -374,30 +374,30 @@ export default function NewChartGroupPage() {
                                                             (chart) => (
                                                                 <div
                                                                     key={
-                                                                        chart.chart_id
+                                                                        chart.chartId
                                                                     }
                                                                     className={`flex items-start space-x-3 rounded-md border p-3 transition-colors ${
                                                                         selectedChartIds.includes(
-                                                                            chart.chart_id
+                                                                            chart.chartId
                                                                         )
                                                                             ? "border-primary bg-primary/5"
                                                                             : ""
                                                                     }`}
                                                                 >
                                                                     <Checkbox
-                                                                        id={`chart-${chart.chart_id}`}
+                                                                        id={`chart-${chart.chartId}`}
                                                                         checked={selectedChartIds.includes(
-                                                                            chart.chart_id
+                                                                            chart.chartId
                                                                         )}
                                                                         onCheckedChange={() =>
                                                                             toggleChartSelection(
-                                                                                chart.chart_id
+                                                                                chart.chartId
                                                                             )
                                                                         }
                                                                     />
                                                                     <div className="flex-1">
                                                                         <Label
-                                                                            htmlFor={`chart-${chart.chart_id}`}
+                                                                            htmlFor={`chart-${chart.chartId}`}
                                                                             className="cursor-pointer text-sm font-medium"
                                                                         >
                                                                             {
@@ -448,7 +448,7 @@ export default function NewChartGroupPage() {
                                                                 const chart =
                                                                     charts.find(
                                                                         (c) =>
-                                                                            c.chart_id ===
+                                                                            c.chartId ===
                                                                             chartId
                                                                     );
                                                                 if (!chart) {

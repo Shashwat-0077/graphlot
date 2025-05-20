@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
-import { LayoutOptionsType } from "@/constants";
+import { LayoutType } from "@/constants";
 import { db } from "@/db";
-import { ChartGroup } from "@/modules/chartGroups/schema/db";
+import { ChartGroup } from "@/db/schema";
 
 export const updateGroup = async ({
     group_id,
@@ -12,7 +12,7 @@ export const updateGroup = async ({
 }: {
     group_id: string;
     name?: string;
-    layout_type?: LayoutOptionsType;
+    layout_type?: LayoutType;
 }): Promise<{ ok: true; group_id: string } | { ok: false; error: string }> => {
     try {
         const date = new Date();

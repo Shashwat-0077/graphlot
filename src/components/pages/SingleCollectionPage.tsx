@@ -88,13 +88,13 @@ export default function SingleCollectionPage() {
             switch (sortOption) {
                 case "newest":
                     return (
-                        new Date(b.created_at).getTime() -
-                        new Date(a.created_at).getTime()
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
                     );
                 case "oldest":
                     return (
-                        new Date(a.created_at).getTime() -
-                        new Date(b.created_at).getTime()
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
                     );
                 case "name-asc":
                     return a.name.localeCompare(b.name);
@@ -236,7 +236,7 @@ export default function SingleCollectionPage() {
                                                   Math.max(
                                                       ...charts.map((c) =>
                                                           new Date(
-                                                              c.updated_at
+                                                              c.updatedAt
                                                           ).getTime()
                                                       )
                                                   )
@@ -365,11 +365,11 @@ export default function SingleCollectionPage() {
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {sortedCharts.map((chart) => (
                             <ChartCard
-                                key={chart.chart_id}
+                                key={chart.chartId}
                                 type={chart.type}
                                 collection_slug={collection_slug}
                                 name={chart.name}
-                                chartId={chart.chart_id}
+                                chartId={chart.chartId}
                                 userId={(user && user?.id) || ""}
                                 notionDatabaseName={chart.notion_database_name}
                             />

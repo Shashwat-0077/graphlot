@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import { Charts, Collections } from "@/db/schema";
-import { LayoutOptionsType } from "@/constants";
+import { LayoutType } from "@/constants";
 
 export const ChartGroup = sqliteTable(
     "chart_groups",
@@ -23,7 +23,7 @@ export const ChartGroup = sqliteTable(
                 onDelete: "cascade",
             }),
         name: text("name").notNull(),
-        layout_type: text("layoutType").notNull().$type<LayoutOptionsType>(),
+        layout_type: text("layoutType").notNull().$type<LayoutType>(),
         chart_count: integer("chartCount", { mode: "number" })
             .notNull()
             .default(0),
@@ -49,7 +49,7 @@ export const ChartGroupCharts = sqliteTable(
             }),
         chart_id: text("chartId")
             .notNull()
-            .references(() => Charts.chart_id, {
+            .references(() => Charts.chartId, {
                 onDelete: "cascade",
                 onUpdate: "cascade",
             }),

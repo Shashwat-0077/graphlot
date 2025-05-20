@@ -6,7 +6,7 @@ import {
 } from "drizzle-zod";
 
 import { LAYOUT_OPTIONS } from "@/constants";
-import { ChartGroup } from "@/modules/chartGroups/schema/db";
+import { ChartGroup } from "@/db/schema";
 
 // Create base schemas from the Drizzle table
 const baseInsertSchema = createInsertSchema(ChartGroup);

@@ -2,7 +2,7 @@ import { HTTPException } from "hono/http-exception";
 import { and, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { ChartGroupCharts } from "@/modules/chartGroups/schema/db";
+import { ChartGroupCharts } from "@/db/schema";
 
 export const addChartsToGroup = async (
     group_id: string,

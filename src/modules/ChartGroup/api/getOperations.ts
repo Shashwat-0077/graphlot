@@ -2,18 +2,18 @@ import { desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
-import { ChartGroupSelect } from "@/modules/chartGroups/schema";
-import { ChartGroup, ChartGroupCharts } from "@/modules/chartGroups/schema/db";
 import {
     getChartWithId,
     getFullChartWithId,
 } from "@/modules/ChartMetaData/api/getCharts";
-import { FullAreaSelect } from "@/modules/Area/schema";
-import { FullBarSelect } from "@/modules/Bar/schema";
+import { FullAreaChartSelect, FullAreaSelect } from "@/modules/Area/schema";
+import { FullBarChartSelect, FullBarSelect } from "@/modules/Bar/schema";
 import { FullHeatmapSelect } from "@/modules/Heatmap/schema";
 import { FullRadarSelect } from "@/modules/Radar/schema";
-import { FullDonutSelect } from "@/modules/Donut/schema";
-import { ChartSelect } from "@/modules/ChartMetaData/schema";
+import { FullDonutSelect } from "@/modules/Radial/schema";
+import { ChartMetadataSelect } from "@/modules/ChartMetaData/schema";
+import { ChartGroupSelect } from "@/modules/ChartGroup/schema";
+import { ChartGroup, ChartGroupCharts } from "@/db/schema";
 
 export const getAllGroups = async (
     collection_id: string
@@ -69,7 +69,7 @@ export const getGroupWithId = async (
 type ChartsInGroupReturn =
     | {
           ok: true;
-          charts: ChartSelect[];
+          charts: ChartMetadataSelect[];
       }
     | {
           ok: false;
@@ -112,8 +112,8 @@ type FullChartsInGroupsReturn =
     | {
           ok: true;
           charts: (
-              | FullAreaSelect
-              | FullBarSelect
+              | FullAreaChartSelect
+              | FullBarChartSelect
               | FullHeatmapSelect
               | FullRadarSelect
               | FullDonutSelect

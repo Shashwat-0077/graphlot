@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
-import { ChartGroup } from "@/modules/chartGroups/schema/db";
+import { ChartGroup } from "@/db/schema";
 
 export const deleteGroup = async (
     group_id: string

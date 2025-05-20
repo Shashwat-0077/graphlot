@@ -2,13 +2,14 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 
+import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
+
 import {
     getAllGroups,
     getChartsInGroup,
     getFullChartsInGroup,
     getGroupWithId,
 } from "@/modules/chartGroups/api/getOperations";
-import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
 import { updateGroup } from "@/modules/chartGroups/api/updateGroup";
 import { createNewGroup } from "@/modules/chartGroups/api/createNewGroup";
 import { ChartGroupSchema } from "@/modules/chartGroups/schema";

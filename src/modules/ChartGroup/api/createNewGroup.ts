@@ -1,8 +1,8 @@
 import { HTTPException } from "hono/http-exception";
 
-import { LayoutOptionsType } from "@/constants";
+import { LayoutType } from "@/constants";
 import { db } from "@/db";
-import { ChartGroup, ChartGroupCharts } from "@/modules/chartGroups/schema/db";
+import { ChartGroup, ChartGroupCharts } from "@/db/schema";
 
 export async function createNewGroup({
     name,
@@ -12,7 +12,7 @@ export async function createNewGroup({
 }: {
     collection_id: string;
     name: string;
-    layout_type: LayoutOptionsType;
+    layout_type: LayoutType;
     chart_ids: string[];
 }): Promise<
     | {

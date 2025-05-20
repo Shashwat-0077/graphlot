@@ -1,91 +1,86 @@
+import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { Hono } from "hono";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
+import { FullBarUpdate } from "@/modules/Bar/schema";
 import {
-    getAllBarChartsWithCollectionId,
-    getBarChartWithId,
+    fetchBarChartById,
+    fetchBarChartsByCollection,
+    fetchFullBarChartById,
 } from "@/modules/Bar/api/helpers/fetch-bar-charts";
 import { updateBarChart } from "@/modules/Bar/api/helpers/update-bar-charts";
-import { BarSchema } from "@/modules/Bar/schema";
 
-type variables = {
+// App-scoped variables (injected by middleware)
+type AppVariables = {
     userId: string;
 };
 
-const app = new Hono<{ Variables: variables }>()
-    .get(
-        "/all",
-        zValidator(
-            "query",
-            z.object({
-                collection_id: z.string().nonempty(),
-            })
-        ),
-        async (c) => {
-            const { collection_id } = c.req.valid("query");
+// Zod schemas for validation
+const querySchema = z.object({
+    collection_id: z.string().nonempty(),
+});
 
-            const response =
-                await getAllBarChartsWithCollectionId(collection_id);
+const paramSchema = z.object({
+    id: z.string().nonempty(),
+});
 
-            if (!response.ok) {
-                return c.json({ error: response.error }, 500);
-            }
+const barChartRoute = new Hono<{ Variables: AppVariables }>()
 
-            const { charts } = response;
-            return c.json({ charts }, 200);
+    // Get all bar charts by collection
+    .get("/", zValidator("query", querySchema), async (c) => {
+        const { collection_id } = c.req.valid("query");
+        const result = await fetchBarChartsByCollection(collection_id);
+
+        if (!result.ok) {
+            return c.json({ error: result.error }, 500);
         }
-    )
-    .get(
-        "/:chart_id",
-        zValidator(
-            "param",
-            z.object({
-                chart_id: z.string().nonempty(),
-            })
-        ),
-        async (c) => {
-            const { chart_id } = c.req.valid("param");
 
-            const response = await getBarChartWithId({
-                chart_id,
-            });
+        return c.json({ charts: result.charts }, 200);
+    })
 
-            if (!response.ok) {
-                return c.json({ error: response.error }, 500);
-            }
+    // Get only the bar chart by id
+    .get("/:id", zValidator("param", paramSchema), async (c) => {
+        const { id } = c.req.valid("param");
+        const result = await fetchBarChartById(id);
 
-            const { chart } = response;
-
-            return c.json({ chart }, 200);
+        if (!result.ok) {
+            return c.json({ error: result.error }, 500);
         }
-    )
+
+        return c.json({ chart: result.chart }, 200);
+    })
+
+    // Get full bar chart data by ID
+    .get("/:id/full", zValidator("param", paramSchema), async (c) => {
+        const { id } = c.req.valid("param");
+        const result = await fetchFullBarChartById(id);
+
+        if (!result.ok) {
+            return c.json({ error: result.error }, 500);
+        }
+
+        return c.json({ chart: result.chart }, 200);
+    })
+
+    // Update bar chart (auth required)
     .put(
-        "/:chart_id",
+        "/:id",
         authMiddleWare,
-        zValidator(
-            "param",
-            z.object({
-                chart_id: z.string().nonempty(),
-            })
-        ),
-        zValidator("json", BarSchema.Update),
+        zValidator("param", paramSchema),
+        zValidator("json", FullBarUpdate),
         async (c) => {
-            const { chart_id } = c.req.valid("param");
+            const { id } = c.req.valid("param");
             const data = c.req.valid("json");
 
-            const response = await updateBarChart({
-                chart_id,
-                data,
-            });
+            const result = await updateBarChart({ chartId: id, data });
 
-            if (!response.ok) {
-                return c.json({ error: response.error }, 500);
+            if (!result.ok) {
+                return c.json({ error: result.error }, 500);
             }
 
             return c.json({ updated: true }, 200);
         }
     );
 
-export default app;
+export default barChartRoute;

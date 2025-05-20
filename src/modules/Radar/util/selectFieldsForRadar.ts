@@ -1,4 +1,4 @@
-import { NotionSchemaType } from "@/constants";
+import { NotionPropertySchema } from "@/constants";
 
 export type XAxisType = {
     Status: string[];
@@ -12,7 +12,7 @@ export type YAxisType = {
     "Multi Select": string[];
 };
 
-export const SelectFieldsForRadar = (data: NotionSchemaType) => {
+export const SelectFieldsForRadar = (data: NotionPropertySchema) => {
     const XAxis: XAxisType = {
         Status: [],
         Select: [],

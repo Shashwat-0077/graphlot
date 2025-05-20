@@ -1,122 +1,141 @@
 import { v4 as uuid } from "uuid";
 import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 
-import { Charts } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
 import { RGBAColor, DayOfWeek } from "@/constants";
-import defaultConfig from "@/modules/Heatmap/default.config";
+import { defaultHeatmapConfig } from "@/modules/Heatmap/heatmap-default-config";
 
-export const HeatmapCharts = sqliteTable("heatmap_charts", {
-    chart_id: text("chart_id")
+export const HEATMAP_CHARTS_TABLE_NAME = "heatmap_chart";
+
+export const HeatmapCharts = sqliteTable(HEATMAP_CHARTS_TABLE_NAME, {
+    chartId: text("chart_id")
         .primaryKey()
-        .references(() => Charts.chart_id, { onDelete: "cascade" }),
+        .references(() => ChartMetadata.chartId, { onDelete: "cascade" }),
 
-    background_color: text("background_color", { mode: "json" })
+    backgroundColor: text("background_color", { mode: "json" })
         .notNull()
-        .default(defaultConfig.background_color)
+        .default(defaultHeatmapConfig.backgroundColor)
         .$type<RGBAColor>(),
-    text_color: text("text_color", { mode: "json" })
-        .notNull()
-        .default(defaultConfig.text_color)
-        .$type<RGBAColor>(),
-    tooltip_enabled: integer("tooltip_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.tooltip_enabled),
-    label_enabled: integer("legend_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.label_enabled),
-    has_border: integer("has_border", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.has_border),
 
-    metric: text("metric").notNull().default(defaultConfig.metric),
-    streak: integer("streak").notNull().default(defaultConfig.streak),
-    streak_color: text("streak_color", { mode: "json" })
+    textColor: text("text_color", { mode: "json" })
         .notNull()
-        .default(defaultConfig.streak_color)
+        .default(defaultHeatmapConfig.textColor)
         .$type<RGBAColor>(),
-    streak_enabled: integer("streak_enabled", { mode: "boolean" })
+
+    tooltipEnabled: integer("tooltip_enabled", { mode: "boolean" })
         .notNull()
-        .default(defaultConfig.streak_enabled),
-    days_to_include_in_streak: text("days_to_include_in_streak", {
+        .default(defaultHeatmapConfig.tooltipEnabled),
+
+    labelEnabled: integer("legend_enabled", { mode: "boolean" })
+        .notNull()
+        .default(defaultHeatmapConfig.labelEnabled),
+
+    borderEnabled: integer("borderEnabled", { mode: "boolean" })
+        .notNull()
+        .default(defaultHeatmapConfig.borderEnabled),
+
+    metric: text("metric").notNull().default(defaultHeatmapConfig.metric),
+    streak: integer("streak").notNull().default(defaultHeatmapConfig.streak),
+
+    streakColor: text("streak_color", { mode: "json" })
+        .notNull()
+        .default(defaultHeatmapConfig.streakColor)
+        .$type<RGBAColor>(),
+
+    streakEnabled: integer("streak_enabled", { mode: "boolean" })
+        .notNull()
+        .default(defaultHeatmapConfig.streakEnabled),
+
+    daysToIncludeInStreak: text("days_to_include_in_streak", {
         mode: "json",
     })
         .$type<DayOfWeek[]>()
         .notNull()
-        .default(defaultConfig.days_to_include_in_streak),
+        .default(defaultHeatmapConfig.daysToIncludeInStreak),
 
-    longest_streak: integer("longest_streak")
+    longestStreak: integer("longest_streak")
         .notNull()
-        .default(defaultConfig.longest_streak),
-    longest_streak_color: text("longest_streak_color", { mode: "json" })
-        .notNull()
-        .default(defaultConfig.longest_streak_color)
-        .$type<RGBAColor>(),
-    longest_streak_enabled: integer("long_streak_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultConfig.longest_streak_enabled),
+        .default(defaultHeatmapConfig.longestStreak),
 
-    sum_of_all_entries: real("sum_of_all_entries")
+    longestStreakColor: text("longest_streak_color", { mode: "json" })
         .notNull()
-        .default(defaultConfig.sum_of_all_entries),
-    sum_of_all_entries_color: text("sum_of_all_entries_color", { mode: "json" })
-        .notNull()
-        .default(defaultConfig.sum_of_all_entries_color)
+        .default(defaultHeatmapConfig.longestStreakColor)
         .$type<RGBAColor>(),
-    sum_of_all_entries_enabled: integer("sum_of_all_entries_enabled", {
+
+    longestStreakEnabled: integer("long_streak_enabled", { mode: "boolean" })
+        .notNull()
+        .default(defaultHeatmapConfig.longestStreakEnabled),
+
+    sumOfAllEntries: real("sum_of_all_entries")
+        .notNull()
+        .default(defaultHeatmapConfig.sumOfAllEntries),
+
+    sumOfAllEntriesColor: text("sum_of_all_entries_color", { mode: "json" })
+        .notNull()
+        .default(defaultHeatmapConfig.sumOfAllEntriesColor)
+        .$type<RGBAColor>(),
+
+    sumOfAllEntriesEnabled: integer("sum_of_all_entries_enabled", {
         mode: "boolean",
     })
         .notNull()
-        .default(defaultConfig.sum_of_all_entries_enabled),
+        .default(defaultHeatmapConfig.sumOfAllEntriesEnabled),
 
-    average_of_all_entries: real("average_of_all_entries")
+    averageOfAllEntries: real("average_of_all_entries")
         .notNull()
-        .default(defaultConfig.average_of_all_entries),
-    average_of_all_entries_color: text("average_of_all_entries_color", {
+        .default(defaultHeatmapConfig.averageOfAllEntries),
+
+    averageOfAllEntriesColor: text("average_of_all_entries_color", {
         mode: "json",
     })
         .notNull()
-        .default(defaultConfig.average_of_all_entries_color)
+        .default(defaultHeatmapConfig.averageOfAllEntriesColor)
         .$type<RGBAColor>(),
-    average_of_all_entries_enabled: integer("average_of_all_entries_enabled", {
+
+    averageOfAllEntriesEnabled: integer("average_of_all_entries_enabled", {
         mode: "boolean",
     })
         .notNull()
-        .default(defaultConfig.average_of_all_entries_enabled),
+        .default(defaultHeatmapConfig.averageOfAllEntriesEnabled),
 
-    number_of_entries: integer("number_of_entries")
+    numberOfEntries: integer("number_of_entries")
         .notNull()
-        .default(defaultConfig.number_of_entries),
-    number_of_entries_color: text("number_of_entries_color", { mode: "json" })
+        .default(defaultHeatmapConfig.numberOfEntries),
+
+    numberOfEntriesColor: text("number_of_entries_color", { mode: "json" })
         .notNull()
-        .default(defaultConfig.number_of_entries_color)
+        .default(defaultHeatmapConfig.numberOfEntriesColor)
         .$type<RGBAColor>(),
-    number_of_entries_enabled: integer("number_of_entries_enabled", {
+
+    numberOfEntriesEnabled: integer("number_of_entries_enabled", {
         mode: "boolean",
     })
         .notNull()
-        .default(defaultConfig.number_of_entries_enabled),
+        .default(defaultHeatmapConfig.numberOfEntriesEnabled),
 
-    button_hover_enabled: integer("toggle_button_hover", { mode: "boolean" })
+    buttonHoverEnabled: integer("toggle_button_hover", { mode: "boolean" })
         .notNull()
-        .default(defaultConfig.button_hover_enabled),
+        .default(defaultHeatmapConfig.buttonHoverEnabled),
 
-    default_box_color: text("default_box_color", { mode: "json" })
+    defaultBoxColor: text("default_box_color", { mode: "json" })
         .notNull()
-        .default(defaultConfig.default_box_color)
+        .default(defaultHeatmapConfig.defaultBoxColor)
         .$type<RGBAColor>(),
+
     accent: text("accent", { mode: "json" })
         .notNull()
-        .default(defaultConfig.accent)
+        .default(defaultHeatmapConfig.accent)
         .$type<RGBAColor>(),
 });
-
 export const HeatmapData = sqliteTable("heatmap_data", {
-    heatmap_data_id: text("id")
+    heatmapDataId: text("id")
         .primaryKey()
         .$defaultFn(() => uuid()),
-    heatmap_id: text("heatmap_id")
+
+    heatmapId: text("heatmap_id")
         .notNull()
-        .references(() => HeatmapCharts.chart_id, { onDelete: "cascade" }),
-    date: text("date").notNull(),
+        .references(() => HeatmapCharts.chartId, { onDelete: "cascade" }),
+
+    date: real("date").notNull(),
     count: integer("count").notNull(),
 });

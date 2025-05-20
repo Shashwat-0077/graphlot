@@ -3,8 +3,9 @@ import { immer } from "zustand/middleware/immer";
 
 import { HeatmapSelect } from "@/modules/Heatmap/schema";
 import { RGBAColor, DayOfWeek } from "@/constants";
+import { defaultHeatmapConfig } from "@/modules/Heatmap/heatmap-default-config";
 
-export type HeatmapChartState = Omit<HeatmapSelect, "chart_id">;
+export type HeatmapChartState = Omit<HeatmapSelect, "chartId">;
 
 export type HeatmapChartActions = {
     // Basic appearance
@@ -48,49 +49,10 @@ export type HeatmapChartActions = {
 
 export type HeatmapChartStore = HeatmapChartState & HeatmapChartActions;
 
-export const defaultHeatmapChartState: HeatmapChartState = {
-    background_color: { r: 25, g: 25, b: 25, a: 1 },
-    text_color: { r: 255, g: 255, b: 255, a: 1 },
-    tooltip_enabled: true,
-    label_enabled: true,
-    has_border: false,
-    average_of_all_entries_enabled: true,
-    sum_of_all_entries_enabled: true,
-    streak_enabled: true,
-    longest_streak_enabled: true,
-    number_of_entries_enabled: true,
-    metric: "count",
-    streak: 0,
-    longest_streak: 0,
-    sum_of_all_entries: 0,
-    average_of_all_entries: 0,
-    number_of_entries: 0,
-    button_hover_enabled: false,
-    default_box_color: { r: 38, g: 38, b: 38, a: 1 },
-    accent: { r: 255, g: 255, b: 255, a: 1 },
-    average_of_all_entries_color: { r: 255, g: 255, b: 255, a: 1 },
-    longest_streak_color: { r: 255, g: 255, b: 255, a: 1 },
-    number_of_entries_color: { r: 255, g: 255, b: 255, a: 1 },
-    streak_color: { r: 255, g: 255, b: 255, a: 1 },
-    sum_of_all_entries_color: { r: 255, g: 255, b: 255, a: 1 },
-    days_to_include_in_streak: [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun",
-    ],
-};
-
 export const initHeatmapChartStore = (
-    data?: HeatmapChartState
+    data?: Partial<HeatmapChartState>
 ): HeatmapChartState => {
-    if (data) {
-        return data;
-    }
-    return defaultHeatmapChartState;
+    return { ...defaultHeatmapConfig, ...data };
 };
 
 export const createHeatmapChartStore = (
@@ -98,57 +60,56 @@ export const createHeatmapChartStore = (
 ) => {
     return createStore<HeatmapChartStore>()(
         immer((set, get) => ({
-            ...defaultHeatmapChartState,
+            ...defaultHeatmapConfig,
             ...initialState,
 
             // Basic appearance
             setBackgroundColor: (color) =>
                 set((state) => {
-                    state.background_color = color;
+                    state.backgroundColor = color;
                 }),
             setTextColor: (color) =>
                 set((state) => {
-                    state.text_color = color;
+                    state.textColor = color;
                 }),
             toggleTooltip: () =>
                 set((state) => {
-                    state.tooltip_enabled = !state.tooltip_enabled;
+                    state.tooltipEnabled = !state.tooltipEnabled;
                 }),
             toggleLegend: () =>
                 set((state) => {
-                    state.label_enabled = !state.label_enabled;
+                    state.labelEnabled = !state.labelEnabled;
                 }),
             toggleBorder: () =>
                 set((state) => {
-                    state.has_border = !state.has_border;
+                    state.borderEnabled = !state.borderEnabled;
                 }),
             toggleAverageOfAllEntries: () =>
                 set((state) => {
-                    state.average_of_all_entries_enabled =
-                        !state.average_of_all_entries_enabled;
+                    state.averageOfAllEntriesEnabled =
+                        !state.averageOfAllEntriesEnabled;
                 }),
             toggleLongestStreak: () =>
                 set((state) => {
-                    state.longest_streak_enabled =
-                        !state.longest_streak_enabled;
+                    state.longestStreakEnabled = !state.longestStreakEnabled;
                 }),
             toggleNumberOfEntries: () =>
                 set((state) => {
-                    state.number_of_entries_enabled =
-                        !state.number_of_entries_enabled;
+                    state.numberOfEntriesEnabled =
+                        !state.numberOfEntriesEnabled;
                 }),
             toggleSumOfAllEntries: () =>
                 set((state) => {
-                    state.sum_of_all_entries_enabled =
-                        !state.sum_of_all_entries_enabled;
+                    state.sumOfAllEntriesEnabled =
+                        !state.sumOfAllEntriesEnabled;
                 }),
             toggleStreak: () =>
                 set((state) => {
-                    state.streak_enabled = !state.streak_enabled;
+                    state.streakEnabled = !state.streakEnabled;
                 }),
             toggleLabel: () =>
                 set((state) => {
-                    state.label_enabled = !state.label_enabled;
+                    state.labelEnabled = !state.labelEnabled;
                 }),
 
             // Metric operations
@@ -162,29 +123,29 @@ export const createHeatmapChartStore = (
                 }),
             setLongestStreak: (longestStreak) =>
                 set((state) => {
-                    state.longest_streak = longestStreak;
+                    state.longestStreak = longestStreak;
                 }),
             setSumOfAllEntries: (sum) =>
                 set((state) => {
-                    state.sum_of_all_entries = sum;
+                    state.sumOfAllEntries = sum;
                 }),
             setAverageOfAllEntries: (average) =>
                 set((state) => {
-                    state.average_of_all_entries = average;
+                    state.averageOfAllEntries = average;
                 }),
             setNumberOfEntries: (count) =>
                 set((state) => {
-                    state.number_of_entries = count;
+                    state.numberOfEntries = count;
                 }),
             toggleButtonHover: () =>
                 set((state) => {
-                    state.button_hover_enabled = !state.button_hover_enabled;
+                    state.buttonHoverEnabled = !state.buttonHoverEnabled;
                 }),
 
             // Color operations
             setDefaultBoxColor: (color) =>
                 set((state) => {
-                    state.default_box_color = color;
+                    state.defaultBoxColor = color;
                 }),
             setAccent: (color) =>
                 set((state) => {
@@ -192,45 +153,45 @@ export const createHeatmapChartStore = (
                 }),
             setLongestStreakColor: (color) =>
                 set((state) => {
-                    state.longest_streak_color = color;
+                    state.longestStreakColor = color;
                 }),
             setNumberOfEntriesColor: (color) =>
                 set((state) => {
-                    state.number_of_entries_color = color;
+                    state.numberOfEntriesColor = color;
                 }),
             setStreakColor: (color) =>
                 set((state) => {
-                    state.streak_color = color;
+                    state.streakColor = color;
                 }),
             setSumOfAllEntriesColor: (color) =>
                 set((state) => {
-                    state.sum_of_all_entries_color = color;
+                    state.sumOfAllEntriesColor = color;
                 }),
             setAverageOfAllEntriesColor: (color) =>
                 set((state) => {
-                    state.average_of_all_entries_color = color;
+                    state.averageOfAllEntriesColor = color;
                 }),
 
             // Days to include in streak
             toggleDaysToIncludeInStreak: (day) =>
                 set((state) => {
-                    const daysSet = new Set(state.days_to_include_in_streak);
+                    const daysSet = new Set(state.daysToIncludeInStreak);
                     if (daysSet.has(day)) {
                         daysSet.delete(day);
                     } else {
                         daysSet.add(day);
                     }
-                    state.days_to_include_in_streak = Array.from(daysSet);
+                    state.daysToIncludeInStreak = Array.from(daysSet);
                 }),
             setDaysToIncludeInStreak: (days) =>
                 set((state) => {
-                    state.days_to_include_in_streak = days;
+                    state.daysToIncludeInStreak = days;
                 }),
             isDayIncludedInStreak: (day) =>
-                get().days_to_include_in_streak.includes(day),
+                get().daysToIncludeInStreak.includes(day),
 
             // State operations
-            reset: () => set(() => ({ ...defaultHeatmapChartState })),
+            reset: () => set(() => ({ ...defaultHeatmapConfig })),
         }))
     );
 };

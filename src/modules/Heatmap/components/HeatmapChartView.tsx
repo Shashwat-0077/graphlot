@@ -41,7 +41,7 @@ const values = [
 export const HeatmapChartView = () => {
     const { weeks, maxCount } = getProcessedData(values);
 
-    const { has_border, background_color } = useHeatmapChartStore(
+    const { borderEnabled, backgroundColor } = useHeatmapChartStore(
         (state) => state
     );
 
@@ -49,10 +49,10 @@ export const HeatmapChartView = () => {
         <div
             className={cn(
                 `flex w-full flex-col items-center justify-center overflow-hidden rounded-xl pb-7 pt-7`,
-                has_border && "border"
+                borderEnabled && "border"
             )}
             style={{
-                backgroundColor: `rgba(${background_color.r}, ${background_color.g}, ${background_color.b}, ${background_color.a}`,
+                backgroundColor: `rgba(${backgroundColor.r}, ${backgroundColor.g}, ${backgroundColor.b}, ${backgroundColor.a}`,
             }}
         >
             <HeatMap weeks={weeks} maxCount={maxCount} />

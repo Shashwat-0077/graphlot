@@ -8,7 +8,7 @@ import {
     createAreaChartStore,
     initAreaChartStore,
 } from "@/modules/Area/store/state";
-import { useAreaChart } from "@/modules/Area/api/client/user-area-charts";
+import { useAreaChart } from "@/modules/Area/api/client/use-area-charts";
 import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
 
@@ -22,9 +22,9 @@ export const AreaChartStoreProvider: ChartStateProvider = ({
     chartId,
 }) => {
     const storeRef = useRef<AreaChartStoreApi>(null);
-    const { data, isLoading, error, isError } = useAreaChart(chartId);
+    const { data: chart, isLoading, error, isError } = useAreaChart(chartId);
 
-    if (!data || isLoading) {
+    if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
                 <BoxLoader />
@@ -43,7 +43,7 @@ export const AreaChartStoreProvider: ChartStateProvider = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createAreaChartStore(initAreaChartStore(data.chart));
+        storeRef.current = createAreaChartStore(initAreaChartStore(chart));
     }
 
     return (

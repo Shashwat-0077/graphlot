@@ -1,52 +1,220 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { BarCharts, Charts } from "@/db/schema";
-import { BarUpdate } from "@/modules/Bar/schema";
+import { BarCharts } from "@/db/schema";
+import { FullBarChartUpdate } from "@/modules/Bar/schema";
+import {
+    ChartBoxModel,
+    ChartColors,
+    ChartMetadata,
+    ChartTypography,
+    ChartVisual,
+} from "@/modules/ChartMetaData/schema/db";
+
+type UpdateResult =
+    | { ok: true; chartId: string }
+    | { ok: false; error: string; details?: unknown };
 
 export async function updateBarChart({
-    chart_id,
+    chartId,
     data,
+    options = { validateBeforeUpdate: false },
 }: {
-    chart_id: string;
-    data: BarUpdate;
-}): Promise<
-    | {
-          ok: true;
-      }
-    | { ok: false; error: string }
-> {
+    chartId: string;
+    data: FullBarChartUpdate;
+    options?: {
+        validateBeforeUpdate?: boolean;
+    };
+}): Promise<UpdateResult> {
+    if (!chartId?.trim()) {
+        return { ok: false, error: "Chart ID is required" };
+    }
+
+    if (!data) {
+        return { ok: false, error: "Update data is required" };
+    }
+
+    const {
+        bar_chart,
+        chart_box_model,
+        chart_colors,
+        chart_typography,
+        chart_visual,
+    } = data;
+
     try {
-        const updated = await db.transaction(async (tx) => {
-            const updated = await tx
-                .update(BarCharts)
-                .set(data)
-                .where(eq(BarCharts.chart_id, chart_id))
-                .returning({ chart_id: BarCharts.chart_id })
-                .then(([res]) => res);
+        if (options.validateBeforeUpdate) {
+            const chartExists = await db
+                .select({ id: ChartMetadata.chartId })
+                .from(ChartMetadata)
+                .where(eq(ChartMetadata.chartId, chartId))
+                .then((results) => results.length > 0);
 
-            await tx
-                .update(Charts)
-                .set({
-                    updated_at: new Date(),
-                })
-                .where(eq(Charts.chart_id, chart_id));
-
-            return updated;
-        });
-
-        if (!updated) {
-            return { ok: false, error: "Bar chart not found" };
+            if (!chartExists) {
+                return {
+                    ok: false,
+                    error: `Chart with ID ${chartId} not found`,
+                };
+            }
         }
 
-        return { ok: true };
+        await db.transaction(async (tx) => {
+            const updateOperations = [];
+
+            if (bar_chart) {
+                updateOperations.push(
+                    tx
+                        .update(BarCharts)
+                        .set(bar_chart)
+                        .where(eq(BarCharts.chartId, chartId))
+                );
+            }
+
+            if (chart_box_model) {
+                updateOperations.push(
+                    tx
+                        .update(ChartBoxModel)
+                        .set(chart_box_model)
+                        .where(eq(ChartBoxModel.chartId, chartId))
+                );
+            }
+
+            if (chart_colors) {
+                updateOperations.push(
+                    tx
+                        .update(ChartColors)
+                        .set(chart_colors)
+                        .where(eq(ChartColors.chartId, chartId))
+                );
+            }
+
+            if (chart_typography) {
+                updateOperations.push(
+                    tx
+                        .update(ChartTypography)
+                        .set(chart_typography)
+                        .where(eq(ChartTypography.chartId, chartId))
+                );
+            }
+
+            if (chart_visual) {
+                updateOperations.push(
+                    tx
+                        .update(ChartVisual)
+                        .set(chart_visual)
+                        .where(eq(ChartVisual.chartId, chartId))
+                );
+            }
+
+            updateOperations.push(
+                tx
+                    .update(ChartMetadata)
+                    .set({ updatedAt: Date.now() })
+                    .where(eq(ChartMetadata.chartId, chartId))
+            );
+
+            await Promise.all(updateOperations);
+        });
+
+        return { ok: true, chartId };
     } catch (error) {
+        if (error instanceof Error) {
+            if (
+                error.message.includes("CONSTRAINT") ||
+                error.message.includes("FOREIGN KEY")
+            ) {
+                return {
+                    ok: false,
+                    error: "Database constraint violation",
+                    details: error.message,
+                };
+            }
+
+            if (error.message.includes("SQLITE_BUSY")) {
+                return {
+                    ok: false,
+                    error: "Database is busy, please try again",
+                    details: error.message,
+                };
+            }
+
+            return {
+                ok: false,
+                error: error.message,
+                details: error.stack,
+            };
+        }
+
         return {
             ok: false,
-            error:
-                error instanceof Error
-                    ? error.message
-                    : "Unknown error occurred",
+            error: "Unknown error occurred during chart update",
+            details: error,
         };
     }
+}
+
+export async function updateBarChartWithRetry({
+    chartId,
+    data,
+    maxRetries = 3,
+    retryDelay = 200,
+}: {
+    chartId: string;
+    data: FullBarChartUpdate;
+    maxRetries?: number;
+    retryDelay?: number;
+}): Promise<UpdateResult> {
+    let lastError: UpdateResult | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const result = await updateBarChart({ chartId, data });
+            if (result.ok) {
+                return result;
+            }
+
+            if (
+                result.error.includes("busy") ||
+                result.error.includes("SQLITE_BUSY")
+            ) {
+                lastError = result;
+                await new Promise((resolve) =>
+                    setTimeout(resolve, retryDelay * attempt)
+                );
+                continue;
+            }
+
+            return result;
+        } catch (error) {
+            lastError = {
+                ok: false,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown error during retry",
+                details: error,
+            };
+
+            if (
+                error instanceof Error &&
+                (error.message.includes("busy") ||
+                    error.message.includes("SQLITE_BUSY"))
+            ) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, retryDelay * attempt)
+                );
+                continue;
+            }
+
+            break;
+        }
+    }
+
+    return (
+        lastError || {
+            ok: false,
+            error: `Failed to update chart after ${maxRetries} attempts`,
+            details: "Max retries reached",
+        }
+    );
 }

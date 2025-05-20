@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { AreaChartCardHeader } from "@/modules/Area/components/AreaChartCardHeader";
 import { BarChartCardHeader } from "@/modules/Bar/components/BarHeaderChart";
 import { ChartType } from "@/constants";
-import { DonutChartCardHeader } from "@/modules/Donut/components/DonutHeaderChart";
+import { DonutChartCardHeader } from "@/modules/Radial/components/RadialHeaderChart";
 import { RadarChartCardHeader } from "@/modules/Radar/components/RadarHeaderChart";
 import { HeatmapChartCardHeader } from "@/modules/Heatmap/components/HeatmapHeaderChart";
 import { getSlug } from "@/utils/pathSlugsOps";

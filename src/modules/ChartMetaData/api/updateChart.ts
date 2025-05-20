@@ -20,7 +20,10 @@ import {
     RadarCharts,
 } from "@/db/schema";
 import { CollectionSelect } from "@/modules/Collection/schema";
-import { ChartSelect, ChartUpdate } from "@/modules/ChartMetaData/schema";
+import {
+    ChartMetadataSelect,
+    ChartMetadataUpdate,
+} from "@/modules/ChartMetaData/schema";
 
 const CHART_TABLES = {
     [AREA]: AreaCharts,
@@ -40,12 +43,12 @@ async function checkPermission({
     | {
           ok: false;
           error: string;
-          field: keyof ChartSelect | "root";
+          field: keyof ChartMetadataSelect | "root";
       }
     | {
           ok: true;
           collection: CollectionSelect;
-          chart: ChartSelect;
+          chart: ChartMetadataSelect;
       }
 > {
     const record = await db
@@ -53,9 +56,9 @@ async function checkPermission({
         .from(Charts)
         .fullJoin(
             Collections,
-            eq(Collections.collection_id, Charts.collection_id)
+            eq(Collections.collection_id, Charts.collectionId)
         )
-        .where(eq(Charts.chart_id, chart_id))
+        .where(eq(Charts.chartId, chart_id))
         .then(([record]) => record);
 
     if (!record || !record.charts) {
@@ -104,7 +107,7 @@ export async function updateChartType({
     | {
           ok: false;
           error: string;
-          field: keyof ChartSelect | "root";
+          field: keyof ChartMetadataSelect | "root";
       }
 > {
     try {
@@ -125,7 +128,7 @@ export async function updateChartType({
             await tx
                 .update(Charts)
                 .set({ type, updated_at: new Date() })
-                .where(eq(Charts.chart_id, chart_id));
+                .where(eq(Charts.chartId, chart_id));
 
             await tx
                 .delete(previousTable)
@@ -159,7 +162,7 @@ export async function moveChartBetweenCollections({
     | {
           ok: false;
           error: string;
-          field: keyof ChartSelect | "root";
+          field: keyof ChartMetadataSelect | "root";
       }
 > {
     try {
@@ -196,7 +199,7 @@ export async function moveChartBetweenCollections({
             await tx
                 .update(Charts)
                 .set({ collection_id: new_collection_id })
-                .where(eq(Charts.chart_id, chart_id));
+                .where(eq(Charts.chartId, chart_id));
 
             await tx
                 .update(Collections)
@@ -220,7 +223,7 @@ export async function updateChart({
     chart_id,
     user_id,
 }: {
-    newChart: ChartUpdate;
+    newChart: ChartMetadataUpdate;
     chart_id: string;
     user_id: string;
 }): Promise<
@@ -230,7 +233,7 @@ export async function updateChart({
     | {
           ok: false;
           error: string;
-          field: keyof ChartSelect | "root";
+          field: keyof ChartMetadataSelect | "root";
       }
 > {
     try {
@@ -247,7 +250,7 @@ export async function updateChart({
                 description: newChart.description,
                 updated_at: new Date(),
             })
-            .where(eq(Charts.chart_id, chart_id));
+            .where(eq(Charts.chartId, chart_id));
 
         return { ok: true };
     } catch (error) {

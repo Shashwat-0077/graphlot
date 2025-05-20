@@ -25,9 +25,9 @@ export async function deleteChart({
             .from(Charts)
             .fullJoin(
                 Collections,
-                eq(Collections.collection_id, Charts.collection_id)
+                eq(Collections.collection_id, Charts.collectionId)
             )
-            .where(eq(Charts.chart_id, chart_id))
+            .where(eq(Charts.chartId, chart_id))
             .then(([record]) => record);
 
         if (!record || !record.charts) {
@@ -57,7 +57,7 @@ export async function deleteChart({
                 return;
             }
 
-            await tx.delete(Charts).where(eq(Charts.chart_id, chart_id));
+            await tx.delete(Charts).where(eq(Charts.chartId, chart_id));
 
             await tx
                 .update(Collections)

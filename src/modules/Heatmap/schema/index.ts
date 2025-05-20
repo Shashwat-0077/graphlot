@@ -5,9 +5,13 @@ import {
     createUpdateSchema,
 } from "drizzle-zod";
 
-import { HeatmapCharts } from "@/modules/Heatmap/schema/db";
-import { ChartSchema } from "@/modules/ChartMetaData/schema";
-import { HEATMAP } from "@/constants";
+import {
+    HEATMAP_CHARTS_TABLE_NAME,
+    HeatmapCharts,
+} from "@/modules/Heatmap/schema/db";
+import { CHART_TYPE_HEATMAP } from "@/constants";
+import { CHART_METADATA_TABLE_NAME } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
 
 // Create base schemas from the Drizzle table
 const baseInsertSchema = createInsertSchema(HeatmapCharts);
@@ -19,27 +23,25 @@ export const HeatmapSchema = {
     Insert: baseInsertSchema,
     Select: baseSelectSchema,
     Update: baseUpdateSchema.omit({
-        chart_id: true,
+        chartId: true,
     }),
 };
 
 export const FullHeatmapSchema = {
-    Insert: HeatmapSchema.Insert.extend(ChartSchema.Insert.shape).extend({
-        type: z.literal(HEATMAP),
+    Select: z.object({
+        [HEATMAP_CHARTS_TABLE_NAME]: HeatmapSchema.Select,
+        [CHART_METADATA_TABLE_NAME]: ChartMetadataSchema.Select.extend({
+            type: z.literal(CHART_TYPE_HEATMAP),
+        }),
     }),
-    Select: HeatmapSchema.Select.extend(ChartSchema.Select.shape).extend({
-        type: z.literal(HEATMAP),
-    }),
-    Update: HeatmapSchema.Update.extend(ChartSchema.Update.shape).extend({
-        type: z.literal(HEATMAP),
+    Update: z.object({
+        [HEATMAP_CHARTS_TABLE_NAME]: HeatmapSchema.Update.optional(),
     }),
 };
 
 // Types for the schemas
-export type HeatmapInsert = z.infer<typeof HeatmapSchema.Insert>;
 export type HeatmapSelect = z.infer<typeof HeatmapSchema.Select>;
 export type HeatmapUpdate = z.infer<typeof HeatmapSchema.Update>;
 
-export type FullHeatmapInsert = z.infer<typeof FullHeatmapSchema.Insert>;
 export type FullHeatmapSelect = z.infer<typeof FullHeatmapSchema.Select>;
 export type FullHeatmapUpdate = z.infer<typeof FullHeatmapSchema.Update>;

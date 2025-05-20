@@ -4,11 +4,12 @@ import { zValidator } from "@hono/zod-validator";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
 import {
-    fetchAreaChartsByCollection,
     fetchAreaChartById,
+    fetchAreaChartsByCollection,
+    fetchFullAreaChartById,
 } from "@/modules/Area/api/helper/fetch-area-charts";
 import { updateAreaChart } from "@/modules/Area/api/helper/update-area-charts";
-import { AreaChartSchema } from "@/modules/Area/schema";
+import { FullAreaUpdate } from "@/modules/Area/schema";
 
 // App-scoped variables (injected by middleware)
 type AppVariables = {
@@ -37,11 +38,20 @@ const areaChartRoute = new Hono<{ Variables: AppVariables }>()
 
         return c.json({ charts: result.charts }, 200);
     })
-
-    // Get a single area chart by ID
+    // Get only the area chart by id
     .get("/:id", zValidator("param", paramSchema), async (c) => {
         const { id } = c.req.valid("param");
         const result = await fetchAreaChartById(id);
+        if (!result.ok) {
+            return c.json({ error: result.error }, 500);
+        }
+        return c.json({ chart: result.chart }, 200);
+    })
+
+    // Get a single area chart by ID
+    .get("/:id/full", zValidator("param", paramSchema), async (c) => {
+        const { id } = c.req.valid("param");
+        const result = await fetchFullAreaChartById(id);
 
         if (!result.ok) {
             return c.json({ error: result.error }, 500);
@@ -55,12 +65,12 @@ const areaChartRoute = new Hono<{ Variables: AppVariables }>()
         "/:id",
         authMiddleWare,
         zValidator("param", paramSchema),
-        zValidator("json", AreaChartSchema.Update),
+        zValidator("json", FullAreaUpdate),
         async (c) => {
             const { id } = c.req.valid("param");
             const data = c.req.valid("json");
 
-            const result = await updateAreaChart({ chart_id: id, data });
+            const result = await updateAreaChart({ chartId: id, data });
 
             if (!result.ok) {
                 return c.json({ error: result.error }, 500);

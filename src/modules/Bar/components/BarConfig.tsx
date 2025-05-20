@@ -38,7 +38,7 @@ import { useBarChartStore } from "@/modules/Bar/store";
 import { GridSelect } from "@/components/ui/grid-select";
 import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
-import { useUpdateBarChart } from "@/modules/Bar/api/client/useUpdateBarChart";
+import { useUpdateBarChart } from "@/modules/Bar/api/client/use-update-bar-chart";
 import type { BarSelect } from "@/modules/Bar/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

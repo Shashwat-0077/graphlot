@@ -3,25 +3,25 @@ import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/db";
 import { Charts } from "@/db/schema";
-import { ChartSelect } from "@/modules/ChartMetaData/schema";
+import { ChartMetadataSelect } from "@/modules/ChartMetaData/schema";
 import { FullAreaSelect } from "@/modules/Area/schema";
 import { FullBarSelect } from "@/modules/Bar/schema";
 import { FullHeatmapSelect } from "@/modules/Heatmap/schema";
 import { FullRadarSelect } from "@/modules/Radar/schema";
-import { FullDonutSelect } from "@/modules/Donut/schema";
+import { FullDonutSelect } from "@/modules/Radial/schema";
 import { AREA, CHART_TYPE_BAR, DONUT, HEATMAP, RADAR } from "@/constants";
-import { fetchAreaChartById } from "@/modules/Area/api/helper/fetch-area-charts";
+import { fetchFullAreaChartById } from "@/modules/Area/api/helper/fetch-area-charts";
 import { getBarChartWithId } from "@/modules/Bar/api/helpers/fetch-bar-charts";
-import { getHeatmapChartWithId } from "@/modules/Heatmap/api/getHeatmap";
-import { getRadarChartWithId } from "@/modules/Radar/api/getRadarCharts";
-import { getDonutChartWithId } from "@/modules/Donut/api/getDonutCharts";
+import { getHeatmapChartWithId } from "@/modules/Heatmap/api/helper/fetch-heatmap";
+import { getRadarChartWithId } from "@/modules/Radar/api/helper/fetch-radar-chart";
+import { getDonutChartWithId } from "@/modules/Radial/api/helper/fetch-radial-chart";
 
 export async function getAllChartsWithCollectionId(
     collection_id: string
 ): Promise<
     | {
           ok: true;
-          charts: ChartSelect[];
+          charts: ChartMetadataSelect[];
       }
     | {
           ok: false;
@@ -34,7 +34,7 @@ export async function getAllChartsWithCollectionId(
         const charts = await db
             .select()
             .from(Charts)
-            .where(eq(Charts.collection_id, collection_id));
+            .where(eq(Charts.collectionId, collection_id));
 
         return {
             ok: true,
@@ -57,7 +57,7 @@ export async function getChartWithId({
 }): Promise<
     | {
           ok: true;
-          chart: ChartSelect;
+          chart: ChartMetadataSelect;
       }
     | {
           ok: false;
@@ -68,7 +68,7 @@ export async function getChartWithId({
         const chart = await db
             .select()
             .from(Charts)
-            .where(and(eq(Charts.chart_id, chart_id)))
+            .where(and(eq(Charts.chartId, chart_id)))
             .then(([record]) => record);
 
         if (!chart) {
@@ -116,7 +116,7 @@ export const getFullChartWithId = async ({
             const basicChart = await tx
                 .select()
                 .from(Charts)
-                .where(and(eq(Charts.chart_id, chart_id)))
+                .where(and(eq(Charts.chartId, chart_id)))
                 .then(([record]) => record);
 
             if (!basicChart) {
@@ -129,24 +129,24 @@ export const getFullChartWithId = async ({
 
             switch (chartType) {
                 case AREA:
-                    return await fetchAreaChartById({
-                        chart_id: basicChart.chart_id,
+                    return await fetchFullAreaChartById({
+                        chart_id: basicChart.chartId,
                     });
                 case CHART_TYPE_BAR:
                     return await getBarChartWithId({
-                        chart_id: basicChart.chart_id,
+                        chart_id: basicChart.chartId,
                     });
                 case HEATMAP:
                     return await getHeatmapChartWithId({
-                        chart_id: basicChart.chart_id,
+                        chart_id: basicChart.chartId,
                     });
                 case RADAR:
                     return await getRadarChartWithId({
-                        chart_id: basicChart.chart_id,
+                        chart_id: basicChart.chartId,
                     });
                 case DONUT:
                     return await getDonutChartWithId({
-                        chart_id: basicChart.chart_id,
+                        chart_id: basicChart.chartId,
                     });
                 default:
                     return {

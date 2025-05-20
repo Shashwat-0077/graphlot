@@ -101,7 +101,7 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
                 onSuccess: (data) => {
                     router.push(
                         `/dashboard/collections/${collection_slug}/${getSlug({
-                            id: data.newChart.chart_id,
+                            id: data.newChart.chartId,
                             name: data.newChart.name,
                         })}`
                     );
