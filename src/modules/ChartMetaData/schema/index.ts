@@ -7,6 +7,11 @@ import {
 
 import {
     ANCHOR_OPTIONS,
+    CHART_TYPE_AREA,
+    CHART_TYPE_BAR,
+    CHART_TYPE_HEATMAP,
+    CHART_TYPE_RADAR,
+    CHART_TYPE_RADIAL,
     CHART_TYPES,
     FONT_OPTIONS,
     FONT_STYLES_OPTIONS,
@@ -21,6 +26,11 @@ import {
     ChartTypography,
     ChartColors,
 } from "@/modules/ChartMetaData/schema/db";
+import { FullAreaChartSelect } from "@/modules/Area/schema";
+import { FullBarChartSelect } from "@/modules/Bar/schema";
+import { FullRadarChartSelect } from "@/modules/Radar/schema";
+import { FullHeatmapSelect } from "@/modules/Heatmap/schema";
+import { FullRadialChartSelect } from "@/modules/Radial/schema";
 
 // === Chart Metadata ===
 const chartInsertSchema = createInsertSchema(ChartMetadata);
@@ -151,3 +161,30 @@ export const ChartColorSchema = {
 export type ChartColorInsert = z.infer<typeof ChartColorSchema.Insert>;
 export type ChartColorSelect = z.infer<typeof ChartColorSchema.Select>;
 export type ChartColorUpdate = z.infer<typeof ChartColorSchema.Update>;
+
+export type FullChartType =
+    | {
+          ok: true;
+          type: typeof CHART_TYPE_AREA;
+          chart: FullAreaChartSelect;
+      }
+    | {
+          ok: true;
+          type: typeof CHART_TYPE_BAR;
+          chart: FullBarChartSelect;
+      }
+    | {
+          ok: true;
+          type: typeof CHART_TYPE_RADAR;
+          chart: FullRadarChartSelect;
+      }
+    | {
+          ok: true;
+          type: typeof CHART_TYPE_HEATMAP;
+          chart: FullHeatmapSelect;
+      }
+    | {
+          ok: true;
+          type: typeof CHART_TYPE_RADIAL;
+          chart: FullRadialChartSelect;
+      };

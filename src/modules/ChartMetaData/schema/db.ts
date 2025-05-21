@@ -44,11 +44,12 @@ export const ChartMetadata = sqliteTable(
             .$defaultFn(() => uuid()),
         collectionId: text("collection_id")
             .notNull()
-            .references(() => Collections.collection_id, {
+            .references(() => Collections.collectionId, {
                 onDelete: "cascade",
             }),
         name: text("name").notNull(),
         description: text("description").notNull(),
+        databaseProvider: text("database_provider").notNull(),
         databaseId: text("database_id").notNull(),
         databaseName: text("database_name").notNull(),
         type: text("type").notNull().$type<ChartType>(),
@@ -237,5 +238,5 @@ export const ChartColors = sqliteTable(CHART_COLOR_TABLE_NAME, {
     legendTextColor: text("legend_text_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.textColor),
+        .default(defaultChartColors.legendTextColor),
 });

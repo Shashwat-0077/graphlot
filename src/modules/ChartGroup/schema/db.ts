@@ -7,32 +7,36 @@ import {
     unique,
 } from "drizzle-orm/sqlite-core";
 
-import { Charts, Collections } from "@/db/schema";
 import { LayoutType } from "@/constants";
+import { ChartMetadata, Collections } from "@/db/schema";
 
 export const ChartGroup = sqliteTable(
     "chart_groups",
     {
-        group_id: text("id")
+        groupId: text("id")
             .primaryKey()
             .notNull()
             .$defaultFn(() => uuid()),
-        collection_id: text("collectionId")
+        collectionId: text("collection_id")
             .notNull()
-            .references(() => Collections.collection_id, {
+            .references(() => Collections.collectionId, {
                 onDelete: "cascade",
             }),
         name: text("name").notNull(),
-        layout_type: text("layoutType").notNull().$type<LayoutType>(),
-        chart_count: integer("chartCount", { mode: "number" })
+        layoutType: text("layout_type").notNull().$type<LayoutType>(),
+        chartCount: integer("chart_count", { mode: "number" })
             .notNull()
             .default(0),
-        created_at: real("created_at").notNull().$type<Date>(),
-        updated_at: real("updated_at").notNull().$type<Date>(),
+        createdAt: real("created_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
+        updatedAt: real("updated_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
     },
     (table) => [
         unique("chart_groups_collection_name_unique").on(
-            table.collection_id,
+            table.collectionId,
             table.name
         ),
     ]
@@ -41,25 +45,29 @@ export const ChartGroup = sqliteTable(
 export const ChartGroupCharts = sqliteTable(
     "chart_group_charts",
     {
-        group_id: text("groupId")
+        groupId: text("groupId")
             .notNull()
-            .references(() => ChartGroup.group_id, {
+            .references(() => ChartGroup.groupId, {
                 onDelete: "cascade",
                 onUpdate: "cascade",
             }),
-        chart_id: text("chartId")
+        chartId: text("chartId")
             .notNull()
-            .references(() => Charts.chartId, {
+            .references(() => ChartMetadata.chartId, {
                 onDelete: "cascade",
                 onUpdate: "cascade",
             }),
-        created_at: text("created_at").notNull().$type<Date>(),
-        updated_at: text("updated_at").notNull().$type<Date>(),
+        createdAt: real("created_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
+        updatedAt: real("updated_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
     },
     (table) => [
         unique("chart_group_charts_group_chart_unique").on(
-            table.group_id,
-            table.chart_id
+            table.groupId,
+            table.chartId
         ),
     ]
 );

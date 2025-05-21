@@ -7,25 +7,30 @@ import {
     unique,
 } from "drizzle-orm/sqlite-core";
 
-import { Users } from "@/db/schema";
+import { Users } from "@/modules/auth/schema/db";
 
 export const Collections = sqliteTable(
     "collections",
     {
-        collection_id: text("id")
+        collectionId: text("id")
             .primaryKey()
             .$defaultFn(() => uuid()),
-        user_id: text("userId")
+        userId: text("userId")
             .notNull()
             .references(() => Users.id, { onDelete: "cascade" }),
         name: text("name").notNull(),
         description: text("description").notNull(),
-        chart_count: integer("chartCount", { mode: "number" })
+        chartCount: integer("chart_count", { mode: "number" })
             .notNull()
             .default(0),
-        created_at: real("createdAt").notNull().$type<Date>(),
+        createdAt: real("created_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
+        updatedAt: real("updated_at")
+            .notNull()
+            .$defaultFn(() => Date.now()),
     },
     (table) => [
-        unique("collections_user_name_unique").on(table.user_id, table.name),
+        unique("collections_user_name_unique").on(table.userId, table.name),
     ]
 );

@@ -16,27 +16,27 @@ const baseUpdateSchema = createUpdateSchema(ChartGroup);
 export const ChartGroupSchema = {
     Insert: baseInsertSchema
         .extend({
-            layout_type: z.enum(LAYOUT_OPTIONS),
+            layoutType: z.enum(LAYOUT_OPTIONS),
         })
         .omit({
-            group_id: true,
-            chart_count: true,
-            created_at: true,
-            updated_at: true,
+            groupId: true,
+            chartCount: true,
+            createdAt: true,
+            updatedAt: true,
         }),
     Select: baseSelectSchema.extend({
-        layout_type: z.enum(LAYOUT_OPTIONS),
+        layoutType: z.enum(LAYOUT_OPTIONS),
     }),
     Update: baseUpdateSchema
         .extend({
-            layout_type: z.enum(LAYOUT_OPTIONS).optional(),
+            layoutType: z.enum(LAYOUT_OPTIONS).optional(),
         })
         .omit({
-            group_id: true,
-            created_at: true,
-            updated_at: true,
-            collection_id: true,
-            chart_count: true,
+            groupId: true,
+            createdAt: true,
+            updatedAt: true,
+            collectionId: true,
+            chartCount: true,
         }),
 };
 

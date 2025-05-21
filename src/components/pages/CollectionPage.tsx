@@ -23,7 +23,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useGetAllCollections } from "@/modules/Collection/api/client/useGetCollections";
+import { useGetAllCollections } from "@/modules/Collection/api/client/use-collections";
 
 export default function CollectionsPage() {
     // State for filtering and sorting

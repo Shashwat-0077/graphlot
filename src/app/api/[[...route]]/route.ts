@@ -3,15 +3,15 @@ import { handle } from "hono/vercel";
 import { HTTPException } from "hono/http-exception";
 
 // Route imports
-import collectionRoutes from "@/modules/Collection/server/route";
-import chartRoutes from "@/modules/ChartMetaData/server/route";
+import collectionRoutes from "@/modules/Collection/api/server/route";
+import chartRoutes from "@/modules/ChartMetaData/api/server/route";
 import notionRoutes from "@/modules/notion/server/route";
 import radarRoutes from "@/modules/Radar/api/server/route";
 import areaRoutes from "@/modules/Area/api/server/route";
 import barRoutes from "@/modules/Bar/api/server/route";
 import heatmapRoutes from "@/modules/Heatmap/api/server/route";
 import radialRoutes from "@/modules/Radial/api/server/route";
-import chartGroupRoutes from "@/modules/ChartGroup/server/route";
+import chartGroupRoutes from "@/modules/ChartGroup/api/server/route";
 
 const app = new Hono().basePath("/api");
 

@@ -12,7 +12,7 @@ import { AreaChartStoreProvider } from "@/modules/Area/store";
 import { BarChartView } from "@/modules/Bar/components/BarChartView";
 import { BarConfig } from "@/modules/Bar/components/BarConfig";
 import { BarChartStoreProvider } from "@/modules/Bar/store";
-import { useGetChartWithId } from "@/modules/ChartMetaData/api/client/useGetChart";
+import { useGetChartWithId } from "@/modules/ChartMetaData/api/client/use-chart";
 import { DonutChartView } from "@/modules/Radial/components/RadialChartView";
 import { DonutConfig } from "@/modules/Radial/components/RadialConfig";
 import { DonutChartStoreProvider } from "@/modules/Radial/store";

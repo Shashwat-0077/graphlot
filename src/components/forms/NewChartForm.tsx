@@ -28,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useGetAllDatabases } from "@/modules/notion/api/client/useGetAllDatabases";
 import { ChartSchema } from "@/modules/ChartMetaData/schema";
-import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/useCreateNewChart";
+import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/use-create-chart";
 import { AREA, CHART_TYPES } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSlug, parseSlug } from "@/utils/pathSlugsOps";

@@ -88,7 +88,7 @@ export type ChartConfigComponent = (props: {
 export type ChartStateProvider = (props: {
     children: React.ReactNode;
     chartId: string;
-}) => React.JSX.Element;
+}) => React.ReactNode;
 
 // === Notion Types ===
 export type NotionPropertySchema = GetDatabaseResponse["properties"];

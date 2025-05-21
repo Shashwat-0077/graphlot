@@ -45,3 +45,6 @@ drizzle/
 
 # bun lock file
 bun.lockb
+
+# vscode
+.vscode/

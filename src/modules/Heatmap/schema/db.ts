@@ -5,7 +5,7 @@ import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
 import { RGBAColor, DayOfWeek } from "@/constants";
 import { defaultHeatmapConfig } from "@/modules/Heatmap/heatmap-default-config";
 
-export const HEATMAP_CHARTS_TABLE_NAME = "heatmap_chart";
+export const HEATMAP_CHARTS_TABLE_NAME = "heatmap";
 
 export const HeatmapCharts = sqliteTable(HEATMAP_CHARTS_TABLE_NAME, {
     chartId: text("chart_id")

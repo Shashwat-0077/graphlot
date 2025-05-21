@@ -13,51 +13,21 @@ const baseSelectSchema = createSelectSchema(Collections);
 const baseUpdateSchema = createUpdateSchema(Collections);
 
 export const CollectionSchema = {
-    Insert: baseInsertSchema
-        .extend({
-            name: z
-                .string({
-                    required_error: "Name is required",
-                    invalid_type_error: "Name must be a string",
-                })
-                .min(1, { message: "Name is required" })
-                .max(100, { message: "Name must be at most 100 characters" }),
-            description: z
-                .string({
-                    required_error: "Description is required",
-                    invalid_type_error: "Description must be a string",
-                })
-                .min(1, { message: "Description is required" })
-                .max(500, {
-                    message: "Description must be at most 500 characters",
-                }),
-        })
-        .omit({
-            collection_id: true,
-            chart_count: true,
-            user_id: true,
-            created_at: true,
-        }),
+    Insert: baseInsertSchema.omit({
+        collectionId: true,
+        chartCount: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+    }),
     Select: baseSelectSchema,
-    Update: baseUpdateSchema
-        .extend({
-            name: z
-                .string({ invalid_type_error: "Name must be a string" })
-                .max(100, { message: "Name must be at most 100 characters" })
-                .optional(),
-            description: z
-                .string({ invalid_type_error: "Description must be a string" })
-                .max(500, {
-                    message: "Description must be at most 500 characters",
-                })
-                .optional(),
-        })
-        .omit({
-            collection_id: true,
-            created_at: true,
-            user_id: true,
-            chart_count: true,
-        }),
+    Update: baseUpdateSchema.omit({
+        collectionId: true,
+        createdAt: true,
+        updatedAt: true,
+        userId: true,
+        chartCount: true,
+    }),
 };
 
 // Types for the schemas

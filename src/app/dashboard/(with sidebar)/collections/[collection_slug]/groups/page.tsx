@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/getCharts";
+import { getAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/helper/fetch-chart";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { Button } from "@/components/ui/button";
 import ChartGroupsPage from "@/components/pages/ChartGroupsPage";

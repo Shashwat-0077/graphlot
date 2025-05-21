@@ -47,12 +47,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyChartGroups } from "@/modules/ChartGroup/components/EmptyChartGroups";
-import { useDeleteGroup } from "@/modules/ChartGroup/api/client/useDeleteGroup";
+import { useDeleteGroup } from "@/modules/ChartGroup/api/client/use-delete-group";
 import { ChartMetadataSelect } from "@/modules/ChartMetaData/schema";
 import { ChartGroupSelect } from "@/modules/ChartGroup/schema";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { LAYOUT_GRID } from "@/constants";
-import { useGetAllGroups } from "@/modules/ChartGroup/api/client/useGetGroups";
+import { useGetAllGroups } from "@/modules/ChartGroup/api/client/use-groups";
 
 export default function ChartGroupsPage({
     collection_slug,

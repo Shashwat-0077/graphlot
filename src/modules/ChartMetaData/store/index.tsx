@@ -5,7 +5,6 @@ import { useStore } from "zustand";
 
 import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
-import { useAreaChart } from "@/modules/Area/api/client";
 import {
     ChartBoxModelStore,
     ChartColorStore,
@@ -20,6 +19,7 @@ import {
     initChartTypographyState,
     initChartVisualState,
 } from "@/modules/ChartMetaData/store/state";
+import { useChartProperties } from "@/modules/ChartMetaData/api/client/use-chart";
 
 // === ChartVisualStore ===
 export type ChartVisualStoreApi = ReturnType<typeof createChartVisualStore>;
@@ -51,7 +51,7 @@ export const ChartConfigStoreProvider: ChartStateProvider = ({
     const typographyStoreRef = useRef<ChartTypographyStoreApi>(null);
     const colorStoreRef = useRef<ChartColorStoreApi>(null);
 
-    const { data, isLoading, error, isError } = useAreaChart(chartId);
+    const { data, isLoading, error, isError } = useChartProperties(chartId);
 
     if (!data || isLoading) {
         return (
@@ -71,56 +71,75 @@ export const ChartConfigStoreProvider: ChartStateProvider = ({
         );
     }
 
-    const {
-        chart: {
-            chart_visual,
-            chart_typography,
-            chart_box_model,
-            chart_colors,
-        },
-    } = data;
+    const { chart_visual, chart_typography, chart_box_model, chart_colors } =
+        data;
 
-    if (!visualStoreRef.current) {
+    // Only create stores for data that exists
+    if (chart_visual && !visualStoreRef.current) {
         visualStoreRef.current = createChartVisualStore(
             initChartVisualState(chart_visual)
         );
     }
 
-    if (!typographyStoreRef.current) {
+    if (chart_typography && !typographyStoreRef.current) {
         typographyStoreRef.current = createChartTypographyStore(
             initChartTypographyState(chart_typography)
         );
     }
 
-    if (!boxModelStoreRef.current) {
+    if (chart_box_model && !boxModelStoreRef.current) {
         boxModelStoreRef.current = createChartBoxModelStore(
             initChartBoxModelState(chart_box_model)
         );
     }
 
-    if (!colorStoreRef.current) {
+    if (chart_colors && !colorStoreRef.current) {
         colorStoreRef.current = createChartColorStore(
             initChartColorState(chart_colors)
         );
     }
 
-    return (
-        <ChartVisualStoreContext.Provider value={visualStoreRef.current}>
+    // Conditionally nest providers based on data availability
+    let content = children;
+
+    // Wrap with each provider only if corresponding data exists
+    if (chart_colors && colorStoreRef.current) {
+        content = (
+            <ChartColorStoreContext.Provider value={colorStoreRef.current}>
+                {content}
+            </ChartColorStoreContext.Provider>
+        );
+    }
+
+    if (chart_box_model && boxModelStoreRef.current) {
+        content = (
+            <ChartBoxModelStoreContext.Provider
+                value={boxModelStoreRef.current}
+            >
+                {content}
+            </ChartBoxModelStoreContext.Provider>
+        );
+    }
+
+    if (chart_typography && typographyStoreRef.current) {
+        content = (
             <ChartTypographyStoreContext.Provider
                 value={typographyStoreRef.current}
             >
-                <ChartBoxModelStoreContext.Provider
-                    value={boxModelStoreRef.current}
-                >
-                    <ChartColorStoreContext.Provider
-                        value={colorStoreRef.current}
-                    >
-                        {children}
-                    </ChartColorStoreContext.Provider>
-                </ChartBoxModelStoreContext.Provider>
+                {content}
             </ChartTypographyStoreContext.Provider>
-        </ChartVisualStoreContext.Provider>
-    );
+        );
+    }
+
+    if (chart_visual && visualStoreRef.current) {
+        content = (
+            <ChartVisualStoreContext.Provider value={visualStoreRef.current}>
+                {content}
+            </ChartVisualStoreContext.Provider>
+        );
+    }
+
+    return content;
 };
 
 export const useChartVisualStore = <T,>(

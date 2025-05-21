@@ -25,8 +25,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/useGetChart";
-import { useGetCollectionById } from "@/modules/Collection/api/client/useGetCollections";
+import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/use-chart";
+import { useGetCollectionById } from "@/modules/Collection/api/client/use-collections";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthSession } from "@/hooks/use-auth-session";
 

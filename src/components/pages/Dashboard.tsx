@@ -23,7 +23,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { auth } from "@/modules/auth";
-import { getAllCollections } from "@/modules/Collection/api/getCollections";
+import { getAllCollections } from "@/modules/Collection/api/helper/fetch-collection";
 
 // Mock data for recent activity
 const recentActivity = [
