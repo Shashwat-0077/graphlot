@@ -23,14 +23,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useGetAllCollections } from "@/modules/Collection/api/client/use-collections";
+import { useCollections } from "@/modules/Collection/api/client/use-collections";
 
 export default function CollectionsPage() {
     // State for filtering and sorting
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState<string>("newest");
 
-    const { data: collections, isLoading, error } = useGetAllCollections();
+    const { data: collections, isLoading, error } = useCollections();
 
     const container = {
         hidden: { opacity: 0 },
@@ -87,22 +87,22 @@ export default function CollectionsPage() {
         switch (sortOption) {
             case "newest":
                 return (
-                    new Date(b.created_at).getTime() -
-                    new Date(a.created_at).getTime()
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
                 );
             case "oldest":
                 return (
-                    new Date(a.created_at).getTime() -
-                    new Date(b.created_at).getTime()
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
                 );
             case "name-asc":
                 return a.name.localeCompare(b.name);
             case "name-desc":
                 return b.name.localeCompare(a.name);
             case "charts-desc":
-                return b.chart_count - a.chart_count;
+                return b.chartCount - a.chartCount;
             case "charts-asc":
-                return a.chart_count - b.chart_count;
+                return a.chartCount - b.chartCount;
             default:
                 return 0;
         }
@@ -253,14 +253,14 @@ export default function CollectionsPage() {
                     <AnimatePresence>
                         {sortedCollections.map((collection) => (
                             <motion.div
-                                key={collection.collection_id}
+                                key={collection.collectionId}
                                 variants={item}
                                 layout
                             >
                                 <CollectionCard
                                     name={collection.name}
-                                    path={`/dashboard/collections/${getSlug({ id: collection.collection_id, name: collection.name })}`}
-                                    chartCount={collection.chart_count}
+                                    path={`/dashboard/collections/${getSlug({ id: collection.collectionId, name: collection.name })}`}
+                                    chartCount={collection.chartCount}
                                 />
                             </motion.div>
                         ))}

@@ -9,7 +9,7 @@ import {
     initHeatmapChartStore,
 } from "@/modules/Heatmap/store/state";
 import { ChartStateProvider } from "@/constants";
-import { BoxLoader } from "@/components/ui/Loader";
+import { SimpleLoader } from "@/components/ui/Loader";
 import { useHeatmap } from "@/modules/Heatmap/api/client/use-heatmap";
 
 export type HeatmapChartStoreApi = ReturnType<typeof createHeatmapChartStore>;
@@ -27,7 +27,7 @@ export const HeatmapChartStoreProvider: ChartStateProvider = ({
     if (!data || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

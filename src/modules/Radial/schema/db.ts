@@ -1,13 +1,18 @@
-import { sql } from "drizzle-orm";
-import { check, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+// import { sql } from "drizzle-orm";
+import {
+    // check,
+    integer,
+    sqliteTable,
+    text,
+} from "drizzle-orm/sqlite-core";
 
 import { defaultDonutChartConfig } from "@/modules/Radial/default-radial-chart- config";
 import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
 import {
     ChartFilter,
-    RADIAL_LEGEND_POSITION_OPTIONS,
+    // RADIAL_LEGEND_POSITION_OPTIONS,
     RadialLegendPositionType,
-    SORT_OPTIONS,
+    // SORT_OPTIONS,
     SortType,
 } from "@/constants";
 
@@ -54,24 +59,24 @@ export const RadialCharts = sqliteTable(
         legendTextSize: integer("legend_text_size")
             .notNull()
             .default(defaultDonutChartConfig.legendTextSize),
-    },
-    (table) => {
-        const legendPosition = RADIAL_LEGEND_POSITION_OPTIONS.map(
-            (v) => `'${v}'`
-        ).join(", ");
-        const sortOrderValuesString = SORT_OPTIONS.map((v) => `'${v}'`).join(
-            ", "
-        );
-
-        return [
-            check(
-                "chk_radial_chart_x_sort_order",
-                sql`(${table.xAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
-            ),
-            check(
-                "chk_radial_chart_legend_position",
-                sql`(${table.legendPosition} IN (${sql.raw(legendPosition)}))`
-            ),
-        ];
     }
+    // (table) => {
+    //     const legendPosition = RADIAL_LEGEND_POSITION_OPTIONS.map(
+    //         (v) => `'${v}'`
+    //     ).join(", ");
+    //     const sortOrderValuesString = SORT_OPTIONS.map((v) => `'${v}'`).join(
+    //         ", "
+    //     );
+
+    //     return [
+    //         check(
+    //             "chk_radial_chart_x_sort_order",
+    //             sql`(${table.xAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
+    //         ),
+    //         check(
+    //             "chk_radial_chart_legend_position",
+    //             sql`(${table.legendPosition} IN (${sql.raw(legendPosition)}))`
+    //         ),
+    //     ];
+    // }
 );

@@ -1,8 +1,8 @@
-import { NotionDataType, NotionSchemaType } from "@/constants";
+import { NotionPropertyData, NotionPropertySchema } from "@/constants";
 
 export function processNotionData(
-    schema: NotionSchemaType,
-    data: NotionDataType[],
+    schema: NotionPropertySchema,
+    data: NotionPropertyData[],
     options: {
         xAxis: string;
         yAxis: string;
@@ -70,10 +70,10 @@ export function processNotionData(
  * Handle case where y-axis is "count"
  */
 function handleCountYAxis(
-    schema: NotionSchemaType,
-    data: NotionDataType[],
+    schema: NotionPropertySchema,
+    data: NotionPropertyData[],
     xAxis: string,
-    xAxisType: NotionSchemaType[string]["type"]
+    xAxisType: NotionPropertySchema[string]["type"]
 ) {
     // Get all possible x-axis values
     const xAxisValues = getUniqueValuesForAxis(schema, xAxis, xAxisType);
@@ -122,12 +122,12 @@ function handleCountYAxis(
  * Handle case where both x and y axes are categorical
  */
 function handleCategoricalYAxis(
-    schema: NotionSchemaType,
-    data: NotionDataType[],
+    schema: NotionPropertySchema,
+    data: NotionPropertyData[],
     xAxis: string,
-    xAxisType: NotionSchemaType[string]["type"],
+    xAxisType: NotionPropertySchema[string]["type"],
     yAxis: string,
-    yAxisType: NotionSchemaType[string]["type"]
+    yAxisType: NotionPropertySchema[string]["type"]
 ) {
     // Get all possible x and y axis values
     const xAxisValues = getUniqueValuesForAxis(schema, xAxis, xAxisType);
@@ -211,10 +211,10 @@ function handleCategoricalYAxis(
  * Handle case where x-axis is categorical and y-axis is numerical
  */
 function handleNumericalYAxis(
-    schema: NotionSchemaType,
-    data: NotionDataType[],
+    schema: NotionPropertySchema,
+    data: NotionPropertyData[],
     xAxis: string,
-    xAxisType: NotionSchemaType[string]["type"],
+    xAxisType: NotionPropertySchema[string]["type"],
     yAxis: string
 ) {
     // Get all possible x-axis values
@@ -265,9 +265,9 @@ function handleNumericalYAxis(
  * Extract all unique values for a given axis from the schema
  */
 function getUniqueValuesForAxis(
-    schema: NotionSchemaType,
+    schema: NotionPropertySchema,
     axisName: string,
-    axisType: NotionSchemaType[string]["type"]
+    axisType: NotionPropertySchema[string]["type"]
 ): string[] {
     const axisSchema = schema[axisName];
 
@@ -286,9 +286,9 @@ function getUniqueValuesForAxis(
  * Extract value from a record for a specific field
  */
 function getValueFromRecord(
-    record: NotionDataType,
+    record: NotionPropertyData,
     fieldName: string,
-    fieldType: NotionSchemaType[string]["type"]
+    fieldType: NotionPropertySchema[string]["type"]
 ) {
     const field = record[fieldName];
 

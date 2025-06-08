@@ -2,10 +2,10 @@ import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
-import { GetAllNotionDatabases } from "@/modules/notion/api/GetAllNotionDatabases";
-import { GetNotionTableData } from "@/modules/notion/api/GetNotionTableData";
-import { GetNotionTableSchema } from "@/modules/notion/api/GetNotionTableSchema";
-import { GetNotionTableMetaData } from "@/modules/notion/api/GetNotionTableMetaData";
+import { fetchAllNotionDatabases } from "@/modules/notion/api/helper/fetch-all-notion-databases";
+import { fetchNotionTableData } from "@/modules/notion/api/helper/fetch-notion-table-data";
+import { fetchNotionTableSchema } from "@/modules/notion/api/helper/fetch-notion-table-schema";
+import { fetchNotionTableMetaData } from "@/modules/notion/api/helper/fetch-notion-table-meta-data";
 
 // HACK : For now i cant see any other response type other than what notion sends us, and the type definitions from notion are not correct, this may cause an error but at the moment their is no way to know what type of error it will cause, we can maybe make the user let us know what type of error it is by submitting a form
 
@@ -17,16 +17,16 @@ const app = new Hono()
         zValidator(
             "query",
             z.object({
-                user_id: z.string().nonempty(),
+                userId: z.string().nonempty(),
             })
         ),
         async (c) => {
-            const { user_id } = c.req.valid("query");
-            if (!user_id) {
+            const { userId } = c.req.valid("query");
+            if (!userId) {
                 return c.json({ ok: false, error: "User ID is required" }, 400);
             }
 
-            const response = await GetAllNotionDatabases({ user_id });
+            const response = await fetchAllNotionDatabases(userId);
             if (!response.ok) {
                 return c.json({ ok: false, error: response.error }, 500);
             }
@@ -37,30 +37,30 @@ const app = new Hono()
         }
     )
     .get(
-        "/:notion_table_id/get-table-data",
+        "/:notionTableId/get-table-data",
         zValidator(
             "param",
             z.object({
-                notion_table_id: z.string().nonempty(),
+                notionTableId: z.string().nonempty(),
             })
         ),
         zValidator(
             "query",
             z.object({
-                user_id: z.string().nonempty(),
+                userId: z.string().nonempty(),
             })
         ),
         async (c) => {
-            const { notion_table_id } = c.req.valid("param");
-            const { user_id } = c.req.valid("query");
+            const { notionTableId } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
 
-            if (!user_id) {
+            if (!userId) {
                 return c.json({ ok: false, error: "User ID is required" }, 400);
             }
 
-            const response = await GetNotionTableData({
-                database_id: notion_table_id,
-                user_id,
+            const response = await fetchNotionTableData({
+                databaseId: notionTableId,
+                userId: userId,
             });
 
             if (!response.ok) {
@@ -73,30 +73,30 @@ const app = new Hono()
         }
     )
     .get(
-        "/:notion_table_id/get-table-schema",
+        "/:notionTableId/get-table-schema",
         zValidator(
             "param",
             z.object({
-                notion_table_id: z.string().nonempty(),
+                notionTableId: z.string().nonempty(),
             })
         ),
         zValidator(
             "query",
             z.object({
-                user_id: z.string().nonempty(),
+                userId: z.string().nonempty(),
             })
         ),
         async (c) => {
-            const { notion_table_id } = c.req.valid("param");
-            const { user_id } = c.req.valid("query");
+            const { notionTableId } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
 
-            if (!user_id) {
+            if (!userId) {
                 return c.json({ ok: false, error: "User ID is required" }, 400);
             }
 
-            const response = await GetNotionTableSchema({
-                database_id: notion_table_id,
-                user_id,
+            const response = await fetchNotionTableSchema({
+                databaseId: notionTableId,
+                userId: userId,
             });
 
             if (!response.ok) {
@@ -109,28 +109,28 @@ const app = new Hono()
         }
     )
     .get(
-        "/:notion_table_id/get-table-metadata",
+        "/:notionTableId/get-table-metadata",
         zValidator(
             "param",
             z.object({
-                notion_table_id: z.string().nonempty(),
+                notionTableId: z.string().nonempty(),
             })
         ),
         zValidator(
             "query",
             z.object({
-                user_id: z.string().nonempty(),
+                userId: z.string().nonempty(),
             })
         ),
         async (c) => {
-            const { notion_table_id } = c.req.valid("param");
-            const { user_id } = c.req.valid("query");
-            if (!user_id) {
+            const { notionTableId } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
+            if (!userId) {
                 return c.json({ ok: false, error: "User ID is required" }, 400);
             }
-            const response = await GetNotionTableMetaData({
-                notion_table_id,
-                user_id,
+            const response = await fetchNotionTableMetaData({
+                notionTableId,
+                userId,
             });
 
             if (!response.ok) {

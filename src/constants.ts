@@ -75,13 +75,12 @@ export type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
 
 // === Component Types ===
 export type ChartViewComponent = (props: {
-    chartName: string;
-    notionTableId: string;
+    chartId: string;
     userId: string;
 }) => React.JSX.Element;
 
 export type ChartConfigComponent = (props: {
-    notionTableId: string;
+    userId: string;
     chartId: string;
 }) => React.JSX.Element;
 
@@ -118,9 +117,9 @@ export const LAYOUT_OPTIONS = [LAYOUT_TYPE_GRID, LAYOUT_TYPE_CAROUSEL] as const;
 export type LayoutType = (typeof LAYOUT_OPTIONS)[number];
 
 // === Tooltips types ===
-const TOOLTIP_STYLE_DASHED = "dashed" as const;
-const TOOLTIP_STYLE_DOT = "dot" as const;
-const TOOLTIP_STYLE_LINE = "line" as const;
+export const TOOLTIP_STYLE_DASHED = "dashed" as const;
+export const TOOLTIP_STYLE_DOT = "dot" as const;
+export const TOOLTIP_STYLE_LINE = "line" as const;
 
 export const TOOLTIP_STYLE_OPTIONS = [
     TOOLTIP_STYLE_DASHED,
@@ -149,6 +148,9 @@ export type AreaChartStyle = (typeof AREA_CHART_STYLE_OPTIONS)[number];
 // === RANGES ===
 export const MIN_BORDER_WIDTH = 0;
 export const MAX_BORDER_WIDTH = 5;
+
+export const MIN_MARGIN = 0;
+export const MAX_MARGIN = 50;
 
 export const MIN_STROKE_WIDTH = 1;
 export const MAX_STROKE_WIDTH = 5;
@@ -207,3 +209,17 @@ export const RADIAL_LEGEND_POSITION_OPTIONS = [
 ] as const;
 export type RadialLegendPositionType =
     (typeof RADIAL_LEGEND_POSITION_OPTIONS)[number];
+
+export const DATABASE_NOTION = "notion";
+export const DATABASE_UPLOAD = "upload";
+
+export const DATABASE_OPTIONS = [DATABASE_NOTION, DATABASE_UPLOAD] as const;
+export type DatabaseType = (typeof DATABASE_OPTIONS)[number];
+
+export type ColumnType = {
+    Status: string[];
+    Select: string[];
+    "Multi Select": string[];
+    Number: string[];
+    Date: string[];
+};

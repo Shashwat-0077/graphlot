@@ -1,9 +1,9 @@
 import React from "react";
 
-import NewChartFormLoader from "@/modules/ChartMetaData/components/NewChartFormLoader";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 const LoadingPage = () => {
-    return <NewChartFormLoader />;
+    return <SimpleLoader />;
 };
 
 export default LoadingPage;

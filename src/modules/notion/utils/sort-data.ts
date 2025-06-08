@@ -1,9 +1,9 @@
 import {
-    SORT_ALPHABETICALLY_ASC,
-    SORT_ALPHABETICALLY_DESC,
-    SORT_DEFAULT,
-    SORT_NUMERICALLY_ASC,
-    SORT_NUMERICALLY_DESC,
+    SORT_ALPHA_ASC,
+    SORT_ALPHA_DESC,
+    SORT_NONE,
+    SORT_NUMERIC_ASC,
+    SORT_NUMERIC_DESC,
     SortType,
 } from "@/constants";
 
@@ -21,15 +21,15 @@ export const sortDataAndConfig = (
     const sortedConfig = [...config];
 
     // X-axis sorting (data array sorting)
-    if (x_sort !== SORT_DEFAULT) {
+    if (x_sort !== SORT_NONE) {
         sortedData = [...data].sort((a, b) => {
-            if (x_sort === SORT_ALPHABETICALLY_ASC) {
+            if (x_sort === SORT_ALPHA_ASC) {
                 return a.class.localeCompare(b.class);
-            } else if (x_sort === SORT_ALPHABETICALLY_DESC) {
+            } else if (x_sort === SORT_ALPHA_DESC) {
                 return b.class.localeCompare(a.class);
             } else if (
-                x_sort === SORT_NUMERICALLY_ASC ||
-                x_sort === SORT_NUMERICALLY_DESC
+                x_sort === SORT_NUMERIC_ASC ||
+                x_sort === SORT_NUMERIC_DESC
             ) {
                 // Calculate sum of all attributes except 'class'
                 const sumA = Object.entries(a)
@@ -48,23 +48,21 @@ export const sortDataAndConfig = (
                         0
                     );
 
-                return x_sort === SORT_NUMERICALLY_ASC
-                    ? sumA - sumB
-                    : sumB - sumA;
+                return x_sort === SORT_NUMERIC_ASC ? sumA - sumB : sumB - sumA;
             }
             return 0;
         });
     }
 
     // Y-axis sorting (config array sorting)
-    if (y_sort !== SORT_DEFAULT) {
-        if (y_sort === SORT_ALPHABETICALLY_ASC) {
+    if (y_sort !== SORT_NONE) {
+        if (y_sort === SORT_ALPHA_ASC) {
             sortedConfig.sort((a, b) => a.localeCompare(b));
-        } else if (y_sort === SORT_ALPHABETICALLY_DESC) {
+        } else if (y_sort === SORT_ALPHA_DESC) {
             sortedConfig.sort((a, b) => b.localeCompare(a));
         } else if (
-            y_sort === SORT_NUMERICALLY_ASC ||
-            y_sort === SORT_NUMERICALLY_DESC
+            y_sort === SORT_NUMERIC_ASC ||
+            y_sort === SORT_NUMERIC_DESC
         ) {
             // Calculate sum for each config item across all data entries
             const configSums = sortedConfig.reduce(
@@ -82,9 +80,7 @@ export const sortDataAndConfig = (
             sortedConfig.sort((a, b) => {
                 const sumA = configSums[a] || 0;
                 const sumB = configSums[b] || 0;
-                return y_sort === SORT_NUMERICALLY_ASC
-                    ? sumA - sumB
-                    : sumB - sumA;
+                return y_sort === SORT_NUMERIC_ASC ? sumA - sumB : sumB - sumA;
             });
         }
     }

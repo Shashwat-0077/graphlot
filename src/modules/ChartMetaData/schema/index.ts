@@ -13,6 +13,7 @@ import {
     CHART_TYPE_RADAR,
     CHART_TYPE_RADIAL,
     CHART_TYPES,
+    DATABASE_OPTIONS,
     FONT_OPTIONS,
     FONT_STYLES_OPTIONS,
     GRID_ORIENTATION_OPTIONS,
@@ -41,17 +42,20 @@ export const ChartMetadataSchema = {
     Insert: chartInsertSchema
         .extend({
             type: z.enum(CHART_TYPES),
+            databaseProvider: z.enum(DATABASE_OPTIONS),
         })
         .omit({ chartId: true, createdAt: true, updatedAt: true }),
 
     Select: chartSelectSchema.extend({
         type: z.enum(CHART_TYPES),
+        databaseProvider: z.enum(DATABASE_OPTIONS),
     }),
 
     Update: chartUpdateSchema
         .extend({
             updatedAt: z.date(),
             type: z.enum(CHART_TYPES).optional(),
+            databaseProvider: z.enum(DATABASE_OPTIONS).optional(),
         })
         .omit({ chartId: true, createdAt: true }),
 };

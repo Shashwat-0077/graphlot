@@ -4,9 +4,11 @@ import { Hono } from "hono";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
 import {
+    fetchChartData,
     fetchChartMetadataByCollection,
     fetchChartMetadataById,
     fetchChartPropertiesById,
+    fetchChartSchema,
     fetchFullChartById,
 } from "@/modules/ChartMetaData/api/helper/fetch-chart";
 import { createNewChart } from "@/modules/ChartMetaData/api/helper/create-new-chart";
@@ -16,7 +18,6 @@ import {
 } from "@/modules/ChartMetaData/api/helper/update-chart";
 import { deleteChart } from "@/modules/ChartMetaData/api/helper/delete-chart";
 import { CHART_TYPES } from "@/constants";
-import { GetNotionTableMetaData } from "@/modules/notion/api/GetNotionTableMetaData";
 import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
 
 type variables = {
@@ -104,57 +105,81 @@ const chartMetadataRoutes = new Hono<{ Variables: variables }>()
             return c.json({ properties: properties }, 200);
         }
     )
-    .post(
-        "/create-chart/notion",
-        authMiddleWare,
+    .get(
+        "/:id/get-table-schema",
         zValidator(
-            "json",
-            ChartMetadataSchema.Insert.omit({ databaseName: true })
+            "query",
+            z.object({
+                userId: z.string().nonempty(),
+            })
+        ),
+        zValidator(
+            "param",
+            z.object({
+                id: z.string().nonempty(),
+            })
         ),
         async (c) => {
-            const chart = c.req.valid("json");
-            const user_id = c.get("userId");
+            const { id } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
 
-            const tableMetaData = await GetNotionTableMetaData({
-                notion_table_id: chart.databaseId,
-                user_id,
-            });
-
-            if (!tableMetaData.ok) {
-                return c.json(
-                    {
-                        error: tableMetaData.error,
-                    },
-                    500
-                );
-            }
-
-            if (!("title" in tableMetaData.data)) {
-                return c.json(
-                    {
-                        error: "Invalid Response from Notion API, title is not defined",
-                    },
-                    500
-                );
-            }
-
-            const databaseName = tableMetaData.data.title[0]["plain_text"];
-
-            const response = await createNewChart({
-                ...chart,
-                databaseName,
+            const response = await fetchChartSchema({
+                chartId: id,
+                userId,
             });
 
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
 
-            return c.json({}, 200);
+            const { ok: _, ...rest } = response;
+
+            return c.json(rest, 200);
         }
     )
-    .post("/create-chart/file-upload", authMiddleWare, async () => {
-        // TODO : yet to be implemented
-    })
+    .get(
+        "/:id/get-table-data",
+        zValidator(
+            "param",
+            z.object({
+                id: z.string().nonempty(),
+            })
+        ),
+        zValidator(
+            "query",
+            z.object({
+                userId: z.string().nonempty(),
+            })
+        ),
+        async (c) => {
+            const { id } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
+            const response = await fetchChartData({
+                chartId: id,
+                userId,
+            });
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+            const { data } = response;
+            return c.json({ data }, 200);
+        }
+    )
+    .post(
+        "/create-chart",
+        authMiddleWare,
+        zValidator("json", ChartMetadataSchema.Insert),
+        async (c) => {
+            const chart = c.req.valid("json");
+            const response = await createNewChart(chart);
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            return c.json({ chart: response.chart }, 200);
+        }
+    )
     .patch(
         "/change-type/:id",
         authMiddleWare,

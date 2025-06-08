@@ -3,7 +3,6 @@
 import { createContext, useContext, useRef } from "react";
 import { useStore } from "zustand";
 
-import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
 import {
     ChartBoxModelStore,
@@ -20,6 +19,7 @@ import {
     initChartVisualState,
 } from "@/modules/ChartMetaData/store/state";
 import { useChartProperties } from "@/modules/ChartMetaData/api/client/use-chart";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 // === ChartVisualStore ===
 export type ChartVisualStoreApi = ReturnType<typeof createChartVisualStore>;
@@ -56,7 +56,7 @@ export const ChartConfigStoreProvider: ChartStateProvider = ({
     if (!data || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

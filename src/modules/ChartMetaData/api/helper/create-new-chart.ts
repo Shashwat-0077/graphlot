@@ -32,6 +32,10 @@ export async function createNewChart(
 ): Promise<
     | {
           ok: true;
+          chart: {
+              id: string;
+              name: string;
+          };
       }
     | {
           ok: false;
@@ -48,8 +52,8 @@ export async function createNewChart(
             };
         }
 
-        await db.transaction(async (tx) => {
-            const { chartId } = await tx
+        const chart = await db.transaction(async (tx) => {
+            const { chartId, name } = await tx
                 .insert(ChartMetadata)
                 .values({
                     ...data,
@@ -59,9 +63,9 @@ export async function createNewChart(
                 })
                 .returning({
                     chartId: ChartMetadata.chartId,
+                    name: ChartMetadata.name,
                 })
-                .then(([res]) => res);
-
+                .get();
             const createOperation = [];
 
             // Define which types use which shared tables - using type guards for type safety
@@ -176,10 +180,15 @@ export async function createNewChart(
             }
 
             await Promise.all(createOperation);
+            return {
+                id: chartId,
+                name,
+            };
         });
 
         return {
             ok: true,
+            chart,
         };
     } catch (error) {
         if (error instanceof Error) {

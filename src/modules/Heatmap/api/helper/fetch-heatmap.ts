@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { HeatmapCharts, Charts } from "@/db/schema";
+import { ChartMetadata, HeatmapCharts } from "@/db/schema";
 import { FullHeatmapSelect, HeatmapSelect } from "@/modules/Heatmap/schema";
 import { CHART_TYPE_HEATMAP } from "@/constants";
 
@@ -15,16 +15,16 @@ export async function fetchHeatmapsByCollection(collectionId: string): Promise<
     try {
         const charts = await db
             .select()
-            .from(Charts)
+            .from(ChartMetadata)
             .where(
                 and(
-                    eq(Charts.collectionId, collectionId),
-                    eq(Charts.type, CHART_TYPE_HEATMAP)
+                    eq(ChartMetadata.collectionId, collectionId),
+                    eq(ChartMetadata.type, CHART_TYPE_HEATMAP)
                 )
             )
             .innerJoin(
                 HeatmapCharts,
-                eq(Charts.chartId, HeatmapCharts.chartId)
+                eq(ChartMetadata.chartId, HeatmapCharts.chartId)
             );
 
         return { ok: true, charts: charts as FullHeatmapSelect[] };
@@ -84,16 +84,16 @@ export async function fetchFullHeatmapById(chartId: string): Promise<
     try {
         const [chart] = await db
             .select()
-            .from(Charts)
+            .from(ChartMetadata)
             .where(
                 and(
-                    eq(Charts.chartId, chartId),
-                    eq(Charts.type, CHART_TYPE_HEATMAP)
+                    eq(ChartMetadata.chartId, chartId),
+                    eq(ChartMetadata.type, CHART_TYPE_HEATMAP)
                 )
             )
             .innerJoin(
                 HeatmapCharts,
-                eq(Charts.chartId, HeatmapCharts.chartId)
+                eq(ChartMetadata.chartId, HeatmapCharts.chartId)
             );
 
         if (!chart) {

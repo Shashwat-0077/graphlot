@@ -15,7 +15,7 @@ import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
 import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
-import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
+import { useProcessData } from "@/modules/notion/api/client/use-process-data";
 
 export const RadarChartView: ChartViewComponentType = ({
     chartName,
@@ -39,10 +39,10 @@ export const RadarChartView: ChartViewComponentType = ({
         sort_y,
     } = useRadarChartStore((state) => state);
 
-    const { data, config, isLoading, error, schema } = useGetProcessData({
+    const { data, config, isLoading, error, schema } = useProcessData({
         notion_table_id,
         x_axis,
-        y_axis,
+        yAxis: y_axis,
         sort_x,
         sort_y,
         user_id,

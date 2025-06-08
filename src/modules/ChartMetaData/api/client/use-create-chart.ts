@@ -2,28 +2,42 @@ import { useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
-// Type for GET response
+
 type RequestType = InferRequestType<
-    (typeof client.api)["charts"]["create-chart"]["notion"]["$post"]
+    (typeof client.api)["charts"]["create-chart"]["$post"]
 >;
 
-// Type for PUT request body
 type ResponseType = InferResponseType<
-    (typeof client.api)["charts"]["create-chart"]["notion"]["$post"],
+    (typeof client.api)["charts"]["create-chart"]["$post"],
     200
 >;
-export const useCreateChartFromNotion = () => {
+export const useCreateNewChart = ({
+    onSuccess,
+    onError,
+}: {
+    onSuccess?: (data: ResponseType) => void;
+    onError?: (error: Error) => void;
+}) => {
     return useMutation<ResponseType, Error, RequestType>({
         mutationFn: async ({ json }) => {
-            const response = await client.api["charts"]["create-chart"][
-                "notion"
-            ].$post({
+            const response = await client.api["charts"]["create-chart"].$post({
                 json: json,
             });
             if (!response.ok) {
-                throw new Error("Failed to create chart from Notion");
+                throw new Error("Failed to create new chart");
             }
-            return response;
+
+            return await response.json();
+        },
+        onSuccess: (data) => {
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error) => {
+            if (onError) {
+                onError(error);
+            }
         },
     });
 };

@@ -23,7 +23,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { auth } from "@/modules/auth";
-import { getAllCollections } from "@/modules/Collection/api/helper/fetch-collection";
+import { fetchAllCollections } from "@/modules/Collection/api/helper/fetch-collection";
 
 // Mock data for recent activity
 const recentActivity = [
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
         );
     }
 
-    const response = await getAllCollections({ userId: user.id || "" });
+    const response = await fetchAllCollections(user.id || "");
 
     if (!response.ok) {
         return (
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
 
     // Calculate total charts across all collections
     const totalCharts = collections.reduce(
-        (sum, collection) => sum + collection.chart_count,
+        (sum, collection) => sum + collection.chartCount,
         0
     );
 
@@ -207,15 +207,15 @@ export default async function DashboardPage() {
                                       collections
                                           .reduce((latest, col) => {
                                               const colDate = new Date(
-                                                  col.created_at
+                                                  col.createdAt
                                               );
                                               const latestDate = new Date(
                                                   latest
                                               );
                                               return colDate > latestDate
-                                                  ? col.created_at
+                                                  ? col.createdAt
                                                   : latest;
-                                          }, collections[0].created_at)
+                                          }, collections[0].createdAt)
                                           .toString()
                                   )}`
                                 : "No collections yet"}
@@ -318,9 +318,9 @@ export default async function DashboardPage() {
                                                     (collection) => (
                                                         <Link
                                                             key={
-                                                                collection.collection_id
+                                                                collection.collectionId
                                                             }
-                                                            href={`/dashboard/collections/${collection.collection_id}-${collection.name.toLowerCase().replace(/\s+/g, "-")}`}
+                                                            href={`/dashboard/collections/${collection.collectionId}-${collection.name.toLowerCase().replace(/\s+/g, "-")}`}
                                                             className="flex items-center justify-between p-4 transition-colors hover:bg-muted/50"
                                                         >
                                                             <div className="flex items-center gap-3">
@@ -335,10 +335,10 @@ export default async function DashboardPage() {
                                                                     </p>
                                                                     <p className="text-sm text-muted-foreground">
                                                                         {
-                                                                            collection.chart_count
+                                                                            collection.chartCount
                                                                         }{" "}
                                                                         chart
-                                                                        {collection.chart_count !==
+                                                                        {collection.chartCount !==
                                                                         1
                                                                             ? "s"
                                                                             : ""}
@@ -347,7 +347,7 @@ export default async function DashboardPage() {
                                                             </div>
                                                             <Badge variant="outline">
                                                                 {formatRelativeTime(
-                                                                    collection.created_at.toString()
+                                                                    collection.createdAt.toString()
                                                                 )}
                                                             </Badge>
                                                         </Link>

@@ -1,30 +1,14 @@
 "use client";
 import { use } from "react";
 
-import {
-    ChartConfigComponentType,
-    ChartViewComponentType,
-    StateProviderType,
-} from "@/constants";
-import { AreaChartView } from "@/modules/Area/components/AreaChartView";
 import { AreaChartConfig } from "@/modules/Area/components/AreaChartConfig";
 import { AreaChartStoreProvider } from "@/modules/Area/store";
-import { BarChartView } from "@/modules/Bar/components/BarChartView";
-import { BarConfig } from "@/modules/Bar/components/BarConfig";
-import { BarChartStoreProvider } from "@/modules/Bar/store";
-import { useGetChartWithId } from "@/modules/ChartMetaData/api/client/use-chart";
-import { DonutChartView } from "@/modules/Radial/components/RadialChartView";
-import { DonutConfig } from "@/modules/Radial/components/RadialConfig";
-import { DonutChartStoreProvider } from "@/modules/Radial/store";
-import { HeatmapChartView } from "@/modules/Heatmap/components/HeatmapChartView";
-import { HeatmapConfig } from "@/modules/Heatmap/components/HeatmapConfig";
-import { HeatmapChartStoreProvider } from "@/modules/Heatmap/store";
-import { RadarChartView } from "@/modules/Radar/components/RadarChartView";
-import { RadarConfig } from "@/modules/Radar/components/RadarConfig";
-import { RadarChartStoreProvider } from "@/modules/Radar/store";
+import { useChartMetadataById } from "@/modules/ChartMetaData/api/client/use-chart";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import { BoxLoader } from "@/components/ui/Loader";
+import { SimpleLoader } from "@/components/ui/Loader";
 import { useAuthSession } from "@/hooks/use-auth-session";
+import { ChartConfigStoreProvider } from "@/modules/ChartMetaData/store";
+import { AreaChartView } from "@/modules/Area/components/AreaChartView";
 
 type Props = {
     params: Promise<{
@@ -40,10 +24,10 @@ export default function ChatConfigs({ params }: Props) {
     const { id: collection_id } = parseSlug(collection_slug);
 
     const {
-        data: chartData,
+        data: chart,
         isLoading: isChartLoading,
         error: chartError,
-    } = useGetChartWithId(chart_id);
+    } = useChartMetadataById(chart_id);
 
     const { session, isAuthenticated, isLoading } = useAuthSession();
 
@@ -58,19 +42,19 @@ export default function ChatConfigs({ params }: Props) {
     if (isChartLoading || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }
 
-    if (
-        chartError ||
-        !chartData ||
-        !isAuthenticated ||
-        !session ||
-        !session.user
-    ) {
-        return <div>Error: {chartError?.message}</div>;
+    if (chartError || !chart || !isAuthenticated || !session || !session.user) {
+        return (
+            <div>
+                Error:{" "}
+                {chartError?.message ||
+                    "Chart not found or user not authenticated"}
+            </div>
+        );
     }
 
     const user_id = session?.user.id;
@@ -79,40 +63,33 @@ export default function ChatConfigs({ params }: Props) {
         return <div>Invalid User ID</div>;
     }
 
-    const { chart } = chartData;
+    // const chartComponents: {
+    //     [key: string]: [
+    //         ChartViewComponent,
+    //         ChartConfigComponent,
+    //         ChartStateProvider,
+    //     ];
+    // } = {
+    //     Bar: [BarChartView, BarConfig, BarChartStoreProvider],
+    //     Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
+    //     Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
+    //     Donut: [DonutChartView, DonutConfig, RadialChartStoreProvider],
+    //     Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
+    // };
 
-    const chartComponents: {
-        [key: string]: [
-            ChartViewComponentType,
-            ChartConfigComponentType,
-            StateProviderType,
-        ];
-    } = {
-        Bar: [BarChartView, BarConfig, BarChartStoreProvider],
-        Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
-        Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
-        Donut: [DonutChartView, DonutConfig, DonutChartStoreProvider],
-        Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
-    };
-
-    const [ChartView, ChartConfig, StoreProvider] = chartComponents[
-        chart.type
-    ] || [RadarChartView, RadarConfig, RadarChartStoreProvider];
+    // const [ChartView, ChartConfig, StoreProvider] = chartComponents[
+    //     chart.type
+    // ] || [RadarChartView, RadarConfig, RadarChartStoreProvider];
 
     return (
-        <StoreProvider char_id={chart_id}>
-            <ChartView
-                notion_table_id={chart.notion_database_id}
-                chartName={chart.name}
-                user_id={user_id}
-            />
-
-            <div>
-                <ChartConfig
-                    notion_table_id={chart.notion_database_id}
-                    chart_id={chart_id}
-                />
-            </div>
-        </StoreProvider>
+        <ChartConfigStoreProvider chartId={chart_id}>
+            <AreaChartStoreProvider chartId={chart_id}>
+                {/* <ChartView chartName={chart.name} userId={user_id} /> */}
+                <div className="px-4">
+                    <AreaChartView chartId={chart_id} userId={user_id} />
+                    <AreaChartConfig chartId={chart_id} userId={user_id} />
+                </div>
+            </AreaChartStoreProvider>
+        </ChartConfigStoreProvider>
     );
 }

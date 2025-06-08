@@ -24,13 +24,13 @@ type ColorPickerPopoverProps =
           removeColor: (index: number) => void;
           color: { r: number; g: number; b: number; a: number };
           setColor: (
+              index: number,
               color: {
                   r: number;
                   g: number;
                   b: number;
                   a: number;
-              },
-              index: number
+              }
           ) => void;
           enableAlpha?: boolean;
           label?: string;
@@ -92,7 +92,7 @@ export default function ColorPickerPopover({
         if (isSingleColor) {
             setColor(paletteColor);
         } else {
-            setColor(paletteColor, colorIndex);
+            setColor(colorIndex, paletteColor);
         }
     };
 
@@ -139,7 +139,7 @@ export default function ColorPickerPopover({
                                 if (isSingleColor) {
                                     setColor(color);
                                 } else {
-                                    setColor(color, colorIndex);
+                                    setColor(colorIndex, color);
                                 }
                             }}
                         />
@@ -211,7 +211,7 @@ export default function ColorPickerPopover({
                                         if (isSingleColor) {
                                             setColor(newColor);
                                         } else {
-                                            setColor(newColor, colorIndex);
+                                            setColor(colorIndex, newColor);
                                         }
                                     }}
                                     className="h-8"
@@ -244,7 +244,7 @@ export default function ColorPickerPopover({
                                         if (isSingleColor) {
                                             setColor(newColor);
                                         } else {
-                                            setColor(newColor, colorIndex);
+                                            setColor(colorIndex, newColor);
                                         }
                                     }}
                                     className="h-8"
@@ -277,7 +277,7 @@ export default function ColorPickerPopover({
                                         if (isSingleColor) {
                                             setColor(newColor);
                                         } else {
-                                            setColor(newColor, colorIndex);
+                                            setColor(colorIndex, newColor);
                                         }
                                     }}
                                     className="h-8"
@@ -315,7 +315,7 @@ export default function ColorPickerPopover({
                                             if (isSingleColor) {
                                                 setColor(newColor);
                                             } else {
-                                                setColor(newColor, colorIndex);
+                                                setColor(colorIndex, newColor);
                                             }
                                         }}
                                         className="h-8"

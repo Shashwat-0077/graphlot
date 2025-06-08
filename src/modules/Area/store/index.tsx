@@ -9,8 +9,8 @@ import {
     initAreaChartStore,
 } from "@/modules/Area/store/state";
 import { useAreaChart } from "@/modules/Area/api/client/use-area-charts";
-import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 export type AreaChartStoreApi = ReturnType<typeof createAreaChartStore>;
 export const AreaChartStoreContext = createContext<
@@ -27,7 +27,7 @@ export const AreaChartStoreProvider: ChartStateProvider = ({
     if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

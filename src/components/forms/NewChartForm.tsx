@@ -5,7 +5,7 @@ import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { BarChart2, Database, Loader2, PieChart, Sparkles } from "lucide-react";
+import { BarChart2, Database, Loader2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,10 +26,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useGetAllDatabases } from "@/modules/notion/api/client/useGetAllDatabases";
-import { ChartSchema } from "@/modules/ChartMetaData/schema";
-import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/use-create-chart";
-import { AREA, CHART_TYPES } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSlug, parseSlug } from "@/utils/pathSlugsOps";
 import { toast } from "@/hooks/use-toast";
@@ -42,19 +38,21 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
+import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/use-create-chart";
+import { CHART_TYPE_AREA, CHART_TYPES, DATABASE_NOTION } from "@/constants";
+import { useNotionDatabases } from "@/modules/notion/api/client/use-notion-databases";
 
-const FormType = ChartSchema.Insert.pick({
+const FormType = ChartMetadataSchema.Insert.pick({
     name: true,
     description: true,
     type: true,
-    notion_database_id: true,
+    databaseId: true,
 });
 
 const chartTypeIcons: Record<string, React.ReactNode> = {
-    AREA: <BarChart2 className="h-4 w-4" />,
+    CHART_TYPE_AREA: <BarChart2 className="h-4 w-4" />,
     CHART_TYPE_BAR: <BarChart2 className="h-4 w-4" />,
-    LINE: <BarChart2 className="h-4 w-4" />,
-    PIE: <PieChart className="h-4 w-4" />,
 };
 
 export function NewChartForm({ collection_slug }: { collection_slug: string }) {
@@ -67,8 +65,8 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
         defaultValues: {
             name: "",
             description: "",
-            type: AREA,
-            notion_database_id: "",
+            type: CHART_TYPE_AREA,
+            databaseId: "",
         },
     });
 
@@ -77,19 +75,23 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
         isLoading: isAuthLoading,
         isAuthenticated,
     } = useAuthSession();
-    const user_id = session ? session.user?.id : undefined;
+    const userId = session ? session.user?.id : undefined;
 
     const {
         data: databases,
         isLoading: isDatabasesLoading,
         error,
-    } = useGetAllDatabases({
-        user_id,
-    });
+    } = useNotionDatabases(userId);
 
     function onSubmit(data: z.infer<typeof FormType>) {
         createNewChart(
-            { form: { ...data, collection_id: collection_Id } },
+            {
+                json: {
+                    ...data,
+                    collectionId: collection_Id,
+                    databaseProvider: DATABASE_NOTION,
+                },
+            },
             {
                 onError: (error) => {
                     toast({
@@ -101,8 +103,8 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
                 onSuccess: (data) => {
                     router.push(
                         `/dashboard/collections/${collection_slug}/${getSlug({
-                            id: data.newChart.chartId,
-                            name: data.newChart.name,
+                            id: data.chart.id,
+                            name: data.chart.name,
                         })}`
                     );
                 },
@@ -285,7 +287,7 @@ export function NewChartForm({ collection_slug }: { collection_slug: string }) {
                                 ) : (
                                     <FormField
                                         control={form.control}
-                                        name="notion_database_id"
+                                        name="databaseId"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">

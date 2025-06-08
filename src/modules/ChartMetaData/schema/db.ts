@@ -5,26 +5,27 @@ import {
     real,
     unique,
     integer,
-    check,
+    // check,
 } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+// import { sql } from "drizzle-orm";
 
 import { Collections } from "@/modules/Collection/schema/db";
 import {
-    ANCHOR_OPTIONS,
+    // ANCHOR_OPTIONS,
     AnchorType,
     ChartType,
-    FONT_STYLES_OPTIONS,
+    DatabaseType,
+    // FONT_STYLES_OPTIONS,
     FontStyleType,
     FontType,
-    GRID_ORIENTATION_OPTIONS,
-    GRID_STYLE_OPTIONS,
+    // GRID_ORIENTATION_OPTIONS,
+    // GRID_STYLE_OPTIONS,
     GridOrientation,
     GridStyle,
-    MAX_BORDER_WIDTH,
-    MAX_TEXT_SIZE,
-    MIN_BORDER_WIDTH,
-    MIN_TEXT_SIZE,
+    // MAX_BORDER_WIDTH,
+    // MAX_TEXT_SIZE,
+    // MIN_BORDER_WIDTH,
+    // MIN_TEXT_SIZE,
     RGBAColor,
     TooltipStyle,
 } from "@/constants";
@@ -49,7 +50,9 @@ export const ChartMetadata = sqliteTable(
             }),
         name: text("name").notNull(),
         description: text("description").notNull(),
-        databaseProvider: text("database_provider").notNull(),
+        databaseProvider: text("database_provider")
+            .notNull()
+            .$type<DatabaseType>(),
         databaseId: text("database_id").notNull(),
         databaseName: text("database_name").notNull(),
         type: text("type").notNull().$type<ChartType>(),
@@ -90,28 +93,28 @@ export const ChartVisual = sqliteTable(
             .notNull()
             .$type<TooltipStyle>()
             .default(defaultChartVisualSettings.tooltipStyle),
-    },
-    (table) => {
-        const orientList = GRID_ORIENTATION_OPTIONS.map((v) => `'${v}'`).join(
-            ", "
-        );
-        const styleList = GRID_STYLE_OPTIONS.map((v) => `'${v}'`).join(", ");
-
-        return [
-            check(
-                "chk_chart_grid_orientation",
-                sql`(${table.gridOrientation} IN (${sql.raw(orientList)}))`
-            ),
-            check(
-                "chk_chart_grid_type",
-                sql`(${table.gridStyle} IN (${sql.raw(styleList)}))`
-            ),
-            check(
-                "chk_chart_grid_width",
-                sql`${table.gridWidth} >= ${MIN_BORDER_WIDTH} AND ${table.gridWidth} <= ${MAX_BORDER_WIDTH}`
-            ),
-        ];
     }
+    // (table) => {
+    //     const orientList = GRID_ORIENTATION_OPTIONS.map((v) => `'${v}'`).join(
+    //         ", "
+    //     );
+    //     const styleList = GRID_STYLE_OPTIONS.map((v) => `'${v}'`).join(", ");
+
+    //     return [
+    //         check(
+    //             "chk_chart_grid_orientation",
+    //             sql`(${table.gridOrientation} IN (${sql.raw(orientList)}))`
+    //         ),
+    //         check(
+    //             "chk_chart_grid_type",
+    //             sql`(${table.gridStyle} IN (${sql.raw(styleList)}))`
+    //         ),
+    //         check(
+    //             "chk_chart_grid_width",
+    //             sql`${table.gridWidth} >= ${MIN_BORDER_WIDTH} AND ${table.gridWidth} <= ${MAX_BORDER_WIDTH}`
+    //         ),
+    //     ];
+    // }
 );
 
 export const CHART_TYPOGRAPHY_TABLE_NAME = "chart_typography";
@@ -145,28 +148,28 @@ export const ChartTypography = sqliteTable(
         legendEnabled: integer("legend_enabled", { mode: "boolean" })
             .notNull()
             .default(defaultChartTypographySettings.legendEnabled),
-    },
-    (table) => {
-        const anchorList = ANCHOR_OPTIONS.map((v) => `'${v}'`).join(", ");
-        const fontStyleList = FONT_STYLES_OPTIONS.map((v) => `'${v}'`).join(
-            ", "
-        );
-
-        return [
-            check(
-                "chk_typography_anchor",
-                sql`(${table.labelAnchor} IN (${sql.raw(anchorList)}))`
-            ),
-            check(
-                "chk_typography_font_style",
-                sql`(${table.labelFontStyle} IN (${sql.raw(fontStyleList)}))`
-            ),
-            check(
-                "chk_typography_size",
-                sql`${table.labelSize} >= ${MIN_TEXT_SIZE} AND ${table.labelSize} <= ${MAX_TEXT_SIZE}`
-            ),
-        ];
     }
+    // (table) => {
+    //     const anchorList = ANCHOR_OPTIONS.map((v) => `'${v}'`).join(", ");
+    //     const fontStyleList = FONT_STYLES_OPTIONS.map((v) => `'${v}'`).join(
+    //         ", "
+    //     );
+
+    //     return [
+    //         check(
+    //             "chk_typography_anchor",
+    //             sql`(${table.labelAnchor} IN (${sql.raw(anchorList)}))`
+    //         ),
+    //         check(
+    //             "chk_typography_font_style",
+    //             sql`(${table.labelFontStyle} IN (${sql.raw(fontStyleList)}))`
+    //         ),
+    //         check(
+    //             "chk_typography_size",
+    //             sql`${table.labelSize} >= ${MIN_TEXT_SIZE} AND ${table.labelSize} <= ${MAX_TEXT_SIZE}`
+    //         ),
+    //     ];
+    // }
 );
 
 export const CHART_BOX_MODEL_TABLE_NAME = "chart_box_model";
@@ -194,20 +197,20 @@ export const ChartBoxModel = sqliteTable(
         borderEnabled: integer("border_enabled", { mode: "boolean" })
             .notNull()
             .default(defaultChartBoxModel.borderEnabled),
-    },
-    (table) => [
-        check(
-            "chk_margin_nonnegative",
-            sql`${table.marginTop} >= 0
-        AND ${table.marginBottom} >= 0
-        AND ${table.marginLeft} >= 0
-        AND ${table.marginRight} >= 0`
-        ),
-        check(
-            "chk_border_width",
-            sql`${table.borderWidth} >= ${MIN_BORDER_WIDTH} AND ${table.borderWidth} <= ${MAX_BORDER_WIDTH}`
-        ),
-    ]
+    }
+    // (table) => [
+    //     check(
+    //         "chk_margin_nonnegative",
+    //         sql`${table.marginTop} >= 0
+    //     AND ${table.marginBottom} >= 0
+    //     AND ${table.marginLeft} >= 0
+    //     AND ${table.marginRight} >= 0`
+    //     ),
+    //     check(
+    //         "chk_border_width",
+    //         sql`${table.borderWidth} >= ${MIN_BORDER_WIDTH} AND ${table.borderWidth} <= ${MAX_BORDER_WIDTH}`
+    //     ),
+    // ]
 );
 
 export const CHART_COLOR_TABLE_NAME = "chart_colors";

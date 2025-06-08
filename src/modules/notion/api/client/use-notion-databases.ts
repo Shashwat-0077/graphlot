@@ -2,17 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "@/lib/rpc";
 
-export const useGetAllDatabases = ({ user_id }: { user_id?: string }) => {
+export const useNotionDatabases = (
+    userId: string | undefined,
+    options: {
+        enabled?: boolean;
+    }
+) => {
     const query = useQuery({
         queryKey: ["all-databases"],
         queryFn: async () => {
-            if (!user_id) {
-                throw new Error("user_id is required");
+            if (!userId) {
+                throw new Error("userId is required");
             }
 
             const response = await client.api.notion["get-databases"]["$get"]({
                 query: {
-                    user_id,
+                    userId: userId,
                 },
             });
 
@@ -24,6 +29,7 @@ export const useGetAllDatabases = ({ user_id }: { user_id?: string }) => {
             const { databases } = await response.json();
             return databases;
         },
+        enabled: options?.enabled ?? true,
     });
 
     return query;

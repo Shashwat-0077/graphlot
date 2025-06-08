@@ -5,7 +5,7 @@ import { HTTPException } from "hono/http-exception";
 // Route imports
 import collectionRoutes from "@/modules/Collection/api/server/route";
 import chartRoutes from "@/modules/ChartMetaData/api/server/route";
-import notionRoutes from "@/modules/notion/server/route";
+import notionRoutes from "@/modules/notion/api/server/route";
 import radarRoutes from "@/modules/Radar/api/server/route";
 import areaRoutes from "@/modules/Area/api/server/route";
 import barRoutes from "@/modules/Bar/api/server/route";

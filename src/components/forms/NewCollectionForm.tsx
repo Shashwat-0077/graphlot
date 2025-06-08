@@ -30,6 +30,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { toast } from "@/hooks/use-toast";
 
 export function NewCollectionForm() {
     const router = useRouter();
@@ -46,52 +47,34 @@ export function NewCollectionForm() {
         },
     });
 
-    const handleError = useCallback(
-        (error: { field: string; message: string }) => {
-            startTransition(() => {
-                form.setError(
-                    error.field as keyof z.infer<
-                        typeof CollectionSchema.Insert
-                    >,
-                    {
-                        type: "server",
-                        message: error.message,
-                    }
-                );
-            });
-        },
-        [form]
-    );
-
-    const handleSuccess = useCallback(
-        ({
-            newCollection,
-        }: {
-            newCollection: { id: string; name: string };
-        }) => {
-            startTransition(() => {
-                router.push(
-                    `/dashboard/collections/${getSlug({
-                        id: newCollection.id,
-                        name: newCollection.name,
-                    })}`
-                );
-            });
-        },
-        [router]
-    );
-
     const onSubmit = useCallback(
         (data: z.infer<typeof CollectionSchema.Insert>) => {
             createCollection(
-                { form: data },
+                { json: data },
                 {
-                    onError: handleError,
-                    onSuccess: handleSuccess,
+                    onError: (error) => {
+                        startTransition(() => {
+                            toast({
+                                title: "Error creating collection",
+                                description: error.message,
+                                variant: "destructive",
+                            });
+                        });
+                    },
+                    onSuccess: ({ collection }) => {
+                        startTransition(() => {
+                            router.push(
+                                `/dashboard/collections/${getSlug({
+                                    id: collection.id,
+                                    name: collection.name,
+                                })}`
+                            );
+                        });
+                    },
                 }
             );
         },
-        [createCollection, handleError, handleSuccess]
+        [createCollection, router]
     );
 
     const isDisabled = isPending || isSubmitting;

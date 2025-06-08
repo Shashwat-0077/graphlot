@@ -4,28 +4,28 @@ import { InferResponseType } from "hono";
 import { client } from "@/lib/rpc";
 
 type ResponseType = InferResponseType<
-    (typeof client.api.notion)[":notion_table_id"]["get-table-data"]["$get"],
+    (typeof client.api.notion)[":notionTableId"]["get-table-data"]["$get"],
     200
 >;
 
-export const useGetTableData = ({
-    notion_table_id,
-    user_id,
+export const useNotionTableData = ({
+    notionTableId,
+    userId,
 }: {
-    notion_table_id: string;
-    user_id: string;
+    notionTableId: string;
+    userId: string;
 }) => {
     const query = useQuery<ResponseType, Error>({
         queryKey: ["table-data"],
         queryFn: async () => {
-            const response = await client.api.notion[":notion_table_id"][
+            const response = await client.api.notion[":notionTableId"][
                 "get-table-data"
             ]["$get"]({
                 param: {
-                    notion_table_id: notion_table_id,
+                    notionTableId: notionTableId,
                 },
                 query: {
-                    user_id,
+                    userId,
                 },
             });
 
@@ -35,7 +35,7 @@ export const useGetTableData = ({
 
             return await response.json();
         },
-        enabled: !!notion_table_id,
+        enabled: !!notionTableId,
     });
 
     return query;

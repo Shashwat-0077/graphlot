@@ -8,9 +8,9 @@ import {
     createBarChartStore,
     initBarChartStore,
 } from "@/modules/Bar/store/state";
-import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
 import { useBarChart } from "@/modules/Bar/api/client/use-bar-chart";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 export type BarChartStoreApi = ReturnType<typeof createBarChartStore>;
 export const BarChartStoreContext = createContext<BarChartStoreApi | undefined>(
@@ -27,7 +27,7 @@ export const BarChartStoreProvider: ChartStateProvider = ({
     if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

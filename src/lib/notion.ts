@@ -6,8 +6,8 @@ type returnType =
     | { success: true; client: Client }
     | { success: false; error: string };
 
-export const getNotionClient = async (user_id: string): Promise<returnType> => {
-    const response = await getNotionAccessToken(user_id);
+export const getNotionClient = async (userId: string): Promise<returnType> => {
+    const response = await getNotionAccessToken(userId);
 
     if (!response.ok) {
         return { success: false, error: response.error };

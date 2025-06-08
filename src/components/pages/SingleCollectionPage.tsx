@@ -25,10 +25,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/use-chart";
-import { useGetCollectionById } from "@/modules/Collection/api/client/use-collections";
+import { useCollectionById } from "@/modules/Collection/api/client/use-collections";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthSession } from "@/hooks/use-auth-session";
+import { useChartMetadataByCollection } from "@/modules/ChartMetaData/api/client/use-chart";
 
 export default function SingleCollectionPage() {
     const { session } = useAuthSession();
@@ -54,12 +54,12 @@ export default function SingleCollectionPage() {
         data: collection,
         isLoading: isCollectionLoading,
         error: collectionError,
-    } = useGetCollectionById(collection_id);
+    } = useCollectionById(collection_id);
     const {
         data: charts,
         isLoading: isChartsLoading,
         error: chartError,
-    } = useGetAllChartsWithCollectionId(collection_id);
+    } = useChartMetadataByCollection(collection_id);
 
     // Filter and sort charts based on search query, chart type, and sort option
     const filteredCharts = useMemo(() => {
@@ -71,7 +71,7 @@ export default function SingleCollectionPage() {
             const matchesSearch =
                 searchQuery === "" ||
                 chart.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                chart.notion_database_name
+                chart.databaseName
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase());
 
@@ -371,7 +371,8 @@ export default function SingleCollectionPage() {
                                 name={chart.name}
                                 chartId={chart.chartId}
                                 userId={(user && user?.id) || ""}
-                                notionDatabaseName={chart.notion_database_name}
+                                databaseName={chart.databaseName}
+                                databaseProvider={chart.databaseProvider}
                             />
                         ))}
                         <Link

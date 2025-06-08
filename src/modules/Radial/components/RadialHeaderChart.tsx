@@ -39,7 +39,11 @@ const DonutChartData = [
     { browser: "other", visitors: 90, fill: "var(--color-other)" },
 ];
 
-export const DonutChartCardHeader = ({ className }: { className?: string }) => {
+export const RadialChartCardHeader = ({
+    className,
+}: {
+    className?: string;
+}) => {
     return (
         <ChartContainer
             config={DonutChartConfig}

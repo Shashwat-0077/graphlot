@@ -8,9 +8,9 @@ import {
     createRadarChartStore,
     initRadarChartStore,
 } from "@/modules/Radar/store/state";
-import { BoxLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
 import { useRadarChart } from "@/modules/Radar/api/client/use-radar-chart";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 export type RadarChartStoreApi = ReturnType<typeof createRadarChartStore>;
 export const RadarChartStoreContext = createContext<
@@ -27,7 +27,7 @@ export const RadarChartStoreProvider: ChartStateProvider = ({
     if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

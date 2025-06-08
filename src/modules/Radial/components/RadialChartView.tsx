@@ -10,7 +10,7 @@ import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWr
 import { ChartViewComponentType, SORT_DEFAULT } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
 import { getRGBAString } from "@/utils/colors";
-import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
+import { useProcessData } from "@/modules/notion/api/client/use-process-data";
 
 export const DonutChartView: ChartViewComponentType = ({
     chartName,
@@ -28,10 +28,10 @@ export const DonutChartView: ChartViewComponentType = ({
         sort_by,
     } = useDonutChartStore((state) => state);
 
-    const { data, config, isLoading, error, schema } = useGetProcessData({
+    const { data, config, isLoading, error, schema } = useProcessData({
         notion_table_id,
         x_axis,
-        y_axis: "count",
+        yAxis: "count",
         sort_x: sort_by,
         sort_y: SORT_DEFAULT,
         user_id,

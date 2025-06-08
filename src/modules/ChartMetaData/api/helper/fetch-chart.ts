@@ -26,12 +26,25 @@ import {
     CHART_TYPE_HEATMAP,
     CHART_TYPE_RADAR,
     CHART_TYPE_RADIAL,
+    DATABASE_NOTION,
+    DATABASE_UPLOAD,
+    NotionPropertyData,
+    NotionPropertySchema,
 } from "@/constants";
 import { fetchFullAreaChartById } from "@/modules/Area/api/helper/fetch-area-charts";
 import { fetchFullBarChartById } from "@/modules/Bar/api/helpers/fetch-bar-charts";
 import { fetchFullRadarChartById } from "@/modules/Radar/api/helper/fetch-radar-chart";
 import { fetchFullHeatmapById } from "@/modules/Heatmap/api/helper/fetch-heatmap";
 import { fetchFullRadialChartById } from "@/modules/Radial/api/helper/fetch-radial-chart";
+import { fetchNotionTableSchema } from "@/modules/notion/api/helper/fetch-notion-table-schema";
+import { fetchNotionTableData } from "@/modules/notion/api/helper/fetch-notion-table-data";
+
+type ChartPropertiesSelect = {
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSelect | undefined;
+    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSelect | undefined;
+    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySelect | undefined;
+    [CHART_COLOR_TABLE_NAME]: ChartColorSelect | undefined;
+};
 
 export async function fetchChartMetadataByCollection(
     collectionId: string
@@ -95,16 +108,14 @@ export async function fetchChartMetadataById(chartId: string): Promise<
     }
 }
 
-export const fetchFullChartById = async (
-    chartId: string
-): Promise<
+export async function fetchFullChartById(chartId: string): Promise<
     | FullChartType
     | {
           ok: false;
           error: string;
           details?: unknown;
       }
-> => {
+> {
     try {
         return await db.transaction(
             async (
@@ -203,14 +214,7 @@ export const fetchFullChartById = async (
             details: error,
         };
     }
-};
-
-type ChartPropertiesSelect = {
-    [CHART_VISUAL_TABLE_NAME]: ChartVisualSelect | undefined;
-    [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSelect | undefined;
-    [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySelect | undefined;
-    [CHART_COLOR_TABLE_NAME]: ChartColorSelect | undefined;
-};
+}
 
 export async function fetchChartPropertiesById(chartId: string): Promise<
     | {
@@ -275,5 +279,155 @@ export async function fetchChartPropertiesById(chartId: string): Promise<
                     : "An unknown error occurred",
             details: error,
         };
+    }
+}
+
+export async function fetchChartSchema({
+    chartId,
+    userId,
+}: {
+    chartId: string;
+    userId: string;
+}): Promise<
+    | {
+          ok: true;
+          databaseProvider: typeof DATABASE_NOTION;
+          schema: NotionPropertySchema;
+      }
+    | {
+          ok: true;
+          databaseProvider: typeof DATABASE_UPLOAD;
+          schema: null;
+      }
+    | { ok: false; error: string; details?: unknown }
+> {
+    const chart = await db
+        .select()
+        .from(ChartMetadata)
+        .where(eq(ChartMetadata.chartId, chartId))
+        .get();
+
+    if (!chart) {
+        return {
+            ok: false,
+            error: "Chart not found",
+        };
+    }
+
+    if (!chart.databaseId) {
+        return {
+            ok: false,
+            error: "Chart does not have a database associated",
+        };
+    }
+
+    switch (chart.databaseProvider) {
+        case DATABASE_NOTION:
+            const response = await fetchNotionTableSchema({
+                databaseId: chart.databaseId,
+                userId,
+            });
+
+            if (!response.ok) {
+                return {
+                    ok: false,
+                    error: "Failed to fetch database schema",
+                    details: response.error,
+                };
+            }
+
+            if (!response.schema) {
+                return {
+                    ok: false,
+                    error: "Database schema is empty",
+                };
+            }
+
+            const schema = response.schema;
+
+            return {
+                ok: true,
+                databaseProvider: DATABASE_NOTION,
+                schema: schema,
+            };
+            break;
+        case DATABASE_UPLOAD:
+            return {
+                ok: true,
+                databaseProvider: DATABASE_UPLOAD,
+                schema: null,
+            };
+            break;
+        default:
+            return {
+                ok: false,
+                error: `Unsupported database provider: ${chart.databaseProvider}`,
+            };
+    }
+}
+
+export async function fetchChartData({
+    chartId,
+    userId,
+}: {
+    chartId: string;
+    userId: string;
+}): Promise<
+    | {
+          ok: true;
+          data: NotionPropertyData[] | null; // Replace null with the Upload schema that you will generate
+      }
+    | { ok: false; error: string; details?: unknown }
+> {
+    const chart = await db
+        .select()
+        .from(ChartMetadata)
+        .where(eq(ChartMetadata.chartId, chartId))
+        .get();
+
+    if (!chart) {
+        return {
+            ok: false,
+            error: "Chart not found",
+        };
+    }
+
+    if (!chart.databaseId) {
+        return {
+            ok: false,
+            error: "Chart does not have a database associated",
+        };
+    }
+
+    switch (chart.databaseProvider) {
+        case DATABASE_NOTION:
+            const response = await fetchNotionTableData({
+                databaseId: chart.databaseId,
+                userId,
+            });
+
+            if (!response.ok) {
+                return {
+                    ok: false,
+                    error: "Failed to fetch chart data",
+                    details: response.error,
+                };
+            }
+
+            return {
+                ok: true,
+                data: response.data,
+            };
+        case DATABASE_UPLOAD:
+            // For uploaded databases, we assume the data is not available
+            return {
+                ok: true,
+                data: null,
+            };
+        default:
+            return {
+                ok: false,
+                error: `Unsupported database provider: ${chart.databaseProvider}`,
+            };
     }
 }

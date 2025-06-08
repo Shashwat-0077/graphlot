@@ -14,6 +14,9 @@ import { useAreaChartStore } from "@/modules/Area/store";
 import { getRGBAString } from "@/utils/colors";
 import {
     ChartViewComponent,
+    FONT_STYLES_BOLD,
+    FONT_STYLES_STRIKETHROUGH,
+    FONT_STYLES_UNDERLINE,
     GRID_ORIENTATION_BOTH,
     GRID_ORIENTATION_HORIZONTAL,
     GRID_ORIENTATION_NONE,
@@ -21,39 +24,88 @@ import {
 } from "@/constants";
 import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
-import { useGetProcessData } from "@/modules/notion/api/client/useGetProcessData";
+import { useProcessData } from "@/modules/notion/api/client/use-process-data";
+import {
+    useChartBoxModelStore,
+    useChartColorStore,
+    useChartTypographyStore,
+    useChartVisualStore,
+} from "@/modules/ChartMetaData/store";
+import {
+    getGridStyle,
+    getLabelAnchor,
+} from "@/modules/notion/utils/get-things";
 
-export const AreaChartView: ChartViewComponent = ({
-    chartName,
-    notionTableId,
-    userId,
-}) => {
+export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8;
+    const gridOrientation = useChartVisualStore(
+        (state) => state.gridOrientation
+    );
+    const gridStyle = useChartVisualStore((state) => state.gridStyle);
+    const gridWidth = useChartVisualStore((state) => state.gridWidth);
+    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
+    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
 
-    const {
-        x_axis_field,
+    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
+    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
+    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
+    const marginRight = useChartBoxModelStore((state) => state.marginRight);
+    const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
-        y_axis_field,
-        color_palette,
-        legend_enabled,
-        grid_orientation,
-        tooltip_enabled,
-        grid_color,
-        text_color,
-        background_color,
-        label_enabled,
-        x_sort_order,
-        y_sort_order,
-        cumulative_enabled,
-    } = useAreaChartStore((state) => state);
+    const backgroundColor = useChartColorStore(
+        (state) => state.backgroundColor
+    );
+    const borderColor = useChartColorStore((state) => state.borderColor);
+    const colorPalette = useChartColorStore((state) => state.colorPalette);
+    const gridColor = useChartColorStore((state) => state.gridColor);
+    const labelColor = useChartColorStore((state) => state.labelColor);
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
 
-    const { data, config, isLoading, error, schema } = useGetProcessData({
-        notionTableId,
+    const label = useChartTypographyStore((state) => state.label);
+    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
+    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
+    const labelFontFamily = useChartTypographyStore(
+        (state) => state.labelFontFamily
+    );
+    const labelFontStyle = useChartTypographyStore(
+        (state) => state.labelFontStyle
+    );
+    const labelSize = useChartTypographyStore((state) => state.labelSize);
+    const legendEnabled = useChartTypographyStore(
+        (state) => state.legendEnabled
+    );
+
+    const areaStyle = useAreaChartStore((state) => state.areaStyle);
+    const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
+    const fillOpacity = useAreaChartStore((state) => state.fillOpacity);
+    const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
+    const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
+    const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
+    const yAxisEnabled = useAreaChartStore((state) => state.yAxisEnabled);
+
+    // Area chart store selectors
+    const xAxisField = useAreaChartStore((state) => state.xAxisField);
+    const yAxisField = useAreaChartStore((state) => state.yAxisField);
+    // const filters = useAreaChartStore((state) => state.filters);
+    const xAxisSortOrder = useAreaChartStore((state) => state.xAxisSortOrder);
+    const yAxisSortOrder = useAreaChartStore((state) => state.yAxisSortOrder);
+    // const omitZeroValuesEnabled = useAreaChartStore(
+    //     (state) => state.omitZeroValuesEnabled
+    // );
+    // const cumulativeEnabled = useAreaChartStore(
+    //     (state) => state.cumulativeEnabled
+    // );
+
+    const { data, config, isLoading, error } = useProcessData({
+        chartId,
         userId,
-        x_axis: x_axis_field,
-        y_axis: y_axis_field,
-        sort_x: x_sort_order,
-        sort_y: y_sort_order,
+        xAxis: xAxisField,
+        yAxis: yAxisField,
+        sortX: xAxisSortOrder,
+        sortY: yAxisSortOrder,
     });
 
     const limitedRadarChartData = useMemo(() => {
@@ -64,7 +116,10 @@ export const AreaChartView: ChartViewComponent = ({
     if (isLoading) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-4">
@@ -81,7 +136,10 @@ export const AreaChartView: ChartViewComponent = ({
     if (error || !data) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -115,46 +173,14 @@ export const AreaChartView: ChartViewComponent = ({
         );
     }
 
-    // No schema state
-    if (!schema) {
-        return (
-            <ChartViewWrapper
-                bgColor={background_color}
-                className="flex items-center justify-center"
-            >
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="rounded-full bg-muted p-3">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-6 w-6 text-muted-foreground"
-                        >
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M3 9h18" />
-                            <path d="M9 21V9" />
-                        </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold">No Data Available</h3>
-                    <p className="max-w-[250px] text-sm text-muted-foreground">
-                        No schema data found. Please connect a valid database.
-                    </p>
-                </div>
-            </ChartViewWrapper>
-        );
-    }
-
     // No axis selected state
-    if (!x_axis_field || !y_axis_field) {
+    if (!xAxisField || !yAxisField) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -197,113 +223,143 @@ export const AreaChartView: ChartViewComponent = ({
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
-            color: color_palette[idx]
-                ? `rgb(${color_palette[idx].r}, ${color_palette[idx].g}, ${color_palette[idx].b})`
-                : "rgb(255, 255, 255)",
-            alpha: color_palette[idx]
-                ? color_palette[idx].a
+            color: colorPalette[idx]
+                ? getRGBAString(colorPalette[idx], false)
+                : "rgb(255, 255, 255 , 1)",
+            alpha: colorPalette[idx]
+                ? colorPalette[idx].a
                 : Math.min(1 / config.length, 0.5),
         };
     }
 
     return (
-        <ChartViewWrapper bgColor={background_color}>
+        <ChartViewWrapper
+            borderEnabled={borderEnabled}
+            borderWidth={borderWidth}
+            borderColor={borderColor}
+            bgColor={backgroundColor}
+        >
             <ChartContainer
                 config={configData}
-                className="mx-auto h-full w-full min-w-0"
+                className="h-full w-full min-w-0"
             >
                 <AreaChart
                     accessibilityLayer
                     data={limitedRadarChartData}
-                    margin={{ top: 40, right: 0, left: 0, bottom: 100 }}
+                    margin={{
+                        top: marginTop,
+                        right: marginRight,
+                        left: marginLeft,
+                        bottom: marginBottom,
+                    }}
                 >
-                    {label_enabled && (
+                    {labelEnabled && (
                         <text
-                            x="50%"
+                            x={getLabelAnchor(labelAnchor)}
                             y={30}
                             style={{
-                                fontSize: "1.25rem",
-                                fontWeight: "bold",
-                                fill: getRGBAString(text_color),
-                                textAnchor: "middle",
+                                fontSize: `${labelSize}px`,
+                                fontFamily: labelFontFamily,
+                                textDecoration:
+                                    labelFontStyle === FONT_STYLES_UNDERLINE
+                                        ? "underline"
+                                        : labelFontStyle ===
+                                            FONT_STYLES_STRIKETHROUGH
+                                          ? "line-through"
+                                          : "none",
+                                fontWeight:
+                                    labelFontStyle === FONT_STYLES_BOLD
+                                        ? "bold"
+                                        : "normal",
+                                fill: getRGBAString(labelColor),
+                                textAnchor: labelAnchor,
                             }}
                         >
-                            {chartName}
+                            {label}
                         </text>
                     )}
 
-                    {legend_enabled && (
+                    {legendEnabled && (
                         <ChartLegend content={<ChartLegendContent />} />
                     )}
 
-                    {grid_orientation !== GRID_ORIENTATION_NONE && (
+                    {gridOrientation !== GRID_ORIENTATION_NONE && (
                         <CartesianGrid
                             vertical={
-                                grid_orientation ===
-                                    GRID_ORIENTATION_VERTICAL ||
-                                grid_orientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_VERTICAL ||
+                                gridOrientation === GRID_ORIENTATION_BOTH
                             }
                             horizontal={
-                                grid_orientation ===
+                                gridOrientation ===
                                     GRID_ORIENTATION_HORIZONTAL ||
-                                grid_orientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_BOTH
                             }
-                            stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
-                            strokeDasharray="3 3"
+                            stroke={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
+                            strokeDasharray={getGridStyle(gridStyle, gridWidth)}
                         />
                     )}
 
-                    <XAxis
-                        dataKey="class"
-                        axisLine={false}
-                        padding={{ left: 20, right: 20 }}
-                        tickMargin={10}
-                        tickFormatter={(value) => value}
-                        stroke={getRGBAString(text_color)}
-                    />
-                    <YAxis tickMargin={10} axisLine={false} />
+                    {xAxisEnabled && (
+                        <XAxis
+                            dataKey="class"
+                            tickMargin={10}
+                            stroke={getRGBAString(gridColor)}
+                        />
+                    )}
 
-                    {tooltip_enabled && (
+                    {yAxisEnabled && (
+                        <YAxis
+                            tickMargin={10}
+                            axisLine={false}
+                            stroke={getRGBAString(gridColor)}
+                        />
+                    )}
+
+                    {tooltipEnabled && (
                         <ChartTooltip
                             cursor={false}
-                            content={<ChartTooltipContent indicator="dashed" />}
+                            content={
+                                <ChartTooltipContent indicator={tooltipStyle} />
+                            }
                         />
                     )}
 
-                    <defs>
-                        {config.map((data_label, idx) => (
-                            <linearGradient
-                                key={idx}
-                                id={`fill${data_label.replace(/\s+/g, "")}`}
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                            >
-                                <stop
-                                    offset="5%"
-                                    stopColor={configData[data_label].color}
-                                    stopOpacity={0.8}
-                                />
-                                <stop
-                                    offset="95%"
-                                    stopColor="var(--color-desktop)"
-                                    stopOpacity={0.1}
-                                />
-                            </linearGradient>
-                        ))}
-                    </defs>
+                    {isAreaChart && (
+                        <defs>
+                            {config.map((data_label, idx) => (
+                                <linearGradient
+                                    key={idx}
+                                    id={`fill${data_label.replace(/\s+/g, "")}`}
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1"
+                                >
+                                    <stop
+                                        offset="5%"
+                                        stopColor={configData[data_label].color}
+                                        stopOpacity={0.8}
+                                    />
+                                    <stop
+                                        offset="95%"
+                                        stopColor="var(--color-desktop)"
+                                        stopOpacity={0.1}
+                                    />
+                                </linearGradient>
+                            ))}
+                        </defs>
+                    )}
 
                     {config.map((data_label) => (
                         <Area
                             key={data_label}
                             dataKey={data_label}
-                            type="monotone"
+                            type={areaStyle}
                             fill={`url(#fill${data_label.replace(/\s+/g, "")})`}
-                            fillOpacity={0.4}
+                            fillOpacity={fillOpacity}
                             stroke={configData[data_label].color}
-                            strokeWidth={2}
-                            stackId={cumulative_enabled ? "1" : undefined}
+                            strokeWidth={strokeWidth}
+                            stackId={stackedEnabled ? "1" : undefined}
                         />
                     ))}
                 </AreaChart>

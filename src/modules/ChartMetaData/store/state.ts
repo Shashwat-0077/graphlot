@@ -2,21 +2,23 @@ import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 import {
-    AnchorType,
-    FontStyleType,
-    FontType,
-    GridOrientation,
-    GridStyle,
-    RGBAColor,
-    TooltipStyle,
+    type AnchorType,
+    type FontStyleType,
+    type FontType,
+    type GridOrientation,
+    type GridStyle,
+    MIN_MARGIN,
+    type RGBAColor,
+    type TooltipStyle,
 } from "@/constants";
 import {
     defaultChartBoxModel,
+    defaultChartColorPalette,
     defaultChartColors,
     defaultChartTypographySettings,
     defaultChartVisualSettings,
 } from "@/modules/ChartMetaData/defaultChartConfig";
-import {
+import type {
     ChartBoxModelSelect,
     ChartColorSelect,
     ChartTypographySelect,
@@ -45,23 +47,24 @@ export type ChartTypographyActions = {
     toggleLegend: () => void;
 };
 export type ChartBoxModelActions = {
-    setMarginTop: (top: number) => void;
-    setMarginBottom: (bottom: number) => void;
-    setMarginLeft: (left: number) => void;
-    setMarginRight: (right: number) => void;
+    setMarginTop: (top?: number) => void;
+    setMarginBottom: (bottom?: number) => void;
+    setMarginLeft: (left?: number) => void;
+    setMarginRight: (right?: number) => void;
     setBorderWidth: (width: number) => void;
     toggleBorder: () => void;
 };
 export type ChartColorActions = {
     setBackgroundColor: (color: RGBAColor) => void;
-    setTextColor: (color: RGBAColor) => void;
     setBorderColor: (color: RGBAColor) => void;
     setGridColor: (color: RGBAColor) => void;
     setLabelColor: (color: RGBAColor) => void;
     setLegendTextColor: (color: RGBAColor) => void;
     setColorPalette: (palette: RGBAColor[]) => void;
-    addColorPalette: (color: RGBAColor) => void;
+    addColorPalette: (color?: RGBAColor) => void;
     removeColorPalette: (index: number) => void;
+    updateColorPalette: (index: number, color: RGBAColor) => void;
+    clearColorPalette: () => void;
 };
 
 export type ChartVisualStore = ChartVisualActions & ChartVisuals;
@@ -164,19 +167,19 @@ export const createChartBoxModelStore = (
     return createStore<ChartBoxModelStore>()(
         immer((set) => ({
             ...initChartBoxModelState(initialState),
-            setMarginTop: (top: number) =>
+            setMarginTop: (top: number = MIN_MARGIN) =>
                 set((state) => {
                     state.marginTop = top;
                 }),
-            setMarginBottom: (bottom: number) =>
+            setMarginBottom: (bottom: number = MIN_MARGIN) =>
                 set((state) => {
                     state.marginBottom = bottom;
                 }),
-            setMarginLeft: (left: number) =>
+            setMarginLeft: (left: number = MIN_MARGIN) =>
                 set((state) => {
                     state.marginLeft = left;
                 }),
-            setMarginRight: (right: number) =>
+            setMarginRight: (right: number = MIN_MARGIN) =>
                 set((state) => {
                     state.marginRight = right;
                 }),
@@ -197,41 +200,45 @@ export const createChartColorStore = (
     return createStore<ChartColorStore>()(
         immer((set) => ({
             ...initChartColorState(initialState),
-            setBackgroundColor: (color: RGBAColor) =>
+            setBackgroundColor: (color) =>
                 set((state) => {
                     state.backgroundColor = color;
                 }),
-            setTextColor: (color: RGBAColor) =>
-                set((state) => {
-                    state.legendTextColor = color;
-                }),
-            setBorderColor: (color: RGBAColor) =>
+            setBorderColor: (color) =>
                 set((state) => {
                     state.borderColor = color;
                 }),
-            setGridColor: (color: RGBAColor) =>
+            setGridColor: (color) =>
                 set((state) => {
                     state.gridColor = color;
                 }),
-            setLabelColor: (color: RGBAColor) =>
+            setLabelColor: (color) =>
                 set((state) => {
                     state.labelColor = color;
                 }),
-            setLegendTextColor: (color: RGBAColor) =>
+            setLegendTextColor: (color) =>
                 set((state) => {
                     state.legendTextColor = color;
                 }),
-            setColorPalette: (palette: RGBAColor[]) =>
+            setColorPalette: (palette) =>
                 set((state) => {
                     state.colorPalette = palette;
                 }),
-            addColorPalette: (color: RGBAColor) =>
+            addColorPalette: (color = defaultChartColorPalette) =>
                 set((state) => {
                     state.colorPalette.push(color);
                 }),
-            removeColorPalette: (index: number) =>
+            updateColorPalette: (index, color) =>
+                set((state) => {
+                    state.colorPalette[index] = color;
+                }),
+            removeColorPalette: (index) =>
                 set((state) => {
                     state.colorPalette.splice(index, 1);
+                }),
+            clearColorPalette: () =>
+                set((state) => {
+                    state.colorPalette = [];
                 }),
         }))
     );

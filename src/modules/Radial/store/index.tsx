@@ -3,7 +3,7 @@
 import { createContext, useRef, useContext } from "react";
 import { useStore } from "zustand";
 
-import { BoxLoader } from "@/components/ui/Loader";
+import { SimpleLoader } from "@/components/ui/Loader";
 import { ChartStateProvider } from "@/constants";
 import {
     createRadialChartStore,
@@ -27,7 +27,7 @@ export const RadialChartStoreProvider: ChartStateProvider = ({
     if (!chart || isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }

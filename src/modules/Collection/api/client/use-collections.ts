@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "@/lib/rpc";
 
-export const useGetAllCollections = () => {
+export const useCollections = () => {
     const query = useQuery({
         queryKey: ["collections", "all"],
         queryFn: async () => {
@@ -20,7 +20,7 @@ export const useGetAllCollections = () => {
     return query;
 };
 
-export const useGetCollectionById = (id: string) => {
+export const useCollectionById = (id: string) => {
     const query = useQuery({
         queryKey: ["collections", id],
         queryFn: async () => {

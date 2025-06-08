@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useHeatmapChartStore } from "@/modules/Heatmap/store";
-import { DAY_OF_WEEK } from "@/constants";
+import { ChartConfigComponent, DAY_OF_WEEK } from "@/constants";
 import { getFullDayFromAbbr } from "@/utils/date";
 import {
     Card,
@@ -30,7 +30,7 @@ import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { useUpdateHeatmap } from "@/modules/Heatmap/api/client/use-update-heatmap";
 import { toast } from "@/hooks/use-toast";
 
-export const HeatmapConfig = ({ chart_id }: { chart_id: string }) => {
+export const HeatmapConfig: ChartConfigComponent = ({ chart_id }) => {
     const {
         label_enabled,
         has_border,

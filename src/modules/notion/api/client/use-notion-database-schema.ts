@@ -2,28 +2,28 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "@/lib/rpc";
 
-export const useGetDatabaseSchema = ({
-    notion_table_id,
-    user_id,
+export const useNotionDatabaseSchema = ({
+    notionTableId,
+    userId,
 }: {
-    notion_table_id: string;
-    user_id?: string;
+    notionTableId: string;
+    userId?: string;
 }) => {
     const query = useQuery({
-        queryKey: ["database-schema"],
+        queryKey: ["notion-database-schema"],
         queryFn: async () => {
-            if (!user_id) {
+            if (!userId) {
                 throw new Error("user_id is required");
             }
 
-            const response = await client.api.notion[":notion_table_id"][
+            const response = await client.api.notion[":notionTableId"][
                 "get-table-schema"
             ]["$get"]({
                 param: {
-                    notion_table_id,
+                    notionTableId: notionTableId,
                 },
                 query: {
-                    user_id,
+                    userId: userId,
                 },
             });
 

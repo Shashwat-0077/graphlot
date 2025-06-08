@@ -1,23 +1,23 @@
 import {
-    check,
+    // check,
     integer,
     real,
     sqliteTable,
     text,
 } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+// import { sql } from "drizzle-orm";
 
 import { defaultAreaChartConfig } from "@/modules/Area/area-chart-default-config";
 import {
-    AREA_CHART_STYLE_OPTIONS,
+    // AREA_CHART_STYLE_OPTIONS,
     AreaChartStyle,
     ChartFilter,
-    SORT_OPTIONS,
+    // SORT_OPTIONS,
     SortType,
-    MIN_STROKE_WIDTH,
-    MAX_STROKE_WIDTH,
-    MIN_OPACITY,
-    MAX_OPACITY,
+    // MIN_STROKE_WIDTH,
+    // MAX_STROKE_WIDTH,
+    // MIN_OPACITY,
+    // MAX_OPACITY,
 } from "@/constants";
 import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
 
@@ -76,36 +76,36 @@ export const AreaCharts = sqliteTable(
         isAreaChart: integer("is_area_chart", { mode: "boolean" })
             .notNull()
             .default(defaultAreaChartConfig.isAreaChart),
-    },
-    (table) => {
-        const areaChartTypesString = AREA_CHART_STYLE_OPTIONS.map(
-            (v) => `'${v}'`
-        ).join(", ");
-        const sortOrderValuesString = SORT_OPTIONS.map((v) => `'${v}'`).join(
-            ", "
-        );
-
-        return [
-            check(
-                "area_charts_area_style_check",
-                sql`(${table.areaStyle} IN (${sql.raw(areaChartTypesString)}))`
-            ),
-            check(
-                "area_charts_x_sort_order_check",
-                sql`(${table.xAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
-            ),
-            check(
-                "area_charts_y_sort_order_check",
-                sql`(${table.yAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
-            ),
-            check(
-                "area_charts_stroke_width_check",
-                sql`${table.strokeWidth} >= ${MIN_STROKE_WIDTH} AND ${table.strokeWidth} <= ${MAX_STROKE_WIDTH}`
-            ),
-            check(
-                "area_charts_fill_opacity_check",
-                sql`${table.fillOpacity} >= ${MIN_OPACITY} AND ${table.fillOpacity} <= ${MAX_OPACITY}`
-            ),
-        ];
     }
+    // (table) => {
+    //     const areaChartTypesString = AREA_CHART_STYLE_OPTIONS.map(
+    //         (v) => `'${v}'`
+    //     ).join(", ");
+    //     const sortOrderValuesString = SORT_OPTIONS.map((v) => `'${v}'`).join(
+    //         ", "
+    //     );
+
+    //     return [
+    //         check(
+    //             "area_charts_area_style_check",
+    //             sql`(${table.areaStyle} IN (${sql.raw(areaChartTypesString)}))`
+    //         ),
+    //         check(
+    //             "area_charts_x_sort_order_check",
+    //             sql`(${table.xAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
+    //         ),
+    //         check(
+    //             "area_charts_y_sort_order_check",
+    //             sql`(${table.yAxisSortOrder} IN (${sql.raw(sortOrderValuesString)}))`
+    //         ),
+    //         check(
+    //             "area_charts_stroke_width_check",
+    //             sql`${table.strokeWidth} >= ${MIN_STROKE_WIDTH} AND ${table.strokeWidth} <= ${MAX_STROKE_WIDTH}`
+    //         ),
+    //         check(
+    //             "area_charts_fill_opacity_check",
+    //             sql`${table.fillOpacity} >= ${MIN_OPACITY} AND ${table.fillOpacity} <= ${MAX_OPACITY}`
+    //         ),
+    //     ];
+    // }
 );

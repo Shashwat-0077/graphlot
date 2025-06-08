@@ -8,7 +8,6 @@ import {
     Activity,
     Grid3X3,
     MoreHorizontal,
-    PieChart,
 } from "lucide-react";
 
 import {
@@ -21,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { AreaChartCardHeader } from "@/modules/Area/components/AreaChartCardHeader";
 import { BarChartCardHeader } from "@/modules/Bar/components/BarHeaderChart";
 import { ChartType } from "@/constants";
-import { DonutChartCardHeader } from "@/modules/Radial/components/RadialHeaderChart";
+import { RadialChartCardHeader } from "@/modules/Radial/components/RadialHeaderChart";
 import { RadarChartCardHeader } from "@/modules/Radar/components/RadarHeaderChart";
 import { HeatmapChartCardHeader } from "@/modules/Heatmap/components/HeatmapHeaderChart";
 import { getSlug } from "@/utils/pathSlugsOps";
@@ -38,10 +37,9 @@ import {
 const chartTypeIcons = {
     Area: <LineChart className="h-4 w-4" />,
     Bar: <BarChart2 className="h-4 w-4" />,
-    Donut: <DonutIcon className="h-4 w-4" />,
+    Radial: <DonutIcon className="h-4 w-4" />,
     Radar: <Activity className="h-4 w-4" />,
     Heatmap: <Grid3X3 className="h-4 w-4" />,
-    Pie: <PieChart className="h-4 w-4" />,
 };
 
 export function ChartCard({
@@ -50,19 +48,21 @@ export function ChartCard({
     name,
     chartId,
     userId,
-    notionDatabaseName,
+    databaseName,
+    databaseProvider,
 }: {
     type: ChartType;
     collection_slug: string;
     name: string;
     chartId: string;
-    notionDatabaseName: string;
+    databaseName: string;
     userId: string;
+    databaseProvider: string;
 }) {
     const ChartTypeComponent = {
         Area: AreaChartCardHeader,
         Bar: BarChartCardHeader,
-        Donut: DonutChartCardHeader,
+        Radial: RadialChartCardHeader,
         Radar: RadarChartCardHeader,
         Heatmap: HeatmapChartCardHeader,
     }[type];
@@ -132,7 +132,9 @@ export function ChartCard({
                         {type}
                     </Badge>
                     <Separator orientation="vertical" className="h-4" />
-                    <span className="truncate">{notionDatabaseName}</span>
+                    <span className="truncate">{databaseName}</span>
+                    <Separator orientation="vertical" className="h-4" />
+                    <span className="truncate">{databaseProvider}</span>
                 </div>
             </CardContent>
             <CardFooter className="border-t bg-muted/30 px-5 py-3">

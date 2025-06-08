@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetDatabaseSchema } from "@/modules/notion/api/client/useGetDatabaseSchema";
+import { useNotionDatabaseSchema } from "@/modules/notion/api/client/use-notion-database-schema";
 import {
     Select,
     SelectContent,
@@ -679,7 +679,7 @@ export const DonutConfig: ChartConfigComponentType = ({
         data: schema,
         isLoading,
         error,
-    } = useGetDatabaseSchema({
+    } = useNotionDatabaseSchema({
         notion_table_id,
         user_id,
     });

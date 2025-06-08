@@ -15,7 +15,7 @@ import { HeatmapChartStoreProvider } from "@/modules/Heatmap/store";
 import { RadarChartView } from "@/modules/Radar/components/RadarChartView";
 import { RadarChartStoreProvider } from "@/modules/Radar/store";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import { BoxLoader } from "@/components/ui/Loader";
+import { SimpleLoader } from "@/components/ui/Loader";
 
 type Props = {
     params: Promise<{
@@ -53,7 +53,7 @@ export default function ChatConfigs({ params }: Props) {
     if (isChartLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
-                <BoxLoader />
+                <SimpleLoader />
             </div>
         );
     }
