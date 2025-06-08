@@ -1,6 +1,6 @@
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
 import { ChartFilter, SortType } from "@/constants";
 import { defaultRadarChartConfig } from "@/modules/Radar/radar-chart-default-config";
 

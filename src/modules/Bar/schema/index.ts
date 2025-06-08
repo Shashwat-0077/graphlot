@@ -11,14 +11,14 @@ import {
     CHART_TYPOGRAPHY_TABLE_NAME,
     CHART_VISUAL_TABLE_NAME,
     CHART_METADATA_TABLE_NAME,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
     ChartVisualSchema,
-} from "@/modules/ChartMetaData/schema";
+} from "@/modules/Chart/schema";
 import { CHART_TYPE_BAR, SORT_OPTIONS } from "@/constants";
 import { FilterSchema } from "@/constants";
 import { BAR_CHARTS_TABLE_NAME, BarCharts } from "@/modules/Bar/schema/db";

@@ -19,7 +19,7 @@ import { NumberInput } from "@/components/ui/number-input";
 import type {
     ChartBoxModelStore,
     ChartVisualStore,
-} from "@/modules/ChartMetaData/store/state";
+} from "@/modules/Chart/store/state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const GridAndBoxModelConfig = ({

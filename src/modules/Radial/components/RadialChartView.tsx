@@ -6,7 +6,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useDonutChartStore } from "@/modules/Radial/store";
-import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
+import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { ChartViewComponentType, SORT_DEFAULT } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
 import { getRGBAString } from "@/utils/colors";

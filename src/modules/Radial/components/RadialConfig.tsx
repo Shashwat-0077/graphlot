@@ -34,7 +34,7 @@ import {
     type ChartFilter,
 } from "@/constants";
 import { useDonutChartStore } from "@/modules/Radial/store";
-import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
+import ClearAll from "@/modules/Chart/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import type { DonutSelect } from "@/modules/Radial/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

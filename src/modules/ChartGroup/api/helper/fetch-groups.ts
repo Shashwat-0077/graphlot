@@ -3,14 +3,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ChartGroup, ChartGroupCharts } from "@/db/schema";
 import { ChartGroupSelect } from "@/modules/ChartGroup/schema";
-import {
-    ChartMetadataSelect,
-    FullChartType,
-} from "@/modules/ChartMetaData/schema";
+import { ChartMetadataSelect, FullChartType } from "@/modules/Chart/schema";
 import {
     fetchChartMetadataById,
     fetchFullChartById,
-} from "@/modules/ChartMetaData/api/helper/fetch-chart";
+} from "@/modules/Chart/api/helper/fetch-chart";
 
 export const fetchAllGroups = async (
     collection_id: string

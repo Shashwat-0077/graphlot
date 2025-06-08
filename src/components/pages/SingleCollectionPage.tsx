@@ -5,13 +5,13 @@ import { useParams } from "next/navigation";
 import { Plus, LayoutGrid, Layers, Search, Filter } from "lucide-react";
 import Link from "next/link";
 
-import { ChartCard } from "@/modules/ChartMetaData/components/ChartCard";
+import { ChartCard } from "@/modules/Chart/components/ChartCard";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import ChartCardLoader from "@/modules/ChartMetaData/components/ChartCardLoader";
+import ChartCardLoader from "@/modules/Chart/components/ChartCardLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChartTypeFilter } from "@/modules/ChartMetaData/components/ChartTypeFilter";
-import { EmptyCharts } from "@/modules/ChartMetaData/components/EmptyCharts";
+import { ChartTypeFilter } from "@/modules/Chart/components/ChartTypeFilter";
+import { EmptyCharts } from "@/modules/Chart/components/EmptyCharts";
 import {
     Card,
     CardContent,
@@ -28,7 +28,7 @@ import {
 import { useCollectionById } from "@/modules/Collection/api/client/use-collections";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { useChartMetadataByCollection } from "@/modules/ChartMetaData/api/client/use-chart";
+import { useChartMetadataByCollection } from "@/modules/Chart/api/client/use-chart";
 
 export default function SingleCollectionPage() {
     const { session } = useAuthSession();

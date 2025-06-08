@@ -34,7 +34,7 @@ import {
     SortType,
 } from "@/constants";
 import { useRadarChartStore } from "@/modules/Radar/store";
-import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
+import ClearAll from "@/modules/Chart/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

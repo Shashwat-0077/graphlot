@@ -1,16 +1,18 @@
 import {
     // check,
     integer,
-    real,
     sqliteTable,
     text,
 } from "drizzle-orm/sqlite-core";
 // import { sql } from "drizzle-orm";
 
-import { defaultAreaChartConfig } from "@/modules/Area/area-chart-default-config";
+import {
+    defaultAreaChartConfig,
+    AreaSpecificConfig,
+    areaSpecificConfigDefaults,
+} from "@/modules/Area/area-chart-default-config";
 import {
     // AREA_CHART_STYLE_OPTIONS,
-    AreaChartStyle,
     ChartFilter,
     // SORT_OPTIONS,
     SortType,
@@ -19,7 +21,7 @@ import {
     // MIN_OPACITY,
     // MAX_OPACITY,
 } from "@/constants";
-import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
 
 export const AREA_CHARTS_TABLE_NAME = "area_chart";
 export const AreaCharts = sqliteTable(
@@ -54,29 +56,14 @@ export const AreaCharts = sqliteTable(
             .notNull()
             .default(defaultAreaChartConfig.filters)
             .$type<ChartFilter[]>(),
-        yAxisEnabled: integer("y_axis_enabled", { mode: "boolean" })
+
+        //NOTE :  we are doing this because, the data above will be updated separately, if we include all above in this, then we have update the whole string
+        specificConfig: text("other_config", { mode: "json" })
             .notNull()
-            .default(defaultAreaChartConfig.yAxisEnabled),
-        xAxisEnabled: integer("x_axis_enabled", { mode: "boolean" })
-            .notNull()
-            .default(defaultAreaChartConfig.xAxisEnabled),
-        stackedEnabled: integer("stacked_enabled", { mode: "boolean" })
-            .notNull()
-            .default(defaultAreaChartConfig.stackedEnabled),
-        areaStyle: text("area_style")
-            .notNull()
-            .default(defaultAreaChartConfig.areaStyle)
-            .$type<AreaChartStyle>(),
-        strokeWidth: real("stroke_width")
-            .notNull()
-            .default(defaultAreaChartConfig.strokeWidth),
-        fillOpacity: real("fill_opacity")
-            .notNull()
-            .default(defaultAreaChartConfig.fillOpacity),
-        isAreaChart: integer("is_area_chart", { mode: "boolean" })
-            .notNull()
-            .default(defaultAreaChartConfig.isAreaChart),
+            .$type<AreaSpecificConfig>()
+            .default(areaSpecificConfigDefaults),
     }
+
     // (table) => {
     //     const areaChartTypesString = AREA_CHART_STYLE_OPTIONS.map(
     //         (v) => `'${v}'`

@@ -13,7 +13,7 @@ import {
     RadarCharts,
     RadialCharts,
 } from "@/db/schema";
-import { ChartMetadataUpdate } from "@/modules/ChartMetaData/schema";
+import { ChartMetadataUpdate } from "@/modules/Chart/schema";
 import {
     CHART_TYPE_AREA,
     CHART_TYPE_BAR,

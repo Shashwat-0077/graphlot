@@ -1,19 +1,28 @@
 import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
-import { AreaChartStyle, ChartFilter, SortType } from "@/constants";
-import { defaultAreaChartConfig } from "@/modules/Area/area-chart-default-config";
+import { AreaChartLineStyle, ChartFilter, SortType } from "@/constants";
+import {
+    AreaSpecificConfig,
+    areaSpecificConfigDefaults,
+    defaultAreaChartConfig,
+} from "@/modules/Area/area-chart-default-config";
 import { AreaChartSelect } from "@/modules/Area/schema";
 
-export type AreaChartState = Omit<AreaChartSelect, "chartId">;
+export type AreaChartState = Omit<
+    AreaChartSelect,
+    "chartId" | "specificConfig"
+> &
+    AreaSpecificConfig;
 
 export type AreaChartActions = {
     toggleXAxis: () => void;
     toggleYAxis: () => void;
     toggleStacked: () => void;
-    setAreaStyle: (style: AreaChartStyle) => void;
+    setAreaStyle: (style: AreaChartLineStyle) => void;
     setStrokeWidth: (width: number) => void;
     setFillOpacity: (opacity: number) => void;
+    setFillRange: (range: [number, number]) => void;
     toggleIsAreaChart: () => void;
     setXAxisField: (field: string) => void;
     setYAxisField: (field: string) => void;
@@ -32,7 +41,11 @@ export type AreaChartStore = AreaChartState & AreaChartActions;
 export const initAreaChartStore = (
     data?: Partial<AreaChartState>
 ): AreaChartState => {
-    return { ...defaultAreaChartConfig, ...data };
+    return {
+        ...defaultAreaChartConfig,
+        ...areaSpecificConfigDefaults,
+        ...data,
+    };
 };
 
 export const createAreaChartStore = (
@@ -56,7 +69,7 @@ export const createAreaChartStore = (
                 }),
             setAreaStyle: (style) =>
                 set((state) => {
-                    state.areaStyle = style;
+                    state.lineStyle = style;
                 }),
             setStrokeWidth: (width) =>
                 set((state) => {
@@ -64,7 +77,12 @@ export const createAreaChartStore = (
                 }),
             setFillOpacity: (opacity) =>
                 set((state) => {
-                    state.fillOpacity = opacity;
+                    state.fill.opacity = opacity;
+                }),
+            setFillRange: (range) =>
+                set((state) => {
+                    state.fill.start = range[0];
+                    state.fill.end = range[1];
                 }),
             toggleIsAreaChart: () =>
                 set((state) => {

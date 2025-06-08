@@ -38,8 +38,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
-import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/use-create-chart";
+import { ChartMetadataSchema } from "@/modules/Chart/schema";
+import { useCreateNewChart } from "@/modules/Chart/api/client/use-create-chart";
 import { CHART_TYPE_AREA, CHART_TYPES, DATABASE_NOTION } from "@/constants";
 import { useNotionDatabases } from "@/modules/notion/api/client/use-notion-databases";
 

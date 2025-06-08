@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateNewChart } from "@/modules/ChartMetaData/api/client/use-create-chart";
+import { useCreateNewChart } from "@/modules/Chart/api/client/use-create-chart";
 import { useNotionDatabases } from "@/modules/notion/api/client/use-notion-databases";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthSession } from "@/hooks/use-auth-session";

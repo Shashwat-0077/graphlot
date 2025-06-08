@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 
-import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
 import { RGBAColor, DayOfWeek } from "@/constants";
 import { defaultHeatmapConfig } from "@/modules/Heatmap/heatmap-default-config";
 

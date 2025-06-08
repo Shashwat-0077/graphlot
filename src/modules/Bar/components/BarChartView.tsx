@@ -13,7 +13,7 @@ import {
 import { useBarChartStore } from "@/modules/Bar/store";
 import { getRGBAString } from "@/utils/colors";
 import type { ChartViewComponentType } from "@/constants";
-import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
+import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
 import { useProcessData } from "@/modules/notion/api/client/use-process-data";
 

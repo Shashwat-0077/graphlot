@@ -2,7 +2,7 @@
 import { AreaChartIcon, Layers, LayoutGrid } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { DualRangeSlider, Slider } from "@/components/ui/slider";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import {
     Select,
@@ -12,8 +12,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
-    AREA_CHART_STYLE_OPTIONS,
-    AreaChartStyle,
+    AREA_CHART_LINE_STYLE_OPTIONS,
+    AreaChartLineStyle,
     MAX_OPACITY,
     MAX_STROKE_WIDTH,
     MIN_OPACITY,
@@ -23,11 +23,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AreaChartStyleConfigProps {
     areaStyle?: string;
-    setAreaStyle?: (value: AreaChartStyle) => void;
+    setAreaStyle?: (value: AreaChartLineStyle) => void;
     strokeWidth?: number;
     setStrokeWidth?: (value: number) => void;
     fillOpacity?: number;
+    fillStart?: number;
+    fillEnd?: number;
     setFillOpacity?: (value: number) => void;
+    setFillRange?: (value: [number, number]) => void;
     isAreaChart?: boolean;
     toggleIsAreaChart?: () => void;
     stackedEnabled?: boolean;
@@ -53,6 +56,9 @@ export const AreaChartStyleConfig = ({
     yAxisEnabled,
     toggleXAxis,
     toggleYAxis,
+    fillStart,
+    fillEnd,
+    setFillRange,
 }: AreaChartStyleConfigProps) => {
     return (
         <Card className="border bg-card shadow-sm">
@@ -78,21 +84,17 @@ export const AreaChartStyleConfig = ({
                 )}
 
                 {/* Area Style */}
-                {areaStyle && setAreaStyle && isAreaChart && (
+                {areaStyle && setAreaStyle && (
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-muted-foreground">
-                            Area Style
+                            Line Style
                         </Label>
-                        <Select
-                            value={areaStyle}
-                            onValueChange={setAreaStyle}
-                            disabled={!isAreaChart}
-                        >
+                        <Select value={areaStyle} onValueChange={setAreaStyle}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select style" />
                             </SelectTrigger>
                             <SelectContent>
-                                {AREA_CHART_STYLE_OPTIONS.map((style) => (
+                                {AREA_CHART_LINE_STYLE_OPTIONS.map((style) => (
                                     <SelectItem key={style} value={style}>
                                         {style.charAt(0).toUpperCase() +
                                             style.slice(1)}
@@ -140,7 +142,7 @@ export const AreaChartStyleConfig = ({
                         <Slider
                             min={MIN_OPACITY}
                             max={MAX_OPACITY}
-                            step={0.05}
+                            step={0.01}
                             value={[fillOpacity]}
                             onValueChange={(value) => setFillOpacity(value[0])}
                             className="w-full"
@@ -148,6 +150,32 @@ export const AreaChartStyleConfig = ({
                         />
                     </div>
                 )}
+                {/* Fill Range */}
+                {fillEnd !== undefined &&
+                    fillStart !== undefined &&
+                    setFillRange &&
+                    isAreaChart && (
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                Fill Range
+                            </Label>
+                            <DualRangeSlider
+                                min={0}
+                                max={1}
+                                step={0.01}
+                                value={[fillStart, fillEnd]}
+                                onValueChange={(value) =>
+                                    setFillRange([value[0], value[1]])
+                                }
+                                className="w-full"
+                                disabled={!isAreaChart}
+                            />
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>Start: {fillStart.toFixed(2)}</span>
+                                <span>End: {fillEnd.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    )}
 
                 {/* Stacked */}
                 {stackedEnabled !== undefined && toggleStacked && (

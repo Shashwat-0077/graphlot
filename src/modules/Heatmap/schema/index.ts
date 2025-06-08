@@ -10,8 +10,8 @@ import {
     HeatmapCharts,
 } from "@/modules/Heatmap/schema/db";
 import { CHART_TYPE_HEATMAP } from "@/constants";
-import { CHART_METADATA_TABLE_NAME } from "@/modules/ChartMetaData/schema/db";
-import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
+import { CHART_METADATA_TABLE_NAME } from "@/modules/Chart/schema/db";
+import { ChartMetadataSchema } from "@/modules/Chart/schema";
 
 // Create base schemas from the Drizzle table
 const baseInsertSchema = createInsertSchema(HeatmapCharts);

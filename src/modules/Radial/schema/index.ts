@@ -14,13 +14,13 @@ import {
     CHART_COLOR_TABLE_NAME,
     CHART_METADATA_TABLE_NAME,
     CHART_TYPOGRAPHY_TABLE_NAME,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
-} from "@/modules/ChartMetaData/schema";
+} from "@/modules/Chart/schema";
 import {
     CHART_TYPE_RADIAL,
     RADIAL_LEGEND_POSITION_OPTIONS,

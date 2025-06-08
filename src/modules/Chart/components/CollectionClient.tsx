@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Plus, LayoutGrid, Layers, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { ChartCard } from "@/modules/ChartMetaData/components/ChartCard";
-import ChartCardLoader from "@/modules/ChartMetaData/components/ChartCardLoader";
+import { ChartCard } from "@/modules/Chart/components/ChartCard";
+import ChartCardLoader from "@/modules/Chart/components/ChartCardLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartTypeFilter } from "@/modules/ChartMetaData/components/ChartTypeFilter";
-import { EmptyCharts } from "@/modules/ChartMetaData/components/EmptyCharts";
+import { ChartTypeFilter } from "@/modules/Chart/components/ChartTypeFilter";
+import { EmptyCharts } from "@/modules/Chart/components/EmptyCharts";
 import type { ChartType } from "@/constants";
 
 import { ChartGroups } from "@/modules/BasicChart/components/ChartGroup";

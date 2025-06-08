@@ -43,7 +43,14 @@ export const AreaChartStoreProvider: ChartStateProvider = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createAreaChartStore(initAreaChartStore(chart));
+        const { specificConfig, ...rest } = chart;
+
+        storeRef.current = createAreaChartStore(
+            initAreaChartStore({
+                ...rest,
+                ...specificConfig,
+            })
+        );
     }
 
     return (

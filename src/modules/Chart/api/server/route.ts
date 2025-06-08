@@ -10,15 +10,15 @@ import {
     fetchChartPropertiesById,
     fetchChartSchema,
     fetchFullChartById,
-} from "@/modules/ChartMetaData/api/helper/fetch-chart";
-import { createNewChart } from "@/modules/ChartMetaData/api/helper/create-new-chart";
+} from "@/modules/Chart/api/helper/fetch-chart";
+import { createNewChart } from "@/modules/Chart/api/helper/create-new-chart";
 import {
     updateChartMetadata,
     updateChartType,
-} from "@/modules/ChartMetaData/api/helper/update-chart";
-import { deleteChart } from "@/modules/ChartMetaData/api/helper/delete-chart";
+} from "@/modules/Chart/api/helper/update-chart";
+import { deleteChart } from "@/modules/Chart/api/helper/delete-chart";
 import { CHART_TYPES } from "@/constants";
-import { ChartMetadataSchema } from "@/modules/ChartMetaData/schema";
+import { ChartMetadataSchema } from "@/modules/Chart/schema";
 
 type variables = {
     userId: string;

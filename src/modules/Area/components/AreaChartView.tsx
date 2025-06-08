@@ -22,7 +22,7 @@ import {
     GRID_ORIENTATION_NONE,
     GRID_ORIENTATION_VERTICAL,
 } from "@/constants";
-import { ChartViewWrapper } from "@/modules/ChartMetaData/components/ChartViewWrapperComponent";
+import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
 import { useProcessData } from "@/modules/notion/api/client/use-process-data";
 import {
@@ -30,7 +30,7 @@ import {
     useChartColorStore,
     useChartTypographyStore,
     useChartVisualStore,
-} from "@/modules/ChartMetaData/store";
+} from "@/modules/Chart/store";
 import {
     getGridStyle,
     getLabelAnchor,
@@ -60,9 +60,9 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     const colorPalette = useChartColorStore((state) => state.colorPalette);
     const gridColor = useChartColorStore((state) => state.gridColor);
     const labelColor = useChartColorStore((state) => state.labelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
-    );
+    // const legendTextColor = useChartColorStore(
+    //     (state) => state.legendTextColor
+    // );
 
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
@@ -78,9 +78,13 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
         (state) => state.legendEnabled
     );
 
-    const areaStyle = useAreaChartStore((state) => state.areaStyle);
+    const areaStyle = useAreaChartStore((state) => state.lineStyle);
     const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
-    const fillOpacity = useAreaChartStore((state) => state.fillOpacity);
+    const {
+        opacity: fillOpacity,
+        start: fillStart,
+        end: fillEnd,
+    } = useAreaChartStore((state) => state.fill);
     const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
     const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
     const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
@@ -336,14 +340,18 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                                     y2="1"
                                 >
                                     <stop
-                                        offset="5%"
+                                        offset={`${fillStart * 100}%`}
                                         stopColor={configData[data_label].color}
-                                        stopOpacity={0.8}
+                                        stopOpacity={
+                                            configData[data_label].alpha
+                                        }
                                     />
                                     <stop
-                                        offset="95%"
-                                        stopColor="var(--color-desktop)"
-                                        stopOpacity={0.1}
+                                        offset={`${fillEnd * 100}%`}
+                                        stopColor={getRGBAString(
+                                            backgroundColor
+                                        )}
+                                        stopOpacity={backgroundColor.a}
                                     />
                                 </linearGradient>
                             ))}

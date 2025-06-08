@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "@/constants";
-import type { ChartTypographyStore } from "@/modules/ChartMetaData/store/state";
+import type { ChartTypographyStore } from "@/modules/Chart/store/state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const UIConfig = ({

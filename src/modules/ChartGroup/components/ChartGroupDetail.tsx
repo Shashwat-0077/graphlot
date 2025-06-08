@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import type { ChartType } from "@/constants";
-import { ChartCard } from "@/modules/ChartMetaData/components/ChartCard";
+import { ChartCard } from "@/modules/Chart/components/ChartCard";
 import {
     DropdownMenu,
     DropdownMenuContent,

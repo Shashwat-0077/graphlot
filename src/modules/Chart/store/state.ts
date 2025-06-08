@@ -17,13 +17,13 @@ import {
     defaultChartColors,
     defaultChartTypographySettings,
     defaultChartVisualSettings,
-} from "@/modules/ChartMetaData/defaultChartConfig";
+} from "@/modules/Chart/defaultChartConfig";
 import type {
     ChartBoxModelSelect,
     ChartColorSelect,
     ChartTypographySelect,
     ChartVisualSelect,
-} from "@/modules/ChartMetaData/schema";
+} from "@/modules/Chart/schema";
 
 export type ChartVisuals = Omit<ChartVisualSelect, "chartId">;
 export type ChartTypography = Omit<ChartTypographySelect, "chartId">;

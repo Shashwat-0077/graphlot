@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
 import { HeatmapCharts } from "@/db/schema";
 import { FullHeatmapUpdate } from "@/modules/Heatmap/schema";
 

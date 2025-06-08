@@ -17,8 +17,8 @@ import {
     initChartColorState,
     initChartTypographyState,
     initChartVisualState,
-} from "@/modules/ChartMetaData/store/state";
-import { useChartProperties } from "@/modules/ChartMetaData/api/client/use-chart";
+} from "@/modules/Chart/store/state";
+import { useChartProperties } from "@/modules/Chart/api/client/use-chart";
 import { SimpleLoader } from "@/components/ui/Loader";
 
 // === ChartVisualStore ===

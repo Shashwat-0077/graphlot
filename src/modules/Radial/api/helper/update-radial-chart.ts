@@ -8,7 +8,7 @@ import {
     ChartColors,
     ChartMetadata,
     ChartTypography,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 
 type UpdateResult =
     | { ok: true; chartId: string }

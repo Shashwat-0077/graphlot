@@ -5,10 +5,10 @@ import { Palette, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { Label } from "@/components/ui/label";
-import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
+import ClearAll from "@/modules/Chart/components/ClearAll";
 import { getRGBAString, invertRGBA } from "@/utils/colors";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { ChartColorStore } from "@/modules/ChartMetaData/store/state";
+import type { ChartColorStore } from "@/modules/Chart/store/state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ColorsConfig({

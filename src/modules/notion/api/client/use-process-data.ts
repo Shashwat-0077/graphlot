@@ -6,7 +6,7 @@ import { sortDataAndConfig } from "@/modules/notion/utils/sort-data";
 import {
     useChartData,
     useChartSchema,
-} from "@/modules/ChartMetaData/api/client/use-chart";
+} from "@/modules/Chart/api/client/use-chart";
 
 export const useProcessData = ({
     userId,

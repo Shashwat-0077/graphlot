@@ -11,7 +11,7 @@ import {
     ChartTypography,
     ChartBoxModel,
     ChartColors,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import { CHART_TYPE_RADIAL } from "@/constants";
 
 // Fetch all radial charts for a given collection

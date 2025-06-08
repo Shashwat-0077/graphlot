@@ -16,7 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
-import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
+import ClearAll from "@/modules/Chart/components/ClearAll";
 import {
     SORT_OPTIONS,
     type SortType,

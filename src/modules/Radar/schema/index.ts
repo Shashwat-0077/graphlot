@@ -16,14 +16,14 @@ import {
     CHART_TYPOGRAPHY_TABLE_NAME,
     CHART_VISUAL_TABLE_NAME,
     CHART_METADATA_TABLE_NAME,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
     ChartVisualSchema,
-} from "@/modules/ChartMetaData/schema";
+} from "@/modules/Chart/schema";
 
 // Base schemas
 const radarInsertBase = createInsertSchema(RadarCharts);

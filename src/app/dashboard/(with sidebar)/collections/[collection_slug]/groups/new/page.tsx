@@ -41,7 +41,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useCreateNewGroup } from "@/modules/ChartGroup/api/client/use-create-new-group";
 import { parseSlug } from "@/utils/pathSlugsOps";
-import { useGetAllChartsWithCollectionId } from "@/modules/ChartMetaData/api/client/use-chart";
+import { useGetAllChartsWithCollectionId } from "@/modules/Chart/api/client/use-chart";
 import { LAYOUT_CAROUSEL, LAYOUT_GRID, LayoutOptionsType } from "@/constants";
 
 export default function NewChartGroupPage() {

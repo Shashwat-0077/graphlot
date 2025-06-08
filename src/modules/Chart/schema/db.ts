@@ -34,7 +34,7 @@ import {
     defaultChartTypographySettings,
     defaultChartVisualSettings,
     defaultChartColors,
-} from "@/modules/ChartMetaData/defaultChartConfig";
+} from "@/modules/Chart/defaultChartConfig";
 
 export const CHART_METADATA_TABLE_NAME = "chart_metadata";
 export const ChartMetadata = sqliteTable(

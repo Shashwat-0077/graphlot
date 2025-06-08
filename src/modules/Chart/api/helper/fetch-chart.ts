@@ -19,7 +19,7 @@ import {
     ChartTypographySelect,
     ChartVisualSelect,
     FullChartType,
-} from "@/modules/ChartMetaData/schema";
+} from "@/modules/Chart/schema";
 import {
     CHART_TYPE_AREA,
     CHART_TYPE_BAR,

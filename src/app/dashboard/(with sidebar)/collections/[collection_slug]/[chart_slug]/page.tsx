@@ -3,11 +3,11 @@ import { use } from "react";
 
 import { AreaChartConfig } from "@/modules/Area/components/AreaChartConfig";
 import { AreaChartStoreProvider } from "@/modules/Area/store";
-import { useChartMetadataById } from "@/modules/ChartMetaData/api/client/use-chart";
+import { useChartMetadataById } from "@/modules/Chart/api/client/use-chart";
 import { parseSlug } from "@/utils/pathSlugsOps";
 import { SimpleLoader } from "@/components/ui/Loader";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { ChartConfigStoreProvider } from "@/modules/ChartMetaData/store";
+import { ChartConfigStoreProvider } from "@/modules/Chart/store";
 import { AreaChartView } from "@/modules/Area/components/AreaChartView";
 
 type Props = {

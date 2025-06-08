@@ -36,7 +36,7 @@ import {
 } from "@/constants";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { GridSelect } from "@/components/ui/grid-select";
-import ClearAll from "@/modules/ChartMetaData/components/ClearAll";
+import ClearAll from "@/modules/Chart/components/ClearAll";
 import { toast } from "@/hooks/use-toast";
 import { useUpdateBarChart } from "@/modules/Bar/api/client/use-update-bar-chart";
 import type { BarSelect } from "@/modules/Bar/schema";

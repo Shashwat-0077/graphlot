@@ -9,7 +9,7 @@ import {
     ChartMetadata,
     ChartTypography,
     ChartVisual,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import { CHART_TYPE_BAR } from "@/constants";
 
 export async function fetchBarChartsByCollection(

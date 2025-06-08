@@ -20,7 +20,7 @@ import {
     RadarCharts,
     RadialCharts,
 } from "@/db/schema";
-import { ChartMetadataInsert } from "@/modules/ChartMetaData/schema";
+import { ChartMetadataInsert } from "@/modules/Chart/schema";
 
 export async function createNewChart(
     data: ChartMetadataInsert,

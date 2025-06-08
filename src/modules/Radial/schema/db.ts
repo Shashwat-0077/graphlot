@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import { defaultDonutChartConfig } from "@/modules/Radial/default-radial-chart- config";
-import { ChartMetadata } from "@/modules/ChartMetaData/schema/db";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
 import {
     ChartFilter,
     // RADIAL_LEGEND_POSITION_OPTIONS,

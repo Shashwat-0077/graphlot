@@ -20,13 +20,13 @@ import {
     useChartColorStore,
     useChartTypographyStore,
     useChartVisualStore,
-} from "@/modules/ChartMetaData/store";
-import { ColorsConfig } from "@/modules/ChartMetaData/components/ColorConfig";
-import { UIConfig } from "@/modules/ChartMetaData/components/UIConfig";
+} from "@/modules/Chart/store";
+import { ColorsConfig } from "@/modules/Chart/components/ColorConfig";
+import { UIConfig } from "@/modules/Chart/components/UIConfig";
 import { AreaChartStyleConfig } from "@/modules/Area/components/AreaChartStyleConfig";
-import { GridAndBoxModelConfig } from "@/modules/ChartMetaData/components/GridConfig";
+import { GridAndBoxModelConfig } from "@/modules/Chart/components/GridConfig";
 import { DataSection } from "@/modules/Area/components/DataSection";
-import { useChartColumns } from "@/modules/ChartMetaData/api/client/use-chart";
+import { useChartColumns } from "@/modules/Chart/api/client/use-chart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
@@ -93,9 +93,13 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const cumulativeEnabled = useAreaChartStore(
         (state) => state.cumulativeEnabled
     );
-    const areaStyle = useAreaChartStore((state) => state.areaStyle);
+    const areaStyle = useAreaChartStore((state) => state.lineStyle);
     const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
-    const fillOpacity = useAreaChartStore((state) => state.fillOpacity);
+    const {
+        opacity: fillOpacity,
+        start: fillStart,
+        end: fillEnd,
+    } = useAreaChartStore((state) => state.fill);
     const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
     const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
     const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
@@ -175,13 +179,19 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
                     omitZeroValuesEnabled: omitZeroValues,
                     cumulativeEnabled: cumulative,
                     filters: localFilters,
-                    areaStyle,
-                    strokeWidth,
-                    fillOpacity,
-                    isAreaChart,
-                    stackedEnabled,
-                    xAxisEnabled,
-                    yAxisEnabled,
+                    specificConfig: {
+                        yAxisEnabled,
+                        xAxisEnabled,
+                        stackedEnabled,
+                        lineStyle: areaStyle,
+                        strokeWidth,
+                        fill: {
+                            opacity: fillOpacity,
+                            start: fillStart,
+                            end: fillEnd,
+                        },
+                        isAreaChart,
+                    },
                 },
                 chart_box_model: chartBoxModelConfig,
                 chart_visual: chartVisualConfig,
@@ -499,12 +509,17 @@ function AreaConfigTabs() {
     const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
 
     // Area chart selectors
-    const areaStyle = useAreaChartStore((state) => state.areaStyle);
+    const areaStyle = useAreaChartStore((state) => state.lineStyle);
     const setAreaStyle = useAreaChartStore((state) => state.setAreaStyle);
     const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
     const setStrokeWidth = useAreaChartStore((state) => state.setStrokeWidth);
-    const fillOpacity = useAreaChartStore((state) => state.fillOpacity);
+    const {
+        opacity: fillOpacity,
+        start: fillStart,
+        end: fillEnd,
+    } = useAreaChartStore((state) => state.fill);
     const setFillOpacity = useAreaChartStore((state) => state.setFillOpacity);
+    const setFillRange = useAreaChartStore((state) => state.setFillRange);
     const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
     const toggleIsAreaChart = useAreaChartStore(
         (state) => state.toggleIsAreaChart
@@ -591,6 +606,9 @@ function AreaConfigTabs() {
                             yAxisEnabled={yAxisEnabled}
                             toggleXAxis={toggleXAxis}
                             toggleYAxis={toggleYAxis}
+                            fillStart={fillStart}
+                            fillEnd={fillEnd}
+                            setFillRange={setFillRange}
                         />
                     </UIConfig>
                 </TabsContent>

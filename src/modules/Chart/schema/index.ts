@@ -26,7 +26,7 @@ import {
     ChartBoxModel,
     ChartTypography,
     ChartColors,
-} from "@/modules/ChartMetaData/schema/db";
+} from "@/modules/Chart/schema/db";
 import { FullAreaChartSelect } from "@/modules/Area/schema";
 import { FullBarChartSelect } from "@/modules/Bar/schema";
 import { FullRadarChartSelect } from "@/modules/Radar/schema";
