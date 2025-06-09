@@ -21,6 +21,8 @@ interface BarChartStyleConfigProps {
     setStrokeWidth: (value: number) => void;
     stacked: boolean;
     toggleStacked: () => void;
+    borderRadiusBetweenBars: boolean; // Optional for backward compatibility
+    toggleBorderRadiusBetweenBars: () => void; // Optional for backward compatibility
 }
 
 export function BarChartStyleConfig({
@@ -40,6 +42,8 @@ export function BarChartStyleConfig({
     setStrokeWidth,
     stacked,
     toggleStacked,
+    borderRadiusBetweenBars, // Optional for backward compatibility
+    toggleBorderRadiusBetweenBars, // Optional for backward compatibility
 }: BarChartStyleConfigProps) {
     return (
         <div className="space-y-6">
@@ -68,6 +72,33 @@ export function BarChartStyleConfig({
             <div className="space-y-4">
                 <h4 className="text-sm font-medium">Bar Styling</h4>
 
+                {/* Callout for Stacked Bars */}
+                {stacked && (
+                    <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg
+                                    className="h-4 w-4 text-primary"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <div className="ml-2">
+                                <p className="text-xs text-primary/80">
+                                    <strong>Note:</strong> Bar gap settings have
+                                    no effect when bars are stacked.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Bar Width */}
                 <div className="space-y-2">
                     <Label className="text-sm">Bar Width</Label>
@@ -80,10 +111,10 @@ export function BarChartStyleConfig({
                             onValueChange={([value]) => setBarWidth(value)}
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground">
                         <span>Thin</span>
-                        <span>{barWidth}px</span>
-                        <span>Thick</span>
+                        <span className="text-center">{barWidth}px</span>
+                        <span className="text-right">Thick</span>
                     </div>
                 </div>
 
@@ -99,10 +130,10 @@ export function BarChartStyleConfig({
                             onValueChange={([value]) => setBarGap(value)}
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground">
                         <span>None</span>
-                        <span>{barGap}px</span>
-                        <span>Large</span>
+                        <span className="text-center">{barGap}px</span>
+                        <span className="text-right">Large</span>
                     </div>
                 </div>
 
@@ -120,10 +151,10 @@ export function BarChartStyleConfig({
                             }
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground">
                         <span>Square</span>
-                        <span>{barBorderRadius}px</span>
-                        <span>Rounded</span>
+                        <span className="text-center">{barBorderRadius}px</span>
+                        <span className="text-right">Rounded</span>
                     </div>
                 </div>
 
@@ -141,10 +172,12 @@ export function BarChartStyleConfig({
                             }
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground">
                         <span>Transparent</span>
-                        <span>{Math.round(fillOpacity * 100)}%</span>
-                        <span>Solid</span>
+                        <span className="text-center">
+                            {Math.round(fillOpacity * 100)}%
+                        </span>
+                        <span className="text-right">Solid</span>
                     </div>
                 </div>
 
@@ -160,10 +193,10 @@ export function BarChartStyleConfig({
                             onValueChange={([value]) => setStrokeWidth(value)}
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground">
                         <span>None</span>
-                        <span>{strokeWidth}px</span>
-                        <span>Thick</span>
+                        <span className="text-center">{strokeWidth}px</span>
+                        <span className="text-right">Thick</span>
                     </div>
                 </div>
             </div>
@@ -177,6 +210,16 @@ export function BarChartStyleConfig({
                     <ToggleSwitch
                         defaultChecked={stacked}
                         toggleFunction={toggleStacked}
+                    />
+                </div>
+
+                <div className="flex w-full items-center justify-between rounded-md bg-muted/10 p-3">
+                    <Label className="text-sm">
+                        Border Radius Between Bars
+                    </Label>
+                    <ToggleSwitch
+                        defaultChecked={borderRadiusBetweenBars}
+                        toggleFunction={toggleBorderRadiusBetweenBars}
                     />
                 </div>
             </div>

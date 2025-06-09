@@ -95,6 +95,9 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const fillOpacity = useBarChartStore((state) => state.fillOpacity);
     const strokeWidth = useBarChartStore((state) => state.strokeWidth);
     const stacked = useBarChartStore((state) => state.stacked);
+    const borderRadiusBetweenBars = useBarChartStore(
+        (state) => state.borderRadiusBetweenBars
+    );
 
     const { data, config, isLoading, error } = useProcessData({
         chartId,
@@ -323,18 +326,127 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                         />
                     )}
 
-                    {config.map((data_label) => (
-                        <Bar
-                            key={data_label}
-                            dataKey={data_label}
-                            fill={configData[data_label].color}
-                            fillOpacity={fillOpacity}
-                            stroke={configData[data_label].color}
-                            strokeWidth={strokeWidth}
-                            radius={barBorderRadius}
-                            stackId={stacked ? "1" : undefined}
-                        />
-                    ))}
+                    {config.map((data_label) => {
+                        if (borderRadiusBetweenBars) {
+                            return (
+                                <Bar
+                                    key={data_label}
+                                    dataKey={data_label}
+                                    fill={configData[data_label].color}
+                                    fillOpacity={fillOpacity}
+                                    stroke={configData[data_label].color}
+                                    strokeWidth={strokeWidth}
+                                    radius={barBorderRadius}
+                                    stackId={stacked ? "1" : undefined}
+                                />
+                            );
+                        }
+
+                        // For non-stacked bars, apply full radius
+                        if (!stacked) {
+                            return (
+                                <Bar
+                                    key={data_label}
+                                    dataKey={data_label}
+                                    fill={configData[data_label].color}
+                                    fillOpacity={fillOpacity}
+                                    stroke={configData[data_label].color}
+                                    strokeWidth={strokeWidth}
+                                    radius={barBorderRadius}
+                                    stackId={undefined}
+                                />
+                            );
+                        }
+
+                        // For stacked bars, use a shape function to handle radius dynamically
+                        // eslint-disable-next-line
+                        const shape = (props: any) => {
+                            const { x, y, width, height, payload } = props;
+
+                            // Get the current field's value
+                            const currentValue = payload[data_label];
+
+                            // Don't render anything if the current value is 0, null, or undefined
+                            if (!currentValue || currentValue <= 0) {
+                                return null;
+                            }
+
+                            // Find which bars have actual data for this data point
+                            const nonZeroFields = config.filter((field) => {
+                                const value = payload[field];
+                                return (
+                                    value !== undefined &&
+                                    value !== null &&
+                                    value > 0
+                                );
+                            });
+
+                            const fieldIndex =
+                                nonZeroFields.indexOf(data_label);
+                            const isFirst = fieldIndex === 0;
+                            const isLast =
+                                fieldIndex === nonZeroFields.length - 1;
+
+                            let topLeftRadius = 0;
+                            let topRightRadius = 0;
+                            let bottomLeftRadius = 0;
+                            let bottomRightRadius = 0;
+
+                            if (isFirst && isLast) {
+                                // Single bar - all corners
+                                topLeftRadius =
+                                    topRightRadius =
+                                    bottomLeftRadius =
+                                    bottomRightRadius =
+                                        barBorderRadius;
+                            } else if (isLast) {
+                                // Last bar - top corners only
+                                topLeftRadius = topRightRadius =
+                                    barBorderRadius;
+                            } else if (isFirst) {
+                                // First bar - bottom corners only
+                                bottomLeftRadius = bottomRightRadius =
+                                    barBorderRadius;
+                            }
+
+                            const path = `
+            M ${x + topLeftRadius} ${y}
+            L ${x + width - topRightRadius} ${y}
+            Q ${x + width} ${y} ${x + width} ${y + topRightRadius}
+            L ${x + width} ${y + height - bottomRightRadius}
+            Q ${x + width} ${y + height} ${x + width - bottomRightRadius} ${y + height}
+            L ${x + bottomLeftRadius} ${y + height}
+            Q ${x} ${y + height} ${x} ${y + height - bottomLeftRadius}
+            L ${x} ${y + topLeftRadius}
+            Q ${x} ${y} ${x + topLeftRadius} ${y}
+            Z
+        `;
+
+                            return (
+                                <path
+                                    d={path}
+                                    fill={configData[data_label].color}
+                                    fillOpacity={fillOpacity}
+                                    stroke={configData[data_label].color}
+                                    strokeWidth={strokeWidth}
+                                />
+                            );
+                        };
+
+                        return (
+                            <Bar
+                                key={data_label}
+                                dataKey={data_label}
+                                fill={configData[data_label].color} // Keep this for tooltip colors
+                                fillOpacity={fillOpacity} // Keep this for tooltip colors
+                                stroke={configData[data_label].color} // Keep this for tooltip colors
+                                strokeWidth={strokeWidth} // Keep this for tooltip colors
+                                // @ts-expect-error i dont wanna wrap my head around recharts types, i know this works, if it doesn't work, i'll fix it later hehe
+                                shape={shape}
+                                stackId="1"
+                            />
+                        );
+                    })}
                 </BarChart>
             </ChartContainer>
         </ChartViewWrapper>

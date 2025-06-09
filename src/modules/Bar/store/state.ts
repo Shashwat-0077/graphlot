@@ -20,6 +20,7 @@ export type BarChartActions = {
     setBorderRadius: (value: number) => void;
     setBarWidth: (value: number) => void;
     setBarGap: (value: number) => void;
+    toggleBorderRadiusBetweenBars: () => void;
     setFillOpacity: (opacity: number) => void;
     setXAxisField: (field: string) => void;
     setYAxisField: (field: string) => void;
@@ -70,6 +71,11 @@ export const createBarChartStore = (
             setFillOpacity: (opacity: number) =>
                 set((state) => {
                     state.fillOpacity = opacity;
+                }),
+            toggleBorderRadiusBetweenBars: () =>
+                set((state) => {
+                    state.borderRadiusBetweenBars =
+                        !state.borderRadiusBetweenBars;
                 }),
 
             setXAxisField: (field: string) =>

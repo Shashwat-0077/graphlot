@@ -5,6 +5,7 @@ export type BarSpecificConfig = {
     yAxisEnabled: boolean;
     xAxisEnabled: boolean;
     barBorderRadius: number; // in pixels
+    borderRadiusBetweenBars: boolean; // in pixels, optional for backward compatibility
     barWidth: number; // in pixels
     barGap: number; // in pixels
     fillOpacity: number; // between 0 and 1
@@ -21,6 +22,7 @@ export const barSpecificConfigDefaults: BarSpecificConfig = {
     fillOpacity: 0.8,
     strokeWidth: 2,
     stacked: false,
+    borderRadiusBetweenBars: false, // for backward compatibility
 };
 
 export const defaultBarChartConfig = {

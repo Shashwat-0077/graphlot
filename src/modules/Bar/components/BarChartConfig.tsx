@@ -102,6 +102,9 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const fillOpacity = useBarChartStore((state) => state.fillOpacity);
     const strokeWidth = useBarChartStore((state) => state.strokeWidth);
     const stacked = useBarChartStore((state) => state.stacked);
+    const borderRadiusBetweenBars = useBarChartStore(
+        (state) => state.borderRadiusBetweenBars
+    );
 
     // Store actions
     const setXAxisField = useBarChartStore((state) => state.setXAxisField);
@@ -185,6 +188,7 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
                         fillOpacity,
                         strokeWidth,
                         stacked,
+                        borderRadiusBetweenBars,
                     },
                 },
                 chart_box_model: chartBoxModelConfig,
@@ -520,6 +524,12 @@ function BarConfigTabs() {
     const setStrokeWidth = useBarChartStore((state) => state.setStrokeWidth);
     const stacked = useBarChartStore((state) => state.stacked);
     const toggleStacked = useBarChartStore((state) => state.toggleStacked);
+    const borderRadiusBetweenBars = useBarChartStore(
+        (state) => state.borderRadiusBetweenBars
+    );
+    const toggleBorderRadiusBetweenBars = useBarChartStore(
+        (state) => state.toggleBorderRadiusBetweenBars
+    );
 
     return (
         <Tabs defaultValue="colors" className="w-full">
@@ -598,6 +608,10 @@ function BarConfigTabs() {
                             setStrokeWidth={setStrokeWidth}
                             stacked={stacked}
                             toggleStacked={toggleStacked}
+                            borderRadiusBetweenBars={borderRadiusBetweenBars}
+                            toggleBorderRadiusBetweenBars={
+                                toggleBorderRadiusBetweenBars
+                            }
                         />
                     </UIConfig>
                 </TabsContent>
