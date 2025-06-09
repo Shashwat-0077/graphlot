@@ -80,7 +80,10 @@ export async function fetchBarChartById(chartId: string): Promise<
             return { ok: false, error: "Bar chart not found" };
         }
 
-        return { ok: true, chart };
+        return {
+            ok: true,
+            chart,
+        };
     } catch (error) {
         return {
             ok: false,
@@ -133,7 +136,10 @@ export async function fetchFullBarChartById(chartId: string): Promise<
             return { ok: false, error: "Bar chart not found" };
         }
 
-        return { ok: true, chart: chart as FullBarChartSelect };
+        return {
+            ok: true,
+            chart: chart as FullBarChartSelect,
+        };
     } catch (error) {
         return {
             ok: false,

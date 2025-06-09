@@ -12,45 +12,100 @@ import {
 } from "@/components/ui/chart";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { getRGBAString } from "@/utils/colors";
-import type { ChartViewComponentType } from "@/constants";
+import {
+    type ChartViewComponent,
+    FONT_STYLES_BOLD,
+    FONT_STYLES_STRIKETHROUGH,
+    FONT_STYLES_UNDERLINE,
+    GRID_ORIENTATION_BOTH,
+    GRID_ORIENTATION_HORIZONTAL,
+    GRID_ORIENTATION_NONE,
+    GRID_ORIENTATION_VERTICAL,
+} from "@/constants";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
 import { useProcessData } from "@/modules/notion/api/client/use-process-data";
+import {
+    useChartBoxModelStore,
+    useChartColorStore,
+    useChartTypographyStore,
+    useChartVisualStore,
+} from "@/modules/Chart/store";
+import {
+    getGridStyle,
+    getLabelAnchor,
+} from "@/modules/notion/utils/get-things";
 
-export const BarChartView: ChartViewComponentType = ({
-    chartName,
-    notion_table_id,
-    user_id,
-}) => {
+export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8;
 
-    const {
-        x_axis,
-        y_axis,
-        color_palette,
-        legend_enabled,
-        grid_type,
-        tooltip_enabled,
-        grid_color,
-        text_color,
-        background_color,
-        label_enabled,
-        bar_size,
-        bar_gap,
-        sort_x,
-        sort_y,
-    } = useBarChartStore((state) => state);
+    // Chart visual store selectors
+    const gridOrientation = useChartVisualStore(
+        (state) => state.gridOrientation
+    );
+    const gridStyle = useChartVisualStore((state) => state.gridStyle);
+    const gridWidth = useChartVisualStore((state) => state.gridWidth);
+    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
+    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
 
-    const { data, config, isLoading, error, schema } = useProcessData({
-        notion_table_id,
-        x_axis,
-        yAxis: y_axis,
-        sort_x,
-        sort_y,
-        user_id,
+    // Chart box model store selectors
+    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
+    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
+    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
+    const marginRight = useChartBoxModelStore((state) => state.marginRight);
+    const marginTop = useChartBoxModelStore((state) => state.marginTop);
+
+    // Chart color store selectors
+    const backgroundColor = useChartColorStore(
+        (state) => state.backgroundColor
+    );
+    const borderColor = useChartColorStore((state) => state.borderColor);
+    const colorPalette = useChartColorStore((state) => state.colorPalette);
+    const gridColor = useChartColorStore((state) => state.gridColor);
+    const labelColor = useChartColorStore((state) => state.labelColor);
+
+    // Chart typography store selectors
+    const label = useChartTypographyStore((state) => state.label);
+    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
+    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
+    const labelFontFamily = useChartTypographyStore(
+        (state) => state.labelFontFamily
+    );
+    const labelFontStyle = useChartTypographyStore(
+        (state) => state.labelFontStyle
+    );
+    const labelSize = useChartTypographyStore((state) => state.labelSize);
+    const legendEnabled = useChartTypographyStore(
+        (state) => state.legendEnabled
+    );
+
+    // Bar chart store selectors
+    const xAxisField = useBarChartStore((state) => state.xAxisField);
+    const yAxisField = useBarChartStore((state) => state.yAxisField);
+    const xAxisSortOrder = useBarChartStore((state) => state.xAxisSortOrder);
+    const yAxisSortOrder = useBarChartStore((state) => state.yAxisSortOrder);
+
+    // Bar specific config selectors
+    const yAxisEnabled = useBarChartStore((state) => state.yAxisEnabled);
+    const xAxisEnabled = useBarChartStore((state) => state.xAxisEnabled);
+    const barBorderRadius = useBarChartStore((state) => state.barBorderRadius);
+    const barWidth = useBarChartStore((state) => state.barWidth);
+    const barGap = useBarChartStore((state) => state.barGap);
+    const fillOpacity = useBarChartStore((state) => state.fillOpacity);
+    const strokeWidth = useBarChartStore((state) => state.strokeWidth);
+    const stacked = useBarChartStore((state) => state.stacked);
+
+    const { data, config, isLoading, error } = useProcessData({
+        chartId,
+        userId,
+        xAxis: xAxisField,
+        yAxis: yAxisField,
+        sortX: xAxisSortOrder,
+        sortY: yAxisSortOrder,
     });
 
-    const limitedRadarChartData = useMemo(() => {
+    const limitedBarChartData = useMemo(() => {
         return data.length > LIMIT ? data.slice(0, LIMIT) : data;
     }, [data]);
 
@@ -58,7 +113,10 @@ export const BarChartView: ChartViewComponentType = ({
     if (isLoading) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-4">
@@ -75,7 +133,10 @@ export const BarChartView: ChartViewComponentType = ({
     if (error || !data) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -109,46 +170,14 @@ export const BarChartView: ChartViewComponentType = ({
         );
     }
 
-    // No schema state
-    if (!schema) {
-        return (
-            <ChartViewWrapper
-                bgColor={background_color}
-                className="flex items-center justify-center"
-            >
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="rounded-full bg-muted p-3">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-6 w-6 text-muted-foreground"
-                        >
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M3 9h18" />
-                            <path d="M9 21V9" />
-                        </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold">No Data Available</h3>
-                    <p className="max-w-[250px] text-sm text-muted-foreground">
-                        No schema data found. Please connect a valid database.
-                    </p>
-                </div>
-            </ChartViewWrapper>
-        );
-    }
-
     // No axis selected state
-    if (!x_axis || !y_axis) {
+    if (!xAxisField || !yAxisField) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -191,77 +220,106 @@ export const BarChartView: ChartViewComponentType = ({
         configData[data_label] = {
             label:
                 data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
-            color: color_palette[idx]
-                ? `rgb(${color_palette[idx].r}, ${color_palette[idx].g}, ${color_palette[idx].b})`
-                : "rgb(255, 255, 255)",
-            alpha: color_palette[idx]
-                ? color_palette[idx].a
+            color: colorPalette[idx]
+                ? getRGBAString(colorPalette[idx], false)
+                : "rgb(255, 255, 255, 1)",
+            alpha: colorPalette[idx]
+                ? colorPalette[idx].a
                 : Math.min(1 / config.length, 0.5),
         };
     }
 
     return (
-        <ChartViewWrapper bgColor={background_color}>
+        <ChartViewWrapper
+            borderEnabled={borderEnabled}
+            borderWidth={borderWidth}
+            borderColor={borderColor}
+            bgColor={backgroundColor}
+        >
             <ChartContainer
                 config={configData}
-                className="mx-auto h-full w-full min-w-0"
+                className="h-full w-full min-w-0"
             >
                 <BarChart
                     accessibilityLayer
-                    data={limitedRadarChartData}
-                    barSize={bar_size}
-                    barGap={bar_gap}
-                    barCategoryGap={0}
-                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                    data={limitedBarChartData}
+                    barSize={barWidth}
+                    barGap={barGap / 100} // Convert to percentage for Recharts
+                    margin={{
+                        top: marginTop,
+                        right: marginRight,
+                        left: marginLeft,
+                        bottom: marginBottom,
+                    }}
                 >
-                    {label_enabled && (
+                    {labelEnabled && (
                         <text
-                            x="50%"
+                            x={getLabelAnchor(labelAnchor)}
                             y={30}
                             style={{
-                                fontSize: "1.25rem",
-                                fontWeight: "bold",
-                                fill: getRGBAString(text_color),
-                                textAnchor: "middle",
+                                fontSize: `${labelSize}px`,
+                                fontFamily: labelFontFamily,
+                                textDecoration:
+                                    labelFontStyle === FONT_STYLES_UNDERLINE
+                                        ? "underline"
+                                        : labelFontStyle ===
+                                            FONT_STYLES_STRIKETHROUGH
+                                          ? "line-through"
+                                          : "none",
+                                fontWeight:
+                                    labelFontStyle === FONT_STYLES_BOLD
+                                        ? "bold"
+                                        : "normal",
+                                fill: getRGBAString(labelColor),
+                                textAnchor: labelAnchor,
                             }}
                         >
-                            {chartName}
+                            {label}
                         </text>
                     )}
 
-                    {legend_enabled && (
+                    {legendEnabled && (
                         <ChartLegend content={<ChartLegendContent />} />
                     )}
 
-                    {grid_type !== "NONE" && (
+                    {gridOrientation !== GRID_ORIENTATION_NONE && (
                         <CartesianGrid
                             vertical={
-                                grid_type === "VERTICAL" || grid_type === "BOTH"
+                                gridOrientation === GRID_ORIENTATION_VERTICAL ||
+                                gridOrientation === GRID_ORIENTATION_BOTH
                             }
                             horizontal={
-                                grid_type === "HORIZONTAL" ||
-                                grid_type === "BOTH"
+                                gridOrientation ===
+                                    GRID_ORIENTATION_HORIZONTAL ||
+                                gridOrientation === GRID_ORIENTATION_BOTH
                             }
-                            stroke={`rgba(${grid_color.r}, ${grid_color.g}, ${grid_color.b}, ${grid_color.a})`}
-                            strokeDasharray="3 3"
-                            strokeOpacity={0.6}
+                            stroke={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
+                            strokeDasharray={getGridStyle(gridStyle, gridWidth)}
                         />
                     )}
 
-                    <XAxis
-                        dataKey="class"
-                        axisLine={false}
-                        padding={{ left: 20, right: 20 }}
-                        tickMargin={10}
-                        tickFormatter={(value) => value}
-                        stroke={getRGBAString(text_color)}
-                    />
-                    <YAxis tickMargin={10} axisLine={false} />
+                    {xAxisEnabled && (
+                        <XAxis
+                            dataKey="class"
+                            tickMargin={10}
+                            stroke={getRGBAString(gridColor)}
+                        />
+                    )}
 
-                    {tooltip_enabled && (
+                    {yAxisEnabled && (
+                        <YAxis
+                            tickMargin={10}
+                            axisLine={false}
+                            stroke={getRGBAString(gridColor)}
+                        />
+                    )}
+
+                    {tooltipEnabled && (
                         <ChartTooltip
                             cursor={false}
-                            content={<ChartTooltipContent indicator="dashed" />}
+                            content={
+                                <ChartTooltipContent indicator={tooltipStyle} />
+                            }
                         />
                     )}
 
@@ -270,10 +328,11 @@ export const BarChartView: ChartViewComponentType = ({
                             key={data_label}
                             dataKey={data_label}
                             fill={configData[data_label].color}
-                            fillOpacity={configData[data_label].alpha}
+                            fillOpacity={fillOpacity}
                             stroke={configData[data_label].color}
-                            strokeWidth={0.2}
-                            radius={0}
+                            strokeWidth={strokeWidth}
+                            radius={barBorderRadius}
+                            stackId={stacked ? "1" : undefined}
                         />
                     ))}
                 </BarChart>

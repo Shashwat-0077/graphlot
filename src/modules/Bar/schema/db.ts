@@ -2,7 +2,11 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { ChartMetadata } from "@/modules/Chart/schema/db";
 import { ChartFilter, SortType } from "@/constants";
-import { defaultBarChartConfig } from "@/modules/Bar/bar-chart-default-config";
+import {
+    BarSpecificConfig,
+    barSpecificConfigDefaults,
+    defaultBarChartConfig,
+} from "@/modules/Bar/bar-chart-default-config";
 
 export const BAR_CHARTS_TABLE_NAME = "bar_chart";
 export const BarCharts = sqliteTable(BAR_CHARTS_TABLE_NAME, {
@@ -35,25 +39,11 @@ export const BarCharts = sqliteTable(BAR_CHARTS_TABLE_NAME, {
         .notNull()
         .default(defaultBarChartConfig.filters)
         .$type<ChartFilter[]>(),
-    yAxisEnabled: integer("y_axis_enabled", { mode: "boolean" })
+    //NOTE :  we are doing this because, the data above will be updated separately, if we include all above in this, then we have update the whole string
+    specificConfig: text("specific_config", { mode: "json" })
         .notNull()
-        .default(defaultBarChartConfig.yAxisEnabled),
-    xAxisEnabled: integer("x_axis_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultBarChartConfig.xAxisEnabled),
-    barBorderRadius: integer("border_radius")
-        .notNull()
-        .default(defaultBarChartConfig.barBorderRadius),
-    barWidth: integer("bar_width")
-        .notNull()
-        .default(defaultBarChartConfig.barWidth),
-    barGap: integer("bar_gap").notNull().default(defaultBarChartConfig.barGap),
-    fillOpacity: integer("fill_opacity")
-        .notNull()
-        .default(defaultBarChartConfig.fillOpacity),
-    strokeWidth: integer("stroke_width")
-        .notNull()
-        .default(defaultBarChartConfig.strokeWidth),
+        .$type<BarSpecificConfig>()
+        .default(barSpecificConfigDefaults),
 
     // TODO : add custom shapes, refer : https://recharts.org/en-US/examples/CustomShapeBarChart
 });

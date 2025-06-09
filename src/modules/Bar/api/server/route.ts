@@ -3,12 +3,12 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/authMiddleware";
-import { FullBarUpdate } from "@/modules/Bar/schema";
 import {
     fetchBarChartById,
     fetchBarChartsByCollection,
     fetchFullBarChartById,
 } from "@/modules/Bar/api/helpers/fetch-bar-charts";
+import { FullBarUpdate } from "@/modules/Bar/schema";
 import { updateBarChart } from "@/modules/Bar/api/helpers/update-bar-charts";
 
 // App-scoped variables (injected by middleware)
@@ -38,20 +38,17 @@ const barChartRoute = new Hono<{ Variables: AppVariables }>()
 
         return c.json({ charts: result.charts }, 200);
     })
-
     // Get only the bar chart by id
     .get("/:id", zValidator("param", paramSchema), async (c) => {
         const { id } = c.req.valid("param");
         const result = await fetchBarChartById(id);
-
         if (!result.ok) {
             return c.json({ error: result.error }, 500);
         }
-
         return c.json({ chart: result.chart }, 200);
     })
 
-    // Get full bar chart data by ID
+    // Get a single bar chart by ID
     .get("/:id/full", zValidator("param", paramSchema), async (c) => {
         const { id } = c.req.valid("param");
         const result = await fetchFullBarChartById(id);
@@ -63,7 +60,7 @@ const barChartRoute = new Hono<{ Variables: AppVariables }>()
         return c.json({ chart: result.chart }, 200);
     })
 
-    // Update bar chart (auth required)
+    // Update an bar chart (auth required)
     .put(
         "/:id",
         authMiddleWare,

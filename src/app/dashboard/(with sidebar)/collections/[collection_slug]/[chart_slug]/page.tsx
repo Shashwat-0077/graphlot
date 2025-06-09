@@ -9,6 +9,14 @@ import { SimpleLoader } from "@/components/ui/Loader";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { ChartConfigStoreProvider } from "@/modules/Chart/store";
 import { AreaChartView } from "@/modules/Area/components/AreaChartView";
+import {
+    ChartConfigComponent,
+    ChartStateProvider,
+    ChartViewComponent,
+} from "@/constants";
+import { BarChartView } from "@/modules/Bar/components/BarChartView";
+import { BarChartConfig } from "@/modules/Bar/components/BarChartConfig";
+import { BarChartStoreProvider } from "@/modules/Bar/store";
 
 type Props = {
     params: Promise<{
@@ -63,33 +71,33 @@ export default function ChatConfigs({ params }: Props) {
         return <div>Invalid User ID</div>;
     }
 
-    // const chartComponents: {
-    //     [key: string]: [
-    //         ChartViewComponent,
-    //         ChartConfigComponent,
-    //         ChartStateProvider,
-    //     ];
-    // } = {
-    //     Bar: [BarChartView, BarConfig, BarChartStoreProvider],
-    //     Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
-    //     Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
-    //     Donut: [DonutChartView, DonutConfig, RadialChartStoreProvider],
-    //     Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
-    // };
+    const chartComponents: {
+        [key: string]: [
+            ChartViewComponent,
+            ChartConfigComponent,
+            ChartStateProvider,
+        ];
+    } = {
+        Bar: [BarChartView, BarChartConfig, BarChartStoreProvider],
+        // Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
+        Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
+        // Donut: [DonutChartView, DonutConfig, RadialChartStoreProvider],
+        // Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
+    };
 
-    // const [ChartView, ChartConfig, StoreProvider] = chartComponents[
-    //     chart.type
-    // ] || [RadarChartView, RadarConfig, RadarChartStoreProvider];
+    const [ChartView, ChartConfig, StoreProvider] = chartComponents[
+        chart.type
+    ] || [AreaChartView, AreaChartConfig, AreaChartStoreProvider];
 
     return (
         <ChartConfigStoreProvider chartId={chart_id}>
-            <AreaChartStoreProvider chartId={chart_id}>
+            <StoreProvider chartId={chart_id}>
                 {/* <ChartView chartName={chart.name} userId={user_id} /> */}
                 <div className="px-4">
-                    <AreaChartView chartId={chart_id} userId={user_id} />
-                    <AreaChartConfig chartId={chart_id} userId={user_id} />
+                    <ChartView chartId={chart_id} userId={user_id} />
+                    <ChartConfig chartId={chart_id} userId={user_id} />
                 </div>
-            </AreaChartStoreProvider>
+            </StoreProvider>
         </ChartConfigStoreProvider>
     );
 }

@@ -1,3 +1,5 @@
+import { eq, sql } from "drizzle-orm";
+
 import {
     CHART_TYPE_AREA,
     CHART_TYPE_BAR,
@@ -16,6 +18,7 @@ import {
     ChartMetadata,
     ChartTypography,
     ChartVisual,
+    Collections,
     HeatmapCharts,
     RadarCharts,
     RadialCharts,
@@ -180,6 +183,13 @@ export async function createNewChart(
             }
 
             await Promise.all(createOperation);
+            await tx
+                .update(Collections)
+                .set({
+                    chartCount: sql`(${Collections.chartCount} + 1)`,
+                })
+                .where(eq(Collections.collectionId, data.collectionId));
+
             return {
                 id: chartId,
                 name,

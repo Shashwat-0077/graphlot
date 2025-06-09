@@ -1,6 +1,28 @@
 import { ChartFilter, SortType } from "@/constants";
 import { SORT_ALPHA_ASC, SORT_NUMERIC_DESC } from "@/constants";
 
+export type BarSpecificConfig = {
+    yAxisEnabled: boolean;
+    xAxisEnabled: boolean;
+    barBorderRadius: number; // in pixels
+    barWidth: number; // in pixels
+    barGap: number; // in pixels
+    fillOpacity: number; // between 0 and 1
+    strokeWidth: number; // in pixels
+    stacked: boolean; // whether the bars are stacked
+};
+
+export const barSpecificConfigDefaults: BarSpecificConfig = {
+    yAxisEnabled: true,
+    xAxisEnabled: true,
+    barBorderRadius: 4,
+    barWidth: 20,
+    barGap: 4,
+    fillOpacity: 0.8,
+    strokeWidth: 2,
+    stacked: false,
+};
+
 export const defaultBarChartConfig = {
     xAxisField: "",
     yAxisField: "",
@@ -9,11 +31,4 @@ export const defaultBarChartConfig = {
     omitZeroValuesEnabled: false,
     cumulativeEnabled: false,
     filters: [] as ChartFilter[],
-    yAxisEnabled: true,
-    xAxisEnabled: true,
-    barBorderRadius: 4,
-    barWidth: 20,
-    barGap: 4,
-    fillOpacity: 0.8,
-    strokeWidth: 2,
 };

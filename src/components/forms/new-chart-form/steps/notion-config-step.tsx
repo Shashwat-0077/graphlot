@@ -59,7 +59,13 @@ const item = {
     show: { opacity: 1, y: 0 },
 };
 
-export function NotionConfigStep({ collectionId }: { collectionId: string }) {
+export function NotionConfigStep({
+    collectionId,
+    collectionName,
+}: {
+    collectionId: string;
+    collectionName: string;
+}) {
     const router = useRouter();
 
     const {
@@ -74,10 +80,12 @@ export function NotionConfigStep({ collectionId }: { collectionId: string }) {
                 variant: "default",
             });
             router.push(
-                `/dashboard/collections/${collectionId}/${getSlug({
-                    id: chart.id,
-                    name: chart.name,
-                })}`
+                `/dashboard/collections/${getSlug({ id: collectionId, name: collectionName })}/${getSlug(
+                    {
+                        id: chart.id,
+                        name: chart.name,
+                    }
+                )}`
             );
         },
         onError: (error) => {

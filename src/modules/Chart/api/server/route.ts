@@ -172,7 +172,7 @@ const chartMetadataRoutes = new Hono<{ Variables: variables }>()
         async (c) => {
             const chart = c.req.valid("json");
             const response = await createNewChart(chart);
-
+            console.log(response);
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }

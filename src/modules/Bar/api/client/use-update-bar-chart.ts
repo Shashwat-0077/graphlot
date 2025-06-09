@@ -3,12 +3,12 @@ import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 
-// Type for PUT request body
+// Type for GET response
 type RequestType = InferRequestType<
     (typeof client.api)["bar-chart"][":id"]["$put"]
 >;
 
-// Type for PUT response
+// Type for PUT request body
 type ResponseType = InferResponseType<
     (typeof client.api)["bar-chart"][":id"]["$put"],
     200
@@ -24,8 +24,8 @@ export const useUpdateBarChart = ({
     return useMutation<ResponseType, Error, RequestType>({
         mutationFn: async ({ param, json }) => {
             const response = await client.api["bar-chart"][":id"].$put({
-                param,
-                json,
+                param: param,
+                json: json,
             });
 
             if (!response.ok) {
@@ -34,6 +34,7 @@ export const useUpdateBarChart = ({
 
             return await response.json();
         },
+        // When mutation is successful, invalidate the corresponding query
         onSuccess: (data, variables) => {
             propOnSuccess();
             queryClient.setQueryData(["bar-chart", variables.param.id], data);

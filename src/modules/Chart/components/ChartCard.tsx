@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { AreaChartCardHeader } from "@/modules/Area/components/AreaChartCardHeader";
-import { BarChartCardHeader } from "@/modules/Bar/components/BarHeaderChart";
+import { BarChartCardHeader } from "@/modules/Bar/components/BarChartCardHeader";
 import { ChartType } from "@/constants";
 import { RadialChartCardHeader } from "@/modules/Radial/components/RadialHeaderChart";
 import { RadarChartCardHeader } from "@/modules/Radar/components/RadarHeaderChart";

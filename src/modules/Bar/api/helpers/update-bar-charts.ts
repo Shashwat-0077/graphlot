@@ -15,6 +15,7 @@ type UpdateResult =
     | { ok: true; chartId: string }
     | { ok: false; error: string; details?: unknown };
 
+// TODO : we can make a route so that we only update what is needed
 export async function updateBarChart({
     chartId,
     data,
@@ -26,6 +27,7 @@ export async function updateBarChart({
         validateBeforeUpdate?: boolean;
     };
 }): Promise<UpdateResult> {
+    // Validate inputs
     if (!chartId?.trim()) {
         return { ok: false, error: "Chart ID is required" };
     }
@@ -43,7 +45,9 @@ export async function updateBarChart({
     } = data;
 
     try {
+        // Optional validation step
         if (options.validateBeforeUpdate) {
+            // Check if chart exists before attempting update
             const chartExists = await db
                 .select({ id: ChartMetadata.chartId })
                 .from(ChartMetadata)
@@ -58,9 +62,12 @@ export async function updateBarChart({
             }
         }
 
+        // Perform all database operations in a transaction
         await db.transaction(async (tx) => {
+            // Create an array of update operations to perform
             const updateOperations = [];
 
+            // Only update tables with provided data
             if (bar_chart) {
                 updateOperations.push(
                     tx
@@ -106,19 +113,25 @@ export async function updateBarChart({
                 );
             }
 
+            // Always update the metadata timestamp
             updateOperations.push(
                 tx
                     .update(ChartMetadata)
-                    .set({ updatedAt: Date.now() })
+                    .set({
+                        updatedAt: Date.now(),
+                    })
                     .where(eq(ChartMetadata.chartId, chartId))
             );
 
+            // Execute all updates in parallel within the transaction
             await Promise.all(updateOperations);
         });
 
         return { ok: true, chartId };
     } catch (error) {
+        // Provide more specific error messages based on error type
         if (error instanceof Error) {
+            // Check for constraint violations or foreign key errors
             if (
                 error.message.includes("CONSTRAINT") ||
                 error.message.includes("FOREIGN KEY")
@@ -130,6 +143,7 @@ export async function updateBarChart({
                 };
             }
 
+            // Check for SQLite specific errors
             if (error.message.includes("SQLITE_BUSY")) {
                 return {
                     ok: false,
@@ -173,11 +187,13 @@ export async function updateBarChartWithRetry({
                 return result;
             }
 
+            // If it's a busy error, retry. Otherwise, return the error
             if (
                 result.error.includes("busy") ||
                 result.error.includes("SQLITE_BUSY")
             ) {
                 lastError = result;
+                // Wait before next retry
                 await new Promise((resolve) =>
                     setTimeout(resolve, retryDelay * attempt)
                 );
@@ -195,6 +211,7 @@ export async function updateBarChartWithRetry({
                 details: error,
             };
 
+            // Only retry on specific errors
             if (
                 error instanceof Error &&
                 (error.message.includes("busy") ||

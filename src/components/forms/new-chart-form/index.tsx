@@ -12,7 +12,13 @@ import { DataSourceStep } from "@/components/forms/new-chart-form/steps/data-sou
 import { NotionConfigStep } from "@/components/forms/new-chart-form/steps/notion-config-step";
 import { Stepper } from "@/components/ui/stepper";
 
-export default function ChartForm({ collectionId }: { collectionId: string }) {
+export default function ChartForm({
+    collectionId,
+    collectionName,
+}: {
+    collectionId: string;
+    collectionName: string;
+}) {
     const {
         currentStep,
         chartType,
@@ -62,7 +68,10 @@ export default function ChartForm({ collectionId }: { collectionId: string }) {
                 return <DataSourceStep />;
             case 2:
                 return dataSource === DATABASE_NOTION ? (
-                    <NotionConfigStep collectionId={collectionId} />
+                    <NotionConfigStep
+                        collectionId={collectionId}
+                        collectionName={collectionName}
+                    />
                 ) : (
                     <UploadYourOwnData />
                 );

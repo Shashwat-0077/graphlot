@@ -14,14 +14,14 @@ export default async function NewChart({ params }: Props) {
         return <div>Invalid path</div>;
     }
 
-    const { id } = parseSlug(collection_slug);
+    const { id, name } = parseSlug(collection_slug);
 
     return (
         <div className="container mx-auto max-w-5xl py-10">
             <h1 className="mb-8 text-center text-4xl font-bold tracking-tight">
                 Create New Chart
             </h1>
-            <ChartForm collectionId={id} />
+            <ChartForm collectionId={id} collectionName={name} />
         </div>
     );
 }

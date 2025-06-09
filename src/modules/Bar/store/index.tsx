@@ -3,14 +3,14 @@
 import { createContext, useRef, useContext } from "react";
 import { useStore } from "zustand";
 
+import { ChartStateProvider } from "@/constants";
+import { SimpleLoader } from "@/components/ui/Loader";
 import {
     BarChartStore,
     createBarChartStore,
     initBarChartStore,
 } from "@/modules/Bar/store/state";
-import { ChartStateProvider } from "@/constants";
 import { useBarChart } from "@/modules/Bar/api/client/use-bar-chart";
-import { SimpleLoader } from "@/components/ui/Loader";
 
 export type BarChartStoreApi = ReturnType<typeof createBarChartStore>;
 export const BarChartStoreContext = createContext<BarChartStoreApi | undefined>(
@@ -43,7 +43,14 @@ export const BarChartStoreProvider: ChartStateProvider = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createBarChartStore(initBarChartStore(chart));
+        const { specificConfig, ...rest } = chart;
+
+        storeRef.current = createBarChartStore(
+            initBarChartStore({
+                ...rest,
+                ...specificConfig,
+            })
+        );
     }
 
     return (

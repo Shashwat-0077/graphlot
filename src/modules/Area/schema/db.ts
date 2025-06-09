@@ -58,7 +58,7 @@ export const AreaCharts = sqliteTable(
             .$type<ChartFilter[]>(),
 
         //NOTE :  we are doing this because, the data above will be updated separately, if we include all above in this, then we have update the whole string
-        specificConfig: text("other_config", { mode: "json" })
+        specificConfig: text("specific_config", { mode: "json" })
             .notNull()
             .$type<AreaSpecificConfig>()
             .default(areaSpecificConfigDefaults),
