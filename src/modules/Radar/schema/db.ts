@@ -2,7 +2,11 @@ import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { ChartMetadata } from "@/modules/Chart/schema/db";
 import { ChartFilter, SortType } from "@/constants";
-import { defaultRadarChartConfig } from "@/modules/Radar/radar-chart-default-config";
+import {
+    defaultRadarChartConfig,
+    RadarSpecificConfig,
+    radarSpecificConfigDefaults,
+} from "@/modules/Radar/radar-chart-default-config";
 
 export const RADAR_CHARTS_TABLE_NAME = "radar_chart";
 export const RadarCharts = sqliteTable(RADAR_CHARTS_TABLE_NAME, {
@@ -36,13 +40,9 @@ export const RadarCharts = sqliteTable(RADAR_CHARTS_TABLE_NAME, {
         .notNull()
         .default(defaultRadarChartConfig.filters)
         .$type<ChartFilter[]>(),
-    yAxisEnabled: integer("y_axis_enabled", { mode: "boolean" })
+    //NOTE :  we are doing this because, the data above will be updated separately, if we include all above in this, then we have update the whole string
+    specificConfig: text("specific_config", { mode: "json" })
         .notNull()
-        .default(defaultRadarChartConfig.yAxisEnabled),
-    xAxisEnabled: integer("x_axis_enabled", { mode: "boolean" })
-        .notNull()
-        .default(defaultRadarChartConfig.xAxisEnabled),
-    strokeWidth: real("stroke_width")
-        .notNull()
-        .default(defaultRadarChartConfig.strokeWidth),
+        .$type<RadarSpecificConfig>()
+        .default(radarSpecificConfigDefaults),
 });

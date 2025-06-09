@@ -43,7 +43,14 @@ export const RadarChartStoreProvider: ChartStateProvider = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createRadarChartStore(initRadarChartStore(chart));
+        const { specificConfig, ...rest } = chart;
+
+        storeRef.current = createRadarChartStore(
+            initRadarChartStore({
+                ...rest,
+                ...specificConfig,
+            })
+        );
     }
 
     return (

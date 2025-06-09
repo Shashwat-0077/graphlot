@@ -17,6 +17,9 @@ import {
 import { BarChartView } from "@/modules/Bar/components/BarChartView";
 import { BarChartConfig } from "@/modules/Bar/components/BarChartConfig";
 import { BarChartStoreProvider } from "@/modules/Bar/store";
+import { RadarChartView } from "@/modules/Radar/components/RadarChartView";
+import { RadarChartConfig } from "@/modules/Radar/components/RadarChartConfig";
+import { RadarChartStoreProvider } from "@/modules/Radar/store";
 
 type Props = {
     params: Promise<{
@@ -79,7 +82,7 @@ export default function ChatConfigs({ params }: Props) {
         ];
     } = {
         Bar: [BarChartView, BarChartConfig, BarChartStoreProvider],
-        // Radar: [RadarChartView, RadarConfig, RadarChartStoreProvider],
+        Radar: [RadarChartView, RadarChartConfig, RadarChartStoreProvider],
         Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
         // Donut: [DonutChartView, DonutConfig, RadialChartStoreProvider],
         // Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
