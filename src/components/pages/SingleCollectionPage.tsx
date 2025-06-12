@@ -170,15 +170,17 @@ export default function SingleCollectionPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                         <Button
-                            asChild
                             variant="outline"
-                            className="hidden sm:inline-flex"
+                            className="shadow-sm"
+                            disabled
                         >
-                            <Link
+                            View Groups
+                            {/* <Link
                                 href={`/dashboard/collections/${collection_slug}/groups`}
+                                aria-disabled
                             >
                                 View Groups
-                            </Link>
+                            </Link> */}
                         </Button>
                         <Button asChild variant="default" className="shadow-sm">
                             <Link

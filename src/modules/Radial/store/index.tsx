@@ -43,7 +43,14 @@ export const RadialChartStoreProvider: ChartStateProvider = ({
     }
 
     if (!storeRef.current) {
-        storeRef.current = createRadialChartStore(initRadialChartStore(chart));
+        const { specificConfig, ...rest } = chart;
+
+        storeRef.current = createRadialChartStore(
+            initRadialChartStore({
+                ...rest,
+                ...specificConfig,
+            })
+        );
     }
 
     return (

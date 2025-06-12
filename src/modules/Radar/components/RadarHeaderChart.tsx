@@ -2,12 +2,7 @@
 
 import { PolarGrid, Radar, RadarChart } from "recharts";
 
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
 const RadarChartConfig = {
@@ -50,10 +45,6 @@ export const RadarChartCardHeader = ({ className }: { className?: string }) => {
                     fillOpacity={0.6}
                 />
                 <Radar dataKey="mobile" fill="var(--color-mobile)" />
-                <ChartLegend
-                    className="mt-8"
-                    content={<ChartLegendContent />}
-                />
             </RadarChart>
         </ChartContainer>
     );

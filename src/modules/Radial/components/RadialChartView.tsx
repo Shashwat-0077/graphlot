@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo } from "react";
 import { LabelList, RadialBar, RadialBarChart } from "recharts";
 
 import {
@@ -5,43 +8,94 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useDonutChartStore } from "@/modules/Radial/store";
+import { useRadialChartStore } from "@/modules/Radial/store";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
-import { ChartViewComponentType, SORT_DEFAULT } from "@/constants";
 import { WavyLoader } from "@/components/ui/Loader";
 import { getRGBAString } from "@/utils/colors";
 import { useProcessData } from "@/modules/notion/api/client/use-process-data";
+import {
+    ChartViewComponent,
+    FONT_STYLES_BOLD,
+    FONT_STYLES_STRIKETHROUGH,
+    FONT_STYLES_UNDERLINE,
+    SORT_NONE,
+} from "@/constants";
+import { getLabelAnchor } from "@/modules/notion/utils/get-things";
+import {
+    useChartBoxModelStore,
+    useChartColorStore,
+    useChartTypographyStore,
+} from "@/modules/Chart/store";
 
-export const DonutChartView: ChartViewComponentType = ({
-    chartName,
-    notion_table_id,
-    user_id,
-}) => {
-    const {
-        x_axis,
-        color_palette,
-        background_color,
-        text_color,
-        label_enabled,
-        tooltip_enabled,
-        legend_enabled,
-        sort_by,
-    } = useDonutChartStore((state) => state);
+export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
+    const LIMIT = 8; // Limit for performance optimization
 
-    const { data, config, isLoading, error, schema } = useProcessData({
-        notion_table_id,
-        x_axis,
+    // Radial chart store selectors
+    const xAxisField = useRadialChartStore((state) => state.xAxisField);
+    const xAxisSortOrder = useRadialChartStore((state) => state.xAxisSortOrder);
+    // const omitZeroValuesEnabled = useRadialChartStore(
+    //     (state) => state.omitZeroValuesEnabled
+    // );
+    const innerRadius = useRadialChartStore((state) => state.innerRadius);
+    const outerRadius = useRadialChartStore((state) => state.outerRadius);
+    const startAngle = useRadialChartStore((state) => state.startAngle);
+    const endAngle = useRadialChartStore((state) => state.endAngle);
+    const legendPosition = useRadialChartStore((state) => state.legendPosition);
+    const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
+
+    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
+    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
+    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
+    const marginRight = useChartBoxModelStore((state) => state.marginRight);
+    const marginTop = useChartBoxModelStore((state) => state.marginTop);
+
+    const label = useChartTypographyStore((state) => state.label);
+    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
+    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
+    const labelFontFamily = useChartTypographyStore(
+        (state) => state.labelFontFamily
+    );
+    const labelFontStyle = useChartTypographyStore(
+        (state) => state.labelFontStyle
+    );
+    const labelSize = useChartTypographyStore((state) => state.labelSize);
+    const legendEnabled = useChartTypographyStore(
+        (state) => state.legendEnabled
+    );
+
+    const backgroundColor = useChartColorStore(
+        (state) => state.backgroundColor
+    );
+    const borderColor = useChartColorStore((state) => state.borderColor);
+    const colorPalette = useChartColorStore((state) => state.colorPalette);
+    const labelColor = useChartColorStore((state) => state.labelColor);
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
+
+    const { data, config, isLoading, error } = useProcessData({
+        chartId,
+        userId,
+        xAxis: xAxisField,
+        sortX: xAxisSortOrder,
         yAxis: "count",
-        sort_x: sort_by,
-        sort_y: SORT_DEFAULT,
-        user_id,
+        sortY: SORT_NONE,
     });
+
+    // Limit data for better performance if needed
+    const limitedRadarChartData = useMemo(() => {
+        return data.length > LIMIT ? data.slice(0, LIMIT) : data;
+    }, [data]);
 
     // Loading state
     if (isLoading) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-4">
@@ -58,7 +112,10 @@ export const DonutChartView: ChartViewComponentType = ({
     if (error || !data) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                bgColor={backgroundColor}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -92,46 +149,14 @@ export const DonutChartView: ChartViewComponentType = ({
         );
     }
 
-    // No schema state
-    if (!schema) {
-        return (
-            <ChartViewWrapper
-                bgColor={background_color}
-                className="flex items-center justify-center"
-            >
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="rounded-full bg-muted p-3">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-6 w-6 text-muted-foreground"
-                        >
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M3 9h18" />
-                            <path d="M9 21V9" />
-                        </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold">No Data Available</h3>
-                    <p className="max-w-[250px] text-sm text-muted-foreground">
-                        No schema data found. Please connect a valid database.
-                    </p>
-                </div>
-            </ChartViewWrapper>
-        );
-    }
-
     // No axis selected state
-    if (!x_axis) {
+    if (!xAxisField) {
         return (
             <ChartViewWrapper
-                bgColor={background_color}
+                borderEnabled={borderEnabled}
+                borderWidth={borderWidth}
+                borderColor={borderColor}
+                bgColor={backgroundColor}
                 className="flex items-center justify-center"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -175,64 +200,87 @@ export const DonutChartView: ChartViewComponentType = ({
         };
     }
 
-    const renderData = data.map((d, idx) => {
+    const renderData = limitedRadarChartData.map((d, idx) => {
         configData[d.class] = {
             label: d.class,
         };
         return {
             ...d,
-            fill: color_palette[idx]
-                ? `rgb(${color_palette[idx].r}, ${color_palette[idx].g}, ${color_palette[idx].b}`
+            fill: colorPalette[idx]
+                ? `rgb(${colorPalette[idx].r}, ${colorPalette[idx].g}, ${colorPalette[idx].b}`
                 : "rgb(255, 255, 255)",
         };
     });
 
     return (
-        <ChartViewWrapper bgColor={background_color}>
+        <ChartViewWrapper
+            borderEnabled={borderEnabled}
+            borderWidth={borderWidth}
+            borderColor={borderColor}
+            bgColor={backgroundColor}
+            className="flex items-center justify-center"
+        >
             <ChartContainer
                 config={configData}
                 className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
             >
                 <RadialBarChart
+                    margin={{
+                        top: marginTop,
+                        right: marginRight,
+                        bottom: marginBottom,
+                        left: marginLeft,
+                    }}
+                    barCategoryGap={5}
                     data={renderData}
-                    innerRadius={40}
-                    outerRadius={120}
-                    startAngle={270}
-                    endAngle={360 + 270}
+                    innerRadius={innerRadius}
+                    outerRadius={outerRadius}
+                    startAngle={startAngle}
+                    endAngle={endAngle}
                 >
-                    {label_enabled && (
+                    {labelEnabled && (
                         <text
-                            x="50%"
-                            y={40}
+                            x={getLabelAnchor(labelAnchor)}
+                            y={30}
                             style={{
-                                fontSize: 36,
-                                fontWeight: "bold",
-                                fill: getRGBAString(text_color),
+                                fontSize: `${labelSize}px`,
+                                fontFamily: labelFontFamily,
+                                textDecoration:
+                                    labelFontStyle === FONT_STYLES_UNDERLINE
+                                        ? "underline"
+                                        : labelFontStyle ===
+                                            FONT_STYLES_STRIKETHROUGH
+                                          ? "line-through"
+                                          : "none",
+                                fontWeight:
+                                    labelFontStyle === FONT_STYLES_BOLD
+                                        ? "bold"
+                                        : "normal",
+                                fill: getRGBAString(labelColor),
+                                textAnchor: labelAnchor,
                             }}
-                            width={200}
-                            textAnchor="middle"
                         >
-                            {chartName}
+                            {label}
                         </text>
                     )}
-                    {tooltip_enabled && (
-                        <ChartTooltip
-                            cursor={false}
-                            content={
-                                <ChartTooltipContent
-                                    hideLabel
-                                    nameKey="class"
-                                />
-                            }
-                        />
-                    )}
+
+                    <ChartTooltip
+                        cursor={false}
+                        content={
+                            <ChartTooltipContent hideLabel nameKey="class" />
+                        }
+                    />
+
                     <RadialBar dataKey="count" background cornerRadius={10}>
-                        {legend_enabled && (
+                        {legendEnabled && (
                             <LabelList
-                                position=""
+                                position={legendPosition}
                                 dataKey="class"
-                                className="fill-white capitalize mix-blend-luminosity"
-                                fontSize={11}
+                                className="capitalize"
+                                style={{
+                                    fill: getRGBAString(legendTextColor),
+                                }}
+                                fontSize={legendTextSize}
                             />
                         )}
                     </RadialBar>

@@ -1,20 +1,13 @@
 // import { sql } from "drizzle-orm";
-import {
-    // check,
-    integer,
-    sqliteTable,
-    text,
-} from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { defaultDonutChartConfig } from "@/modules/Radial/default-radial-chart- config";
-import { ChartMetadata } from "@/modules/Chart/schema/db";
 import {
-    ChartFilter,
-    // RADIAL_LEGEND_POSITION_OPTIONS,
-    RadialLegendPositionType,
-    // SORT_OPTIONS,
-    SortType,
-} from "@/constants";
+    defaultRadialChartConfig,
+    RadialSpecificConfig,
+    radialSpecificConfigDefaults,
+} from "@/modules/Radial/default-radial-chart- config";
+import { ChartMetadata } from "@/modules/Chart/schema/db";
+import { ChartFilter, SortType } from "@/constants";
 
 export const RADIAL_CHARTS_TABLE_NAME = "radial_chart";
 export const RadialCharts = sqliteTable(
@@ -26,39 +19,26 @@ export const RadialCharts = sqliteTable(
 
         xAxisField: text("x_axis_field")
             .notNull()
-            .default(defaultDonutChartConfig.xAxisField),
+            .default(defaultRadialChartConfig.xAxisField),
         xAxisSortOrder: text("x_sort_order")
             .notNull()
             .$type<SortType>()
-            .default(defaultDonutChartConfig.xAxisSortOrder),
+            .default(defaultRadialChartConfig.xAxisSortOrder),
         omitZeroValuesEnabled: integer("omit_zero_values_enabled", {
             mode: "boolean",
         })
             .notNull()
-            .default(defaultDonutChartConfig.omitZeroValuesEnabled),
+            .default(defaultRadialChartConfig.omitZeroValuesEnabled),
         filters: text("filters", { mode: "json" })
             .notNull()
-            .default(defaultDonutChartConfig.filters)
+            .default(defaultRadialChartConfig.filters)
             .$type<ChartFilter[]>(),
-        innerRadius: integer("inner_radius")
+
+        //NOTE :  we are doing this because, the data above will be updated separately, if we include all above in this, then we have update the whole string
+        specificConfig: text("specific_config", { mode: "json" })
             .notNull()
-            .default(defaultDonutChartConfig.innerRadius),
-        outerRadius: integer("outer_radius")
-            .notNull()
-            .default(defaultDonutChartConfig.outerRadius),
-        startAngle: integer("start_angle")
-            .notNull()
-            .default(defaultDonutChartConfig.startAngle),
-        endAngle: integer("end_angle")
-            .notNull()
-            .default(defaultDonutChartConfig.endAngle),
-        legendPosition: text("legend_position")
-            .notNull()
-            .$type<RadialLegendPositionType>()
-            .default(defaultDonutChartConfig.legendPosition),
-        legendTextSize: integer("legend_text_size")
-            .notNull()
-            .default(defaultDonutChartConfig.legendTextSize),
+            .$type<RadialSpecificConfig>()
+            .default(radialSpecificConfigDefaults),
     }
     // (table) => {
     //     const legendPosition = RADIAL_LEGEND_POSITION_OPTIONS.map(

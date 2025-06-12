@@ -18,7 +18,7 @@ export const useCreateCollection = () => {
                 await client.api.collections["create-collection"].$post(props);
 
             if (!response.ok) {
-                throw new Error("Failed to update chart");
+                throw new Error("Failed to Create Collection");
             }
 
             const data = await response.json();

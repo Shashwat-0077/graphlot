@@ -21,11 +21,7 @@ import {
     ChartMetadataSchema,
     ChartTypographySchema,
 } from "@/modules/Chart/schema";
-import {
-    CHART_TYPE_RADIAL,
-    RADIAL_LEGEND_POSITION_OPTIONS,
-    SORT_OPTIONS,
-} from "@/constants";
+import { CHART_TYPE_RADIAL, SORT_OPTIONS } from "@/constants";
 
 // Base schemas from RadialCharts table
 const radialInsertBase = createInsertSchema(RadialCharts);
@@ -36,16 +32,13 @@ const radialUpdateBase = createUpdateSchema(RadialCharts);
 export const RadialChartSchema = {
     Insert: radialInsertBase.extend({
         xAxisSortOrder: z.enum(SORT_OPTIONS),
-        legendPosition: z.enum(RADIAL_LEGEND_POSITION_OPTIONS),
     }),
     Select: radialSelectBase.extend({
         xAxisSortOrder: z.enum(SORT_OPTIONS),
-        legendPosition: z.enum(RADIAL_LEGEND_POSITION_OPTIONS),
     }),
     Update: radialUpdateBase
         .extend({
             xAxisSortOrder: z.enum(SORT_OPTIONS).optional(),
-            legendPosition: z.enum(RADIAL_LEGEND_POSITION_OPTIONS).optional(),
         })
         .omit({
             chartId: true,
