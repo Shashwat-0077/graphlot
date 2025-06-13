@@ -174,13 +174,7 @@ export default function SingleCollectionPage() {
                             className="shadow-sm"
                             disabled
                         >
-                            View Groups
-                            {/* <Link
-                                href={`/dashboard/collections/${collection_slug}/groups`}
-                                aria-disabled
-                            >
-                                View Groups
-                            </Link> */}
+                            Delete Collection
                         </Button>
                         <Button asChild variant="default" className="shadow-sm">
                             <Link

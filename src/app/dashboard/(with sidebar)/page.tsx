@@ -22,7 +22,7 @@ export default async function Dashboard() {
                 </div>
             }
         >
-            <DashboardPage />
+            <DashboardPage username={session.user.name || "Guest"} />
         </Suspense>
     );
 }

@@ -24,7 +24,7 @@ export function SidebarLogo() {
                 <Image
                     width={75}
                     height={75}
-                    src={"/logo.png"}
+                    src={"/logo.svg"}
                     alt="logo"
                     priority
                 />
