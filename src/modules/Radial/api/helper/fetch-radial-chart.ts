@@ -11,6 +11,7 @@ import {
     ChartTypography,
     ChartBoxModel,
     ChartColors,
+    ChartVisual,
 } from "@/modules/Chart/schema/db";
 import { CHART_TYPE_RADIAL } from "@/constants";
 
@@ -117,6 +118,10 @@ export async function fetchFullRadialChartById(chartId: string): Promise<
             .innerJoin(
                 RadialCharts,
                 eq(ChartMetadata.chartId, RadialCharts.chartId)
+            )
+            .innerJoin(
+                ChartVisual,
+                eq(ChartMetadata.chartId, ChartVisual.chartId)
             )
             .innerJoin(
                 ChartTypography,

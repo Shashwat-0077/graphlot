@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
-import {
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useRadarChartStore } from "@/modules/Radar/store";
 import { getRGBAString } from "@/utils/colors";
 import {
@@ -17,6 +11,8 @@ import {
     FONT_STYLES_BOLD,
     FONT_STYLES_STRIKETHROUGH,
     FONT_STYLES_UNDERLINE,
+    GRID_ORIENTATION_TYPE_NONE,
+    GRID_ORIENTATION_TYPE_ONE,
 } from "@/constants";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
@@ -27,24 +23,47 @@ import {
     useChartTypographyStore,
     useChartVisualStore,
 } from "@/modules/Chart/store";
-import { getLabelAnchor } from "@/modules/notion/utils/get-things";
+import {
+    getGridStyle,
+    getLabelAnchor,
+} from "@/modules/notion/utils/get-things";
+import { CustomTooltipContent } from "@/components/ui/CustomToolTip";
+import {
+    CustomChartLegend,
+    CustomChartLegendContent,
+} from "@/components/ui/CustomChartLegend";
 
 export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8;
 
-    // Chart visual store selectors
+    const gridOrientation = useChartVisualStore(
+        (state) => state.gridOrientation
+    );
+    const gridStyle = useChartVisualStore((state) => state.gridStyle);
+    const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    // Chart box model store selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration from store
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
-    // Chart color store selectors
+    // Color configuration from store
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -52,8 +71,23 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const colorPalette = useChartColorStore((state) => state.colorPalette);
     const gridColor = useChartColorStore((state) => state.gridColor);
     const labelColor = useChartColorStore((state) => state.labelColor);
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
-    // Chart typography store selectors
+    // Typography configuration from store
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -71,7 +105,6 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     // Radar chart store selectors
     const strokeWidth = useRadarChartStore((state) => state.strokeWidth);
     const xAxisEnabled = useRadarChartStore((state) => state.xAxisEnabled);
-    const yAxisEnabled = useRadarChartStore((state) => state.yAxisEnabled);
     const xAxisField = useRadarChartStore((state) => state.xAxisField);
     const yAxisField = useRadarChartStore((state) => state.yAxisField);
     const xAxisSortOrder = useRadarChartStore((state) => state.xAxisSortOrder);
@@ -94,7 +127,6 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (isLoading) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -114,7 +146,6 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (error || !data) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -155,7 +186,6 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (!xAxisField || !yAxisField) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -212,7 +242,6 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
 
     return (
         <ChartViewWrapper
-            borderEnabled={borderEnabled}
             borderWidth={borderWidth}
             borderColor={borderColor}
             bgColor={backgroundColor}
@@ -256,23 +285,35 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
                         </text>
                     )}
 
-                    {legendEnabled && (
-                        <ChartLegend content={<ChartLegendContent />} />
-                    )}
-
                     {tooltipEnabled && (
                         <ChartTooltip
                             cursor={false}
                             content={
-                                <ChartTooltipContent indicator={tooltipStyle} />
+                                <CustomTooltipContent
+                                    indicator={tooltipStyle}
+                                    textColor={tooltipTextColor}
+                                    separatorEnabled={tooltipSeparatorEnabled}
+                                    totalEnabled={tooltipTotalEnabled}
+                                    backgroundColor={tooltipBackgroundColor}
+                                    separatorColor={tooltipSeparatorColor}
+                                />
                             }
+                            wrapperStyle={{
+                                zIndex: 1000,
+                                borderRadius: `${tooltipBorderRadius}px`,
+                                borderWidth: `${tooltipBorderWidth}px`,
+                                borderColor: getRGBAString(
+                                    tooltipBorderColor,
+                                    true
+                                ),
+                                overflow: "hidden",
+                            }}
                         />
                     )}
 
                     {xAxisEnabled && (
                         <PolarAngleAxis
                             dataKey="class"
-                            stroke={getRGBAString(gridColor)}
                             fill={getRGBAString(gridColor)}
                             tickLine={false}
                             axisLine={false}
@@ -283,12 +324,18 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
                         />
                     )}
 
-                    {yAxisEnabled && (
+                    {gridOrientation !== GRID_ORIENTATION_TYPE_NONE && (
                         <PolarGrid
+                            gridType={
+                                gridOrientation === GRID_ORIENTATION_TYPE_ONE
+                                    ? "polygon"
+                                    : "circle"
+                            }
+                            strokeWidth={gridWidth}
                             stroke={getRGBAString(gridColor)}
                             fill={getRGBAString(gridColor)}
-                            strokeWidth={1}
                             strokeOpacity={0.3}
+                            strokeDasharray={getGridStyle(gridStyle, gridWidth)}
                         />
                     )}
 
@@ -310,6 +357,27 @@ export const RadarChartView: ChartViewComponent = ({ chartId, userId }) => {
                     ))}
                 </RadarChart>
             </ChartContainer>
+
+            {legendEnabled && (
+                <div className="mt-2 w-full">
+                    <CustomChartLegend
+                        orientation="horizontal"
+                        className="pb-2"
+                    >
+                        <CustomChartLegendContent
+                            textColor={legendTextColor}
+                            payload={config.map((key) => ({
+                                value: configData[key].label,
+                                color: configData[key].color,
+                                payload: {
+                                    fill: configData[key].color,
+                                    stroke: configData[key].color,
+                                },
+                            }))}
+                        />
+                    </CustomChartLegend>
+                </div>
+            )}
         </ChartViewWrapper>
     );
 };

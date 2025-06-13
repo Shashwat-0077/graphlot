@@ -15,6 +15,7 @@ export const useCollections = () => {
             const { collections } = await response.json();
             return collections;
         },
+        staleTime: 0,
     });
 
     return query;

@@ -8,7 +8,6 @@ interface ChartViewWrapperProps {
     bgColor: { r: number; g: number; b: number; a: number };
     borderColor: { r: number; g: number; b: number; a: number };
     borderWidth: number;
-    borderEnabled: boolean;
     className?: string;
 }
 
@@ -18,14 +17,13 @@ export function ChartViewWrapper({
     className,
     borderColor,
     borderWidth,
-    borderEnabled,
 }: ChartViewWrapperProps) {
     return (
         <div
             style={{
                 backgroundColor: getRGBAString(bgColor, true),
                 borderColor: getRGBAString(borderColor, true),
-                borderWidth: borderEnabled ? `${borderWidth}px` : "0px",
+                borderWidth: `${borderWidth}px`,
             }}
             className={cn(
                 "relative flex min-h-[300px] w-full flex-col items-center justify-center rounded-xl p-4",

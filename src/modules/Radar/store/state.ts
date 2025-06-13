@@ -17,7 +17,6 @@ export type RadarChartState = Omit<
 
 export type RadarChartActions = {
     toggleXAxis: () => void;
-    toggleYAxis: () => void;
     setStrokeWidth: (width: number) => void;
     setXAxisField: (field: string) => void;
     setYAxisField: (field: string) => void;
@@ -54,10 +53,6 @@ export const createRadarChartStore = (
             toggleXAxis: () =>
                 set((state) => {
                     state.xAxisEnabled = !state.xAxisEnabled;
-                }),
-            toggleYAxis: () =>
-                set((state) => {
-                    state.yAxisEnabled = !state.yAxisEnabled;
                 }),
             setStrokeWidth: (width) =>
                 set((state) => {

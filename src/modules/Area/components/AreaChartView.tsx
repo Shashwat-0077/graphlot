@@ -3,41 +3,43 @@
 import { useMemo } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import {
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
-import { useAreaChartStore } from "@/modules/Area/store";
-import { getRGBAString } from "@/utils/colors";
-import {
-    ChartViewComponent,
-    FONT_STYLES_BOLD,
-    FONT_STYLES_STRIKETHROUGH,
-    FONT_STYLES_UNDERLINE,
-    GRID_ORIENTATION_BOTH,
-    GRID_ORIENTATION_HORIZONTAL,
-    GRID_ORIENTATION_NONE,
-    GRID_ORIENTATION_VERTICAL,
-} from "@/constants";
+// Components
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
-import { useProcessData } from "@/modules/notion/api/client/use-process-data";
+import {
+    CustomChartLegend,
+    CustomChartLegendContent,
+} from "@/components/ui/CustomChartLegend";
+import { CustomTooltipContent } from "@/components/ui/CustomToolTip";
+import { useAreaChartStore } from "@/modules/Area/store";
 import {
     useChartBoxModelStore,
     useChartColorStore,
     useChartTypographyStore,
     useChartVisualStore,
 } from "@/modules/Chart/store";
+import { getRGBAString } from "@/utils/colors";
+import {
+    ChartViewComponent,
+    FONT_STYLES_BOLD,
+    FONT_STYLES_STRIKETHROUGH,
+    FONT_STYLES_UNDERLINE,
+    GRID_ORIENTATION_TYPE_THREE,
+    GRID_ORIENTATION_TYPE_ONE,
+    GRID_ORIENTATION_TYPE_NONE,
+    GRID_ORIENTATION_TYPE_TWO,
+} from "@/constants";
+import { useProcessData } from "@/modules/notion/api/client/use-process-data";
 import {
     getGridStyle,
     getLabelAnchor,
 } from "@/modules/notion/utils/get-things";
 
 export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
-    const LIMIT = 8;
+    const LIMIT = 8; // Maximum number of data points to display
+
+    // Visual configuration from store
     const gridOrientation = useChartVisualStore(
         (state) => state.gridOrientation
     );
@@ -45,14 +47,27 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration from store
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
+    // Color configuration from store
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -60,10 +75,23 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     const colorPalette = useChartColorStore((state) => state.colorPalette);
     const gridColor = useChartColorStore((state) => state.gridColor);
     const labelColor = useChartColorStore((state) => state.labelColor);
-    // const legendTextColor = useChartColorStore(
-    //     (state) => state.legendTextColor
-    // );
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
+    // Typography configuration from store
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -78,6 +106,7 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
         (state) => state.legendEnabled
     );
 
+    // Area chart specific configuration from store
     const areaStyle = useAreaChartStore((state) => state.lineStyle);
     const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
     const {
@@ -89,20 +118,12 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
     const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
     const yAxisEnabled = useAreaChartStore((state) => state.yAxisEnabled);
-
-    // Area chart store selectors
     const xAxisField = useAreaChartStore((state) => state.xAxisField);
     const yAxisField = useAreaChartStore((state) => state.yAxisField);
-    // const filters = useAreaChartStore((state) => state.filters);
     const xAxisSortOrder = useAreaChartStore((state) => state.xAxisSortOrder);
     const yAxisSortOrder = useAreaChartStore((state) => state.yAxisSortOrder);
-    // const omitZeroValuesEnabled = useAreaChartStore(
-    //     (state) => state.omitZeroValuesEnabled
-    // );
-    // const cumulativeEnabled = useAreaChartStore(
-    //     (state) => state.cumulativeEnabled
-    // );
 
+    // Data fetching
     const { data, config, isLoading, error } = useProcessData({
         chartId,
         userId,
@@ -112,6 +133,7 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
         sortY: yAxisSortOrder,
     });
 
+    // Limit data points for better visualization
     const limitedRadarChartData = useMemo(() => {
         return data.length > LIMIT ? data.slice(0, LIMIT) : data;
     }, [data]);
@@ -120,7 +142,6 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (isLoading) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -140,7 +161,6 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (error || !data) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -181,7 +201,6 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (!xAxisField || !yAxisField) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -217,7 +236,7 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
         );
     }
 
-    // Prepare chart configuration data
+    // Prepare chart configuration data for each series
     const configData: {
         [key: string]: { label: string; color: string; alpha: number };
     } = {};
@@ -238,7 +257,6 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
 
     return (
         <ChartViewWrapper
-            borderEnabled={borderEnabled}
             borderWidth={borderWidth}
             borderColor={borderColor}
             bgColor={backgroundColor}
@@ -257,6 +275,7 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                         bottom: marginBottom,
                     }}
                 >
+                    {/* Chart title/label */}
                     {labelEnabled && (
                         <text
                             x={getLabelAnchor(labelAnchor)}
@@ -283,26 +302,23 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                         </text>
                     )}
 
-                    {legendEnabled && (
-                        <ChartLegend content={<ChartLegendContent />} />
-                    )}
-
-                    {gridOrientation !== GRID_ORIENTATION_NONE && (
+                    {/* Grid configuration */}
+                    {gridOrientation !== GRID_ORIENTATION_TYPE_NONE && (
                         <CartesianGrid
                             vertical={
-                                gridOrientation === GRID_ORIENTATION_VERTICAL ||
-                                gridOrientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_TYPE_TWO ||
+                                gridOrientation === GRID_ORIENTATION_TYPE_THREE
                             }
                             horizontal={
-                                gridOrientation ===
-                                    GRID_ORIENTATION_HORIZONTAL ||
-                                gridOrientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_TYPE_ONE ||
+                                gridOrientation === GRID_ORIENTATION_TYPE_THREE
                             }
                             stroke={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
                             strokeDasharray={getGridStyle(gridStyle, gridWidth)}
                         />
                     )}
 
+                    {/* X and Y axes */}
                     {xAxisEnabled && (
                         <XAxis
                             dataKey="class"
@@ -310,7 +326,6 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                             stroke={getRGBAString(gridColor)}
                         />
                     )}
-
                     {yAxisEnabled && (
                         <YAxis
                             tickMargin={10}
@@ -319,15 +334,34 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                         />
                     )}
 
+                    {/* Tooltip configuration */}
                     {tooltipEnabled && (
                         <ChartTooltip
                             cursor={false}
                             content={
-                                <ChartTooltipContent indicator={tooltipStyle} />
+                                <CustomTooltipContent
+                                    indicator={tooltipStyle}
+                                    textColor={tooltipTextColor}
+                                    separatorEnabled={tooltipSeparatorEnabled}
+                                    totalEnabled={tooltipTotalEnabled}
+                                    backgroundColor={tooltipBackgroundColor}
+                                    separatorColor={tooltipSeparatorColor}
+                                />
                             }
+                            wrapperStyle={{
+                                zIndex: 1000,
+                                borderRadius: `${tooltipBorderRadius}px`,
+                                borderWidth: `${tooltipBorderWidth}px`,
+                                borderColor: getRGBAString(
+                                    tooltipBorderColor,
+                                    true
+                                ),
+                                overflow: "hidden",
+                            }}
                         />
                     )}
 
+                    {/* Gradient definitions for area fills */}
                     {isAreaChart && (
                         <defs>
                             {config.map((data_label, idx) => (
@@ -358,6 +392,7 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                         </defs>
                     )}
 
+                    {/* Area series */}
                     {config.map((data_label) => (
                         <Area
                             key={data_label}
@@ -372,6 +407,28 @@ export const AreaChartView: ChartViewComponent = ({ chartId, userId }) => {
                     ))}
                 </AreaChart>
             </ChartContainer>
+
+            {/* Legend configuration */}
+            {legendEnabled && (
+                <div className="mt-2 w-full">
+                    <CustomChartLegend
+                        orientation="horizontal"
+                        className="pb-2"
+                    >
+                        <CustomChartLegendContent
+                            textColor={legendTextColor}
+                            payload={config.map((key) => ({
+                                value: configData[key].label,
+                                color: configData[key].color,
+                                payload: {
+                                    fill: configData[key].color,
+                                    stroke: configData[key].color,
+                                },
+                            }))}
+                        />
+                    </CustomChartLegend>
+                </div>
+            )}
         </ChartViewWrapper>
     );
 };

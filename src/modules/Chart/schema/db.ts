@@ -93,6 +93,22 @@ export const ChartVisual = sqliteTable(
             .notNull()
             .$type<TooltipStyle>()
             .default(defaultChartVisualSettings.tooltipStyle),
+        tooltipBorderWidth: real("tooltip_border_width")
+            .notNull()
+            .default(defaultChartVisualSettings.tooltipBorderWidth),
+        tooltipBorderRadius: real("tooltip_border_radius")
+            .notNull()
+            .default(defaultChartVisualSettings.tooltipBorderRadius),
+        tooltipTotalEnabled: integer("tooltip_total_enabled", {
+            mode: "boolean",
+        })
+            .notNull()
+            .default(defaultChartVisualSettings.tooltipTotalEnabled),
+        tooltipSeparatorEnabled: integer("tooltip_separator_enabled", {
+            mode: "boolean",
+        })
+            .notNull()
+            .default(defaultChartVisualSettings.tooltipSeparatorEnabled),
     }
     // (table) => {
     //     const orientList = GRID_ORIENTATION_OPTIONS.map((v) => `'${v}'`).join(
@@ -194,9 +210,6 @@ export const ChartBoxModel = sqliteTable(
         borderWidth: real("border_width")
             .notNull()
             .default(defaultChartBoxModel.borderWidth),
-        borderEnabled: integer("border_enabled", { mode: "boolean" })
-            .notNull()
-            .default(defaultChartBoxModel.borderEnabled),
     }
     // (table) => [
     //     check(
@@ -234,6 +247,26 @@ export const ChartColors = sqliteTable(CHART_COLOR_TABLE_NAME, {
         .notNull()
         .$type<RGBAColor>()
         .default(defaultChartColors.gridColor),
+    tooltipBackgroundColor: text("tooltip_background_color", {
+        mode: "json",
+    })
+        .notNull()
+        .$type<RGBAColor>()
+        .default(defaultChartColors.tooltipBackgroundColor),
+    tooltipTextColor: text("tooltip_text_color", { mode: "json" })
+        .notNull()
+        .$type<RGBAColor>()
+        .default(defaultChartColors.tooltipTextColor),
+    tooltipSeparatorColor: text("tooltip_separator_color", {
+        mode: "json",
+    })
+        .notNull()
+        .$type<RGBAColor>()
+        .default(defaultChartColors.tooltipSeparatorColor),
+    tooltipBorderColor: text("tooltip_border_color", { mode: "json" })
+        .notNull()
+        .$type<RGBAColor>()
+        .default(defaultChartColors.tooltipBorderColor),
     labelColor: text("label_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()

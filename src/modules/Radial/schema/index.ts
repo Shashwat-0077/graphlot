@@ -14,12 +14,14 @@ import {
     CHART_COLOR_TABLE_NAME,
     CHART_METADATA_TABLE_NAME,
     CHART_TYPOGRAPHY_TABLE_NAME,
+    CHART_VISUAL_TABLE_NAME,
 } from "@/modules/Chart/schema/db";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
+    ChartVisualSchema,
 } from "@/modules/Chart/schema";
 import { CHART_TYPE_RADIAL, SORT_OPTIONS } from "@/constants";
 
@@ -51,6 +53,7 @@ export const FullRadialSelect = z.object({
     [CHART_METADATA_TABLE_NAME]: ChartMetadataSchema.Select.extend({
         type: z.literal(CHART_TYPE_RADIAL),
     }),
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Select,
     [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Select,
     [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Select,
     [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Select,
@@ -59,6 +62,7 @@ export const FullRadialSelect = z.object({
 // Full chart object (UPDATE)
 export const FullRadialUpdate = z.object({
     [RADIAL_CHARTS_TABLE_NAME]: RadialChartSchema.Update.optional(),
+    [CHART_VISUAL_TABLE_NAME]: ChartVisualSchema.Update.optional(),
     [CHART_TYPOGRAPHY_TABLE_NAME]: ChartTypographySchema.Update.optional(),
     [CHART_COLOR_TABLE_NAME]: ChartColorSchema.Update.optional(),
     [CHART_BOX_MODEL_TABLE_NAME]: ChartBoxModelSchema.Update.optional(),

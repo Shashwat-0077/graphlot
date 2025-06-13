@@ -3,48 +3,35 @@
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import { useBarChartStore } from "@/modules/Bar/store";
 
-interface BarChartStyleConfigProps {
-    yAxisEnabled: boolean;
-    xAxisEnabled: boolean;
-    toggleXAxis: () => void;
-    toggleYAxis: () => void;
-    barBorderRadius: number;
-    setBarBorderRadius: (value: number) => void;
-    barWidth: number;
-    setBarWidth: (value: number) => void;
-    barGap: number;
-    setBarGap: (value: number) => void;
-    fillOpacity: number;
-    setFillOpacity: (value: number) => void;
-    strokeWidth: number;
-    setStrokeWidth: (value: number) => void;
-    stacked: boolean;
-    toggleStacked: () => void;
-    borderRadiusBetweenBars: boolean; // Optional for backward compatibility
-    toggleBorderRadiusBetweenBars: () => void; // Optional for backward compatibility
-}
+export function BarChartStyleConfig() {
+    // Bar chart selectors
+    const yAxisEnabled = useBarChartStore((state) => state.yAxisEnabled);
+    const xAxisEnabled = useBarChartStore((state) => state.xAxisEnabled);
+    const toggleXAxis = useBarChartStore((state) => state.toggleXAxis);
+    const toggleYAxis = useBarChartStore((state) => state.toggleYAxis);
+    const barBorderRadius = useBarChartStore((state) => state.barBorderRadius);
+    const setBarBorderRadius = useBarChartStore(
+        (state) => state.setBorderRadius
+    );
+    const barWidth = useBarChartStore((state) => state.barWidth);
+    const setBarWidth = useBarChartStore((state) => state.setBarWidth);
+    const barGap = useBarChartStore((state) => state.barGap);
+    const setBarGap = useBarChartStore((state) => state.setBarGap);
+    const fillOpacity = useBarChartStore((state) => state.fillOpacity);
+    const setFillOpacity = useBarChartStore((state) => state.setFillOpacity);
+    const strokeWidth = useBarChartStore((state) => state.strokeWidth);
+    const setStrokeWidth = useBarChartStore((state) => state.setStrokeWidth);
+    const stacked = useBarChartStore((state) => state.stacked);
+    const toggleStacked = useBarChartStore((state) => state.toggleStacked);
+    const borderRadiusBetweenBars = useBarChartStore(
+        (state) => state.borderRadiusBetweenBars
+    );
+    const toggleBorderRadiusBetweenBars = useBarChartStore(
+        (state) => state.toggleBorderRadiusBetweenBars
+    );
 
-export function BarChartStyleConfig({
-    yAxisEnabled,
-    xAxisEnabled,
-    toggleXAxis,
-    toggleYAxis,
-    barBorderRadius,
-    setBarBorderRadius,
-    barWidth,
-    setBarWidth,
-    barGap,
-    setBarGap,
-    fillOpacity,
-    setFillOpacity,
-    strokeWidth,
-    setStrokeWidth,
-    stacked,
-    toggleStacked,
-    borderRadiusBetweenBars, // Optional for backward compatibility
-    toggleBorderRadiusBetweenBars, // Optional for backward compatibility
-}: BarChartStyleConfigProps) {
     return (
         <div className="space-y-6">
             {/* Axis Controls */}

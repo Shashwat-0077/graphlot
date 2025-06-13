@@ -15,6 +15,8 @@ export type RadialSpecificConfig = {
     endAngle: number; // in degrees
     legendPosition: RadialLegendPositionType; // position of the legend
     legendTextSize: number; // size of the legend text in pixels
+    gap: number; // gap between segments in pixels
+    stacked: boolean; // whether the segments are stacked or not
 };
 
 export const radialSpecificConfigDefaults: RadialSpecificConfig = {
@@ -24,6 +26,8 @@ export const radialSpecificConfigDefaults: RadialSpecificConfig = {
     endAngle: 360, // default end angle
     legendPosition: RADIAL_LEGEND_POSITION_END as RadialLegendPositionType, // default legend position
     legendTextSize: 12, // default legend text size
+    gap: 5, // default gap between segments
+    stacked: false, // default stacked option
 };
 
 // The default config for a Radial chart

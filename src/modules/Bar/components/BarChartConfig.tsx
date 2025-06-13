@@ -41,7 +41,8 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         },
     });
 
-    // Individual selectors for chart stores
+    // Store selectors
+    // Visual configuration
     const gridOrientation = useChartVisualStore(
         (state) => state.gridOrientation
     );
@@ -49,14 +50,27 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
+    // Color configuration
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -67,7 +81,20 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const legendTextColor = useChartColorStore(
         (state) => state.legendTextColor
     );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
+    // Typography configuration
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -136,10 +163,13 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
             gridWidth,
             tooltipEnabled,
             tooltipStyle,
+            tooltipBorderWidth,
+            tooltipBorderRadius,
+            tooltipTotalEnabled,
+            tooltipSeparatorEnabled,
         };
 
         const chartBoxModelConfig = {
-            borderEnabled,
             borderWidth,
             marginBottom,
             marginLeft,
@@ -154,6 +184,10 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
             gridColor,
             labelColor,
             legendTextColor,
+            tooltipBackgroundColor,
+            tooltipTextColor,
+            tooltipSeparatorColor,
+            tooltipBorderColor,
         };
 
         const chartTypographyConfig = {
@@ -403,134 +437,6 @@ export const BarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
 };
 
 function BarConfigTabs() {
-    // Individual selectors for chart visual store
-    const gridOrientation = useChartVisualStore(
-        (state) => state.gridOrientation
-    );
-    const setGridOrientation = useChartVisualStore(
-        (state) => state.setGridOrientation
-    );
-    const gridStyle = useChartVisualStore((state) => state.gridStyle);
-    const setGridStyle = useChartVisualStore((state) => state.setGridStyle);
-    const gridWidth = useChartVisualStore((state) => state.gridWidth);
-    const setGridWidth = useChartVisualStore((state) => state.setGridWidth);
-    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
-    const toggleTooltip = useChartVisualStore((state) => state.toggleTooltip);
-    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
-    const setTooltipStyle = useChartVisualStore(
-        (state) => state.setTooltipStyle
-    );
-
-    // Box model selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
-    const toggleBorder = useChartBoxModelStore((state) => state.toggleBorder);
-    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
-    const setBorderWidth = useChartBoxModelStore(
-        (state) => state.setBorderWidth
-    );
-    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
-    const setMarginBottom = useChartBoxModelStore(
-        (state) => state.setMarginBottom
-    );
-    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
-    const setMarginLeft = useChartBoxModelStore((state) => state.setMarginLeft);
-    const marginRight = useChartBoxModelStore((state) => state.marginRight);
-    const setMarginRight = useChartBoxModelStore(
-        (state) => state.setMarginRight
-    );
-    const marginTop = useChartBoxModelStore((state) => state.marginTop);
-    const setMarginTop = useChartBoxModelStore((state) => state.setMarginTop);
-
-    // Color selectors
-    const backgroundColor = useChartColorStore(
-        (state) => state.backgroundColor
-    );
-    const setBackgroundColor = useChartColorStore(
-        (state) => state.setBackgroundColor
-    );
-    const borderColor = useChartColorStore((state) => state.borderColor);
-    const setBorderColor = useChartColorStore((state) => state.setBorderColor);
-    const gridColor = useChartColorStore((state) => state.gridColor);
-    const setGridColor = useChartColorStore((state) => state.setGridColor);
-    const labelColor = useChartColorStore((state) => state.labelColor);
-    const setLabelColor = useChartColorStore((state) => state.setLabelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
-    );
-    const setLegendTextColor = useChartColorStore(
-        (state) => state.setLegendTextColor
-    );
-    const colorPalette = useChartColorStore((state) => state.colorPalette);
-    const setColorPalette = useChartColorStore(
-        (state) => state.setColorPalette
-    );
-    const addColorPalette = useChartColorStore(
-        (state) => state.addColorPalette
-    );
-    const clearColorPalette = useChartColorStore(
-        (state) => state.clearColorPalette
-    );
-    const removeColorPalette = useChartColorStore(
-        (state) => state.removeColorPalette
-    );
-    const updateColorPalette = useChartColorStore(
-        (state) => state.updateColorPalette
-    );
-
-    // Typography selectors
-    const label = useChartTypographyStore((state) => state.label);
-    const setLabel = useChartTypographyStore((state) => state.setLabel);
-    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
-    const setLabelAnchor = useChartTypographyStore(
-        (state) => state.setLabelAnchor
-    );
-    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
-    const toggleLabel = useChartTypographyStore((state) => state.toggleLabel);
-    const labelFontFamily = useChartTypographyStore(
-        (state) => state.labelFontFamily
-    );
-    const setLabelFontFamily = useChartTypographyStore(
-        (state) => state.setLabelFontFamily
-    );
-    const labelFontStyle = useChartTypographyStore(
-        (state) => state.labelFontStyle
-    );
-    const setLabelFontStyle = useChartTypographyStore(
-        (state) => state.setLabelFontStyle
-    );
-    const labelSize = useChartTypographyStore((state) => state.labelSize);
-    const setLabelSize = useChartTypographyStore((state) => state.setLabelSize);
-    const legendEnabled = useChartTypographyStore(
-        (state) => state.legendEnabled
-    );
-    const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
-
-    // Bar chart selectors
-    const yAxisEnabled = useBarChartStore((state) => state.yAxisEnabled);
-    const xAxisEnabled = useBarChartStore((state) => state.xAxisEnabled);
-    const toggleXAxis = useBarChartStore((state) => state.toggleXAxis);
-    const toggleYAxis = useBarChartStore((state) => state.toggleYAxis);
-    const barBorderRadius = useBarChartStore((state) => state.barBorderRadius);
-    const setBarBorderRadius = useBarChartStore(
-        (state) => state.setBorderRadius
-    );
-    const barWidth = useBarChartStore((state) => state.barWidth);
-    const setBarWidth = useBarChartStore((state) => state.setBarWidth);
-    const barGap = useBarChartStore((state) => state.barGap);
-    const setBarGap = useBarChartStore((state) => state.setBarGap);
-    const fillOpacity = useBarChartStore((state) => state.fillOpacity);
-    const setFillOpacity = useBarChartStore((state) => state.setFillOpacity);
-    const strokeWidth = useBarChartStore((state) => state.strokeWidth);
-    const setStrokeWidth = useBarChartStore((state) => state.setStrokeWidth);
-    const stacked = useBarChartStore((state) => state.stacked);
-    const toggleStacked = useBarChartStore((state) => state.toggleStacked);
-    const borderRadiusBetweenBars = useBarChartStore(
-        (state) => state.borderRadiusBetweenBars
-    );
-    const toggleBorderRadiusBetweenBars = useBarChartStore(
-        (state) => state.toggleBorderRadiusBetweenBars
-    );
-
     return (
         <Tabs defaultValue="colors" className="w-full">
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 rounded-none bg-background">
@@ -555,91 +461,15 @@ function BarConfigTabs() {
             </TabsList>
             <div className="p-4">
                 <TabsContent className="mt-0" value="colors">
-                    <ColorsConfig
-                        backgroundColor={backgroundColor}
-                        borderColor={borderColor}
-                        colorPalette={colorPalette}
-                        gridColor={gridColor}
-                        labelColor={labelColor}
-                        legendTextColor={legendTextColor}
-                        setBackgroundColor={setBackgroundColor}
-                        setBorderColor={setBorderColor}
-                        setColorPalette={setColorPalette}
-                        setGridColor={setGridColor}
-                        setLabelColor={setLabelColor}
-                        setLegendTextColor={setLegendTextColor}
-                        addColorPalette={addColorPalette}
-                        clearColorPalette={clearColorPalette}
-                        removeColorPalette={removeColorPalette}
-                        updateColorPalette={updateColorPalette}
-                    />
+                    <ColorsConfig />
                 </TabsContent>
                 <TabsContent className="mt-0" value="ui-features">
-                    <UIConfig
-                        label={label}
-                        setLabel={setLabel}
-                        labelAnchor={labelAnchor}
-                        setLabelAnchor={setLabelAnchor}
-                        labelEnabled={labelEnabled}
-                        labelFontFamily={labelFontFamily}
-                        setLabelFontFamily={setLabelFontFamily}
-                        labelFontStyle={labelFontStyle}
-                        setLabelFontStyle={setLabelFontStyle}
-                        labelSize={labelSize}
-                        setLabelSize={setLabelSize}
-                        legendEnabled={legendEnabled}
-                        toggleLabel={toggleLabel}
-                        toggleLegend={toggleLegend}
-                    >
-                        <BarChartStyleConfig
-                            yAxisEnabled={yAxisEnabled}
-                            xAxisEnabled={xAxisEnabled}
-                            toggleXAxis={toggleXAxis}
-                            toggleYAxis={toggleYAxis}
-                            barBorderRadius={barBorderRadius}
-                            setBarBorderRadius={setBarBorderRadius}
-                            barWidth={barWidth}
-                            setBarWidth={setBarWidth}
-                            barGap={barGap}
-                            setBarGap={setBarGap}
-                            fillOpacity={fillOpacity}
-                            setFillOpacity={setFillOpacity}
-                            strokeWidth={strokeWidth}
-                            setStrokeWidth={setStrokeWidth}
-                            stacked={stacked}
-                            toggleStacked={toggleStacked}
-                            borderRadiusBetweenBars={borderRadiusBetweenBars}
-                            toggleBorderRadiusBetweenBars={
-                                toggleBorderRadiusBetweenBars
-                            }
-                        />
+                    <UIConfig>
+                        <BarChartStyleConfig />
                     </UIConfig>
                 </TabsContent>
                 <TabsContent value="grid-layout" className="mt-0">
-                    <GridAndBoxModelConfig
-                        borderEnabled={borderEnabled}
-                        borderWidth={borderWidth}
-                        marginBottom={marginBottom}
-                        marginLeft={marginLeft}
-                        marginRight={marginRight}
-                        marginTop={marginTop}
-                        setBorderWidth={setBorderWidth}
-                        setMarginBottom={setMarginBottom}
-                        setMarginLeft={setMarginLeft}
-                        setMarginRight={setMarginRight}
-                        setMarginTop={setMarginTop}
-                        toggleBorder={toggleBorder}
-                        gridOrientation={gridOrientation}
-                        setGridOrientation={setGridOrientation}
-                        gridStyle={gridStyle}
-                        setGridStyle={setGridStyle}
-                        gridWidth={gridWidth}
-                        setGridWidth={setGridWidth}
-                        tooltipEnabled={tooltipEnabled}
-                        tooltipStyle={tooltipStyle}
-                        setTooltipStyle={setTooltipStyle}
-                        toggleTooltip={toggleTooltip}
-                    />
+                    <GridAndBoxModelConfig />
                 </TabsContent>
             </div>
         </Tabs>

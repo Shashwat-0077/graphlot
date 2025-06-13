@@ -1,13 +1,13 @@
 "use client";
-import { Columns3, Grid2x2, Rows3 } from "lucide-react";
+import { Circle, Columns3, Grid2x2, Pentagon, Rows3 } from "lucide-react";
 import { TbLineDashed, TbLineDotted } from "react-icons/tb";
 import { RxBorderSolid } from "react-icons/rx";
 
 import {
-    GRID_ORIENTATION_BOTH,
-    GRID_ORIENTATION_HORIZONTAL,
-    GRID_ORIENTATION_NONE,
-    GRID_ORIENTATION_VERTICAL,
+    GRID_ORIENTATION_TYPE_THREE,
+    GRID_ORIENTATION_TYPE_ONE,
+    GRID_ORIENTATION_TYPE_NONE,
+    GRID_ORIENTATION_TYPE_TWO,
     GRID_STYLE_DASHED,
     GRID_STYLE_DOTTED,
     GRID_STYLE_SOLID,
@@ -30,37 +30,80 @@ const GridOrientationSelect = ({
                 value={gridOrientation}
                 onValueChange={(val: GridOrientation) => {
                     if (
-                        val === GRID_ORIENTATION_HORIZONTAL ||
-                        val === GRID_ORIENTATION_VERTICAL ||
-                        val === GRID_ORIENTATION_BOTH
+                        val === GRID_ORIENTATION_TYPE_ONE ||
+                        val === GRID_ORIENTATION_TYPE_TWO ||
+                        val === GRID_ORIENTATION_TYPE_THREE
                     ) {
                         setGridOrientation(val);
                     } else {
-                        setGridOrientation(GRID_ORIENTATION_NONE);
+                        setGridOrientation(GRID_ORIENTATION_TYPE_NONE);
                     }
                 }}
                 className="flex"
             >
                 <ToggleGroupItem
-                    value={GRID_ORIENTATION_HORIZONTAL}
-                    aria-label={"Toggle " + GRID_ORIENTATION_HORIZONTAL}
+                    value={GRID_ORIENTATION_TYPE_ONE}
+                    aria-label={"Toggle " + GRID_ORIENTATION_TYPE_ONE}
                     className="size-10 p-0"
                 >
                     <Rows3 size={20} />
                 </ToggleGroupItem>
                 <ToggleGroupItem
-                    value={GRID_ORIENTATION_VERTICAL}
-                    aria-label={"Toggle " + GRID_ORIENTATION_VERTICAL}
+                    value={GRID_ORIENTATION_TYPE_TWO}
+                    aria-label={"Toggle " + GRID_ORIENTATION_TYPE_TWO}
                     className="size-10 p-0"
                 >
                     <Columns3 size={20} />
                 </ToggleGroupItem>
                 <ToggleGroupItem
-                    value={GRID_ORIENTATION_BOTH}
-                    aria-label={"Toggle " + GRID_ORIENTATION_BOTH}
+                    value={GRID_ORIENTATION_TYPE_THREE}
+                    aria-label={"Toggle " + GRID_ORIENTATION_TYPE_THREE}
                     className="size-10 p-0"
                 >
                     <Grid2x2 size={20} />
+                </ToggleGroupItem>
+            </ToggleGroup>
+        </div>
+    );
+};
+
+const GridOrientationSelectForRadar = ({
+    gridOrientation,
+    setGridOrientation,
+}: {
+    gridOrientation: GridOrientation;
+    setGridOrientation: (gridOrientation: GridOrientation) => void;
+}) => {
+    return (
+        <div className="flex items-center">
+            <ToggleGroup
+                type="single"
+                value={gridOrientation}
+                onValueChange={(val: GridOrientation) => {
+                    if (
+                        val === GRID_ORIENTATION_TYPE_ONE ||
+                        val === GRID_ORIENTATION_TYPE_TWO
+                    ) {
+                        setGridOrientation(val);
+                    } else {
+                        setGridOrientation(GRID_ORIENTATION_TYPE_NONE);
+                    }
+                }}
+                className="flex"
+            >
+                <ToggleGroupItem
+                    value={GRID_ORIENTATION_TYPE_ONE}
+                    aria-label={"Toggle " + GRID_ORIENTATION_TYPE_ONE}
+                    className="size-10 p-0"
+                >
+                    <Pentagon size={20} />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                    value={GRID_ORIENTATION_TYPE_TWO}
+                    aria-label={"Toggle " + GRID_ORIENTATION_TYPE_TWO}
+                    className="size-10 p-0"
+                >
+                    <Circle size={20} />
                 </ToggleGroupItem>
             </ToggleGroup>
         </div>
@@ -116,4 +159,8 @@ const GridStylesSelect = ({
     );
 };
 
-export { GridOrientationSelect, GridStylesSelect };
+export {
+    GridOrientationSelect,
+    GridStylesSelect,
+    GridOrientationSelectForRadar,
+};

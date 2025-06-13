@@ -40,7 +40,8 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         },
     });
 
-    // Chart visual store selectors
+    // Store selectors
+    // Visual configuration
     const gridOrientation = useChartVisualStore(
         (state) => state.gridOrientation
     );
@@ -48,16 +49,27 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    // Chart box model store selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
-    // Chart color store selectors
+    // Color configuration
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -68,8 +80,20 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const legendTextColor = useChartColorStore(
         (state) => state.legendTextColor
     );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
-    // Chart typography store selectors
+    // Typography configuration
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -98,7 +122,6 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     );
     const strokeWidth = useRadarChartStore((state) => state.strokeWidth);
     const xAxisEnabled = useRadarChartStore((state) => state.xAxisEnabled);
-    const yAxisEnabled = useRadarChartStore((state) => state.yAxisEnabled);
 
     // Radar chart store actions
     const setXAxisField = useRadarChartStore((state) => state.setXAxisField);
@@ -130,10 +153,13 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
             gridWidth,
             tooltipEnabled,
             tooltipStyle,
+            tooltipBorderWidth,
+            tooltipBorderRadius,
+            tooltipTotalEnabled,
+            tooltipSeparatorEnabled,
         };
 
         const chartBoxModelConfig = {
-            borderEnabled,
             borderWidth,
             marginBottom,
             marginLeft,
@@ -148,6 +174,10 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
             gridColor,
             labelColor,
             legendTextColor,
+            tooltipBackgroundColor,
+            tooltipTextColor,
+            tooltipSeparatorColor,
+            tooltipBorderColor,
         };
 
         const chartTypographyConfig = {
@@ -174,7 +204,6 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
                     cumulativeEnabled: cumulative,
                     filters: localFilters,
                     specificConfig: {
-                        yAxisEnabled,
                         xAxisEnabled,
                         strokeWidth,
                     },
@@ -394,116 +423,6 @@ export const RadarChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
 };
 
 function RadarConfigTabs() {
-    // Chart visual store selectors and actions
-    const gridOrientation = useChartVisualStore(
-        (state) => state.gridOrientation
-    );
-    const setGridOrientation = useChartVisualStore(
-        (state) => state.setGridOrientation
-    );
-    const gridStyle = useChartVisualStore((state) => state.gridStyle);
-    const setGridStyle = useChartVisualStore((state) => state.setGridStyle);
-    const gridWidth = useChartVisualStore((state) => state.gridWidth);
-    const setGridWidth = useChartVisualStore((state) => state.setGridWidth);
-    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
-    const toggleTooltip = useChartVisualStore((state) => state.toggleTooltip);
-    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
-    const setTooltipStyle = useChartVisualStore(
-        (state) => state.setTooltipStyle
-    );
-
-    // Box model selectors and actions
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
-    const toggleBorder = useChartBoxModelStore((state) => state.toggleBorder);
-    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
-    const setBorderWidth = useChartBoxModelStore(
-        (state) => state.setBorderWidth
-    );
-    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
-    const setMarginBottom = useChartBoxModelStore(
-        (state) => state.setMarginBottom
-    );
-    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
-    const setMarginLeft = useChartBoxModelStore((state) => state.setMarginLeft);
-    const marginRight = useChartBoxModelStore((state) => state.marginRight);
-    const setMarginRight = useChartBoxModelStore(
-        (state) => state.setMarginRight
-    );
-    const marginTop = useChartBoxModelStore((state) => state.marginTop);
-    const setMarginTop = useChartBoxModelStore((state) => state.setMarginTop);
-
-    // Color selectors and actions
-    const backgroundColor = useChartColorStore(
-        (state) => state.backgroundColor
-    );
-    const setBackgroundColor = useChartColorStore(
-        (state) => state.setBackgroundColor
-    );
-    const borderColor = useChartColorStore((state) => state.borderColor);
-    const setBorderColor = useChartColorStore((state) => state.setBorderColor);
-    const gridColor = useChartColorStore((state) => state.gridColor);
-    const setGridColor = useChartColorStore((state) => state.setGridColor);
-    const labelColor = useChartColorStore((state) => state.labelColor);
-    const setLabelColor = useChartColorStore((state) => state.setLabelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
-    );
-    const setLegendTextColor = useChartColorStore(
-        (state) => state.setLegendTextColor
-    );
-    const colorPalette = useChartColorStore((state) => state.colorPalette);
-    const setColorPalette = useChartColorStore(
-        (state) => state.setColorPalette
-    );
-    const addColorPalette = useChartColorStore(
-        (state) => state.addColorPalette
-    );
-    const clearColorPalette = useChartColorStore(
-        (state) => state.clearColorPalette
-    );
-    const removeColorPalette = useChartColorStore(
-        (state) => state.removeColorPalette
-    );
-    const updateColorPalette = useChartColorStore(
-        (state) => state.updateColorPalette
-    );
-
-    // Typography selectors and actions
-    const label = useChartTypographyStore((state) => state.label);
-    const setLabel = useChartTypographyStore((state) => state.setLabel);
-    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
-    const setLabelAnchor = useChartTypographyStore(
-        (state) => state.setLabelAnchor
-    );
-    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
-    const toggleLabel = useChartTypographyStore((state) => state.toggleLabel);
-    const labelFontFamily = useChartTypographyStore(
-        (state) => state.labelFontFamily
-    );
-    const setLabelFontFamily = useChartTypographyStore(
-        (state) => state.setLabelFontFamily
-    );
-    const labelFontStyle = useChartTypographyStore(
-        (state) => state.labelFontStyle
-    );
-    const setLabelFontStyle = useChartTypographyStore(
-        (state) => state.setLabelFontStyle
-    );
-    const labelSize = useChartTypographyStore((state) => state.labelSize);
-    const setLabelSize = useChartTypographyStore((state) => state.setLabelSize);
-    const legendEnabled = useChartTypographyStore(
-        (state) => state.legendEnabled
-    );
-    const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
-
-    // Radar chart selectors and actions
-    const strokeWidth = useRadarChartStore((state) => state.strokeWidth);
-    const setStrokeWidth = useRadarChartStore((state) => state.setStrokeWidth);
-    const xAxisEnabled = useRadarChartStore((state) => state.xAxisEnabled);
-    const yAxisEnabled = useRadarChartStore((state) => state.yAxisEnabled);
-    const toggleXAxis = useRadarChartStore((state) => state.toggleXAxis);
-    const toggleYAxis = useRadarChartStore((state) => state.toggleYAxis);
-
     return (
         <Tabs defaultValue="colors" className="w-full">
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 rounded-none bg-background">
@@ -528,77 +447,15 @@ function RadarConfigTabs() {
             </TabsList>
             <div className="p-4">
                 <TabsContent value="colors" className="mt-0">
-                    <ColorsConfig
-                        backgroundColor={backgroundColor}
-                        borderColor={borderColor}
-                        colorPalette={colorPalette}
-                        gridColor={gridColor}
-                        labelColor={labelColor}
-                        legendTextColor={legendTextColor}
-                        setBackgroundColor={setBackgroundColor}
-                        setBorderColor={setBorderColor}
-                        setColorPalette={setColorPalette}
-                        setGridColor={setGridColor}
-                        setLabelColor={setLabelColor}
-                        setLegendTextColor={setLegendTextColor}
-                        addColorPalette={addColorPalette}
-                        clearColorPalette={clearColorPalette}
-                        removeColorPalette={removeColorPalette}
-                        updateColorPalette={updateColorPalette}
-                    />
+                    <ColorsConfig />
                 </TabsContent>
                 <TabsContent value="ui-features" className="mt-0">
-                    <UIConfig
-                        label={label}
-                        setLabel={setLabel}
-                        labelAnchor={labelAnchor}
-                        setLabelAnchor={setLabelAnchor}
-                        labelEnabled={labelEnabled}
-                        labelFontFamily={labelFontFamily}
-                        setLabelFontFamily={setLabelFontFamily}
-                        labelFontStyle={labelFontStyle}
-                        setLabelFontStyle={setLabelFontStyle}
-                        labelSize={labelSize}
-                        setLabelSize={setLabelSize}
-                        legendEnabled={legendEnabled}
-                        toggleLabel={toggleLabel}
-                        toggleLegend={toggleLegend}
-                    >
-                        <RadarChartStyleConfig
-                            strokeWidth={strokeWidth}
-                            setStrokeWidth={setStrokeWidth}
-                            xAxisEnabled={xAxisEnabled}
-                            yAxisEnabled={yAxisEnabled}
-                            toggleXAxis={toggleXAxis}
-                            toggleYAxis={toggleYAxis}
-                        />
+                    <UIConfig>
+                        <RadarChartStyleConfig />
                     </UIConfig>
                 </TabsContent>
                 <TabsContent value="grid-layout" className="mt-0">
-                    <GridAndBoxModelConfig
-                        borderEnabled={borderEnabled}
-                        borderWidth={borderWidth}
-                        marginBottom={marginBottom}
-                        marginLeft={marginLeft}
-                        marginRight={marginRight}
-                        marginTop={marginTop}
-                        setBorderWidth={setBorderWidth}
-                        setMarginBottom={setMarginBottom}
-                        setMarginLeft={setMarginLeft}
-                        setMarginRight={setMarginRight}
-                        setMarginTop={setMarginTop}
-                        toggleBorder={toggleBorder}
-                        gridOrientation={gridOrientation}
-                        setGridOrientation={setGridOrientation}
-                        gridStyle={gridStyle}
-                        setGridStyle={setGridStyle}
-                        gridWidth={gridWidth}
-                        setGridWidth={setGridWidth}
-                        tooltipEnabled={tooltipEnabled}
-                        tooltipStyle={tooltipStyle}
-                        setTooltipStyle={setTooltipStyle}
-                        toggleTooltip={toggleTooltip}
-                    />
+                    <GridAndBoxModelConfig showGridOrientationRadar />
                 </TabsContent>
             </div>
         </Tabs>

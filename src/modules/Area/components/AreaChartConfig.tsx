@@ -5,32 +5,37 @@ import { Save, Sliders, Palette, Layout } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWindowSize } from "react-use";
 
+// UI Components
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import type { ChartConfigComponent, ChartFilter } from "@/constants";
-import { useAreaChartStore } from "@/modules/Area/store";
-import { toast } from "@/hooks/use-toast";
-import { useUpdateAreaChart } from "@/modules/Area/api/client/use-update-area-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/CopyButton";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { ChartConfigComponent, ChartFilter } from "@/constants";
 import { envClient } from "@/lib/env/clientEnv";
+import { useAreaChartStore } from "@/modules/Area/store";
 import {
     useChartBoxModelStore,
     useChartColorStore,
     useChartTypographyStore,
     useChartVisualStore,
 } from "@/modules/Chart/store";
+import { useUpdateAreaChart } from "@/modules/Area/api/client/use-update-area-chart";
+import { useChartColumns } from "@/modules/Chart/api/client/use-chart";
 import { ColorsConfig } from "@/modules/Chart/components/ColorConfig";
 import { UIConfig } from "@/modules/Chart/components/UIConfig";
 import { AreaChartStyleConfig } from "@/modules/Area/components/AreaChartStyleConfig";
 import { GridAndBoxModelConfig } from "@/modules/Chart/components/GridConfig";
 import { DataSection } from "@/modules/Area/components/DataSection";
-import { useChartColumns } from "@/modules/Chart/api/client/use-chart";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/hooks/use-toast";
 
 export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const path = usePathname();
+    const { width } = useWindowSize();
+    const isBigScreen = width >= 1280;
+
+    // API mutation for updating chart
     const { mutate: updateChart } = useUpdateAreaChart({
         onSuccess: () => {
             toast({
@@ -40,7 +45,8 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         },
     });
 
-    // Solution 1: Use individual selectors (Recommended)
+    // Store selectors
+    // Visual configuration
     const gridOrientation = useChartVisualStore(
         (state) => state.gridOrientation
     );
@@ -48,14 +54,27 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
+    // Color configuration
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -66,7 +85,20 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const legendTextColor = useChartColorStore(
         (state) => state.legendTextColor
     );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
+    // Typography configuration
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -81,7 +113,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         (state) => state.legendEnabled
     );
 
-    // Area chart store selectors
+    // Area chart specific configuration
     const xAxisField = useAreaChartStore((state) => state.xAxisField);
     const yAxisField = useAreaChartStore((state) => state.yAxisField);
     const filters = useAreaChartStore((state) => state.filters);
@@ -122,104 +154,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         (state) => state.setCumulativeEnabled
     );
 
-    // Create config objects only when needed for the API call
-    const handleUpdate = () => {
-        toast({
-            title: "Saving chart...",
-            description: "Please wait while we update your chart",
-        });
-
-        // Create objects here, not in selectors
-        const chartVisualConfig = {
-            gridOrientation,
-            gridStyle,
-            gridWidth,
-            tooltipEnabled,
-            tooltipStyle,
-        };
-
-        const chartBoxModelConfig = {
-            borderEnabled,
-            borderWidth,
-            marginBottom,
-            marginLeft,
-            marginRight,
-            marginTop,
-        };
-
-        const chartColorConfig = {
-            backgroundColor,
-            borderColor,
-            colorPalette,
-            gridColor,
-            labelColor,
-            legendTextColor,
-        };
-
-        const chartTypographyConfig = {
-            label,
-            labelAnchor,
-            labelEnabled,
-            labelFontFamily,
-            labelFontStyle,
-            labelSize,
-            legendEnabled,
-        };
-
-        updateChart({
-            param: {
-                id: chartId,
-            },
-            json: {
-                area_chart: {
-                    xAxisField: xAxis,
-                    yAxisField: yAxis,
-                    xAxisSortOrder: sortX,
-                    yAxisSortOrder: sortY,
-                    omitZeroValuesEnabled: omitZeroValues,
-                    cumulativeEnabled: cumulative,
-                    filters: localFilters,
-                    specificConfig: {
-                        yAxisEnabled,
-                        xAxisEnabled,
-                        stackedEnabled,
-                        lineStyle: areaStyle,
-                        strokeWidth,
-                        fill: {
-                            opacity: fillOpacity,
-                            start: fillStart,
-                            end: fillEnd,
-                        },
-                        isAreaChart,
-                    },
-                },
-                chart_box_model: chartBoxModelConfig,
-                chart_visual: chartVisualConfig,
-                chart_colors: chartColorConfig,
-                chart_typography: chartTypographyConfig,
-            },
-        });
-    };
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-                e.preventDefault();
-                handleUpdate();
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    });
-
-    const { width } = useWindowSize();
-    const isBigScreen = width >= 1280;
-
-    // Local states
+    // Local state for form inputs
     const [xAxis, setXAxis] = useState(xAxisField);
     const [yAxis, setYAxis] = useState(yAxisField);
     const [sortX, setSortX] = useState(xAxisSortOrder);
@@ -228,6 +163,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
     const [cumulative, setCumulative] = useState(cumulativeEnabled);
     const [localFilters, setLocalFilters] = useState<ChartFilter[]>(filters);
 
+    // Filter management functions
     const addFilter = (filter: ChartFilter) => {
         setLocalFilters((prevFilters) => [...prevFilters, filter]);
     };
@@ -266,6 +202,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         });
     };
 
+    // Apply local changes to store
     const onApply = () => {
         setXAxisField(xAxis);
         setYAxisField(yAxis);
@@ -276,6 +213,95 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         setOmitZeroValuesEnabled(omitZeroValues);
     };
 
+    // Save chart configuration
+    const handleUpdate = () => {
+        toast({
+            title: "Saving chart...",
+            description: "Please wait while we update your chart",
+        });
+
+        updateChart({
+            param: { id: chartId },
+            json: {
+                area_chart: {
+                    xAxisField: xAxis,
+                    yAxisField: yAxis,
+                    xAxisSortOrder: sortX,
+                    yAxisSortOrder: sortY,
+                    omitZeroValuesEnabled: omitZeroValues,
+                    cumulativeEnabled: cumulative,
+                    filters: localFilters,
+                    specificConfig: {
+                        yAxisEnabled,
+                        xAxisEnabled,
+                        stackedEnabled,
+                        lineStyle: areaStyle,
+                        strokeWidth,
+                        fill: {
+                            opacity: fillOpacity,
+                            start: fillStart,
+                            end: fillEnd,
+                        },
+                        isAreaChart,
+                    },
+                },
+                chart_box_model: {
+                    borderWidth,
+                    marginBottom,
+                    marginLeft,
+                    marginRight,
+                    marginTop,
+                },
+                chart_visual: {
+                    gridOrientation,
+                    gridStyle,
+                    gridWidth,
+                    tooltipEnabled,
+                    tooltipStyle,
+                    tooltipBorderWidth,
+                    tooltipBorderRadius,
+                    tooltipTotalEnabled,
+                    tooltipSeparatorEnabled,
+                },
+                chart_colors: {
+                    backgroundColor,
+                    borderColor,
+                    colorPalette,
+                    gridColor,
+                    labelColor,
+                    legendTextColor,
+                    tooltipBackgroundColor,
+                    tooltipTextColor,
+                    tooltipSeparatorColor,
+                    tooltipBorderColor,
+                },
+                chart_typography: {
+                    label,
+                    labelAnchor,
+                    labelEnabled,
+                    labelFontFamily,
+                    labelFontStyle,
+                    labelSize,
+                    legendEnabled,
+                },
+            },
+        });
+    };
+
+    // Keyboard shortcut for saving
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+                e.preventDefault();
+                handleUpdate();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    });
+
+    // Fetch chart columns
     const {
         columns,
         isLoading: columnsLoading,
@@ -285,6 +311,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         userId: userId || "",
     });
 
+    // Loading state
     if (columnsLoading) {
         return (
             <div className="mx-auto py-8">
@@ -303,6 +330,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
         );
     }
 
+    // Error state
     if (!columns || error) {
         return (
             <div className="mx-auto py-8">
@@ -323,12 +351,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
                 <h1 className="text-2xl font-bold">Area Chart Configuration</h1>
                 <div className="flex items-center gap-2">
                     <CopyButton
-                        textToCopy={
-                            envClient.NEXT_PUBLIC_APP_URL +
-                            path +
-                            "/view?user_id=" +
-                            userId
-                        }
+                        textToCopy={`${envClient.NEXT_PUBLIC_APP_URL}${path}/view?user_id=${userId}`}
                     />
                     <Button
                         type="button"
@@ -406,131 +429,6 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
 };
 
 function AreaConfigTabs() {
-    // Use individual selectors for each property
-    const gridOrientation = useChartVisualStore(
-        (state) => state.gridOrientation
-    );
-    const setGridOrientation = useChartVisualStore(
-        (state) => state.setGridOrientation
-    );
-    const gridStyle = useChartVisualStore((state) => state.gridStyle);
-    const setGridStyle = useChartVisualStore((state) => state.setGridStyle);
-    const gridWidth = useChartVisualStore((state) => state.gridWidth);
-    const setGridWidth = useChartVisualStore((state) => state.setGridWidth);
-    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
-    const toggleTooltip = useChartVisualStore((state) => state.toggleTooltip);
-    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
-    const setTooltipStyle = useChartVisualStore(
-        (state) => state.setTooltipStyle
-    );
-
-    // Box model selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
-    const toggleBorder = useChartBoxModelStore((state) => state.toggleBorder);
-    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
-    const setBorderWidth = useChartBoxModelStore(
-        (state) => state.setBorderWidth
-    );
-    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
-    const setMarginBottom = useChartBoxModelStore(
-        (state) => state.setMarginBottom
-    );
-    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
-    const setMarginLeft = useChartBoxModelStore((state) => state.setMarginLeft);
-    const marginRight = useChartBoxModelStore((state) => state.marginRight);
-    const setMarginRight = useChartBoxModelStore(
-        (state) => state.setMarginRight
-    );
-    const marginTop = useChartBoxModelStore((state) => state.marginTop);
-    const setMarginTop = useChartBoxModelStore((state) => state.setMarginTop);
-
-    // Color selectors
-    const backgroundColor = useChartColorStore(
-        (state) => state.backgroundColor
-    );
-    const setBackgroundColor = useChartColorStore(
-        (state) => state.setBackgroundColor
-    );
-    const borderColor = useChartColorStore((state) => state.borderColor);
-    const setBorderColor = useChartColorStore((state) => state.setBorderColor);
-    const gridColor = useChartColorStore((state) => state.gridColor);
-    const setGridColor = useChartColorStore((state) => state.setGridColor);
-    const labelColor = useChartColorStore((state) => state.labelColor);
-    const setLabelColor = useChartColorStore((state) => state.setLabelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
-    );
-    const setLegendTextColor = useChartColorStore(
-        (state) => state.setLegendTextColor
-    );
-    const colorPalette = useChartColorStore((state) => state.colorPalette);
-    const setColorPalette = useChartColorStore(
-        (state) => state.setColorPalette
-    );
-    const addColorPalette = useChartColorStore(
-        (state) => state.addColorPalette
-    );
-    const clearColorPalette = useChartColorStore(
-        (state) => state.clearColorPalette
-    );
-    const removeColorPalette = useChartColorStore(
-        (state) => state.removeColorPalette
-    );
-    const updateColorPalette = useChartColorStore(
-        (state) => state.updateColorPalette
-    );
-
-    // Typography selectors
-    const label = useChartTypographyStore((state) => state.label);
-    const setLabel = useChartTypographyStore((state) => state.setLabel);
-    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
-    const setLabelAnchor = useChartTypographyStore(
-        (state) => state.setLabelAnchor
-    );
-    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
-    const toggleLabel = useChartTypographyStore((state) => state.toggleLabel);
-    const labelFontFamily = useChartTypographyStore(
-        (state) => state.labelFontFamily
-    );
-    const setLabelFontFamily = useChartTypographyStore(
-        (state) => state.setLabelFontFamily
-    );
-    const labelFontStyle = useChartTypographyStore(
-        (state) => state.labelFontStyle
-    );
-    const setLabelFontStyle = useChartTypographyStore(
-        (state) => state.setLabelFontStyle
-    );
-    const labelSize = useChartTypographyStore((state) => state.labelSize);
-    const setLabelSize = useChartTypographyStore((state) => state.setLabelSize);
-    const legendEnabled = useChartTypographyStore(
-        (state) => state.legendEnabled
-    );
-    const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
-
-    // Area chart selectors
-    const areaStyle = useAreaChartStore((state) => state.lineStyle);
-    const setAreaStyle = useAreaChartStore((state) => state.setAreaStyle);
-    const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
-    const setStrokeWidth = useAreaChartStore((state) => state.setStrokeWidth);
-    const {
-        opacity: fillOpacity,
-        start: fillStart,
-        end: fillEnd,
-    } = useAreaChartStore((state) => state.fill);
-    const setFillOpacity = useAreaChartStore((state) => state.setFillOpacity);
-    const setFillRange = useAreaChartStore((state) => state.setFillRange);
-    const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
-    const toggleIsAreaChart = useAreaChartStore(
-        (state) => state.toggleIsAreaChart
-    );
-    const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
-    const toggleStacked = useAreaChartStore((state) => state.toggleStacked);
-    const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
-    const yAxisEnabled = useAreaChartStore((state) => state.yAxisEnabled);
-    const toggleXAxis = useAreaChartStore((state) => state.toggleXAxis);
-    const toggleYAxis = useAreaChartStore((state) => state.toggleYAxis);
-
     return (
         <Tabs defaultValue="colors" className="w-full">
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 rounded-none bg-background">
@@ -555,88 +453,15 @@ function AreaConfigTabs() {
             </TabsList>
             <div className="p-4">
                 <TabsContent value="colors" className="mt-0">
-                    <ColorsConfig
-                        backgroundColor={backgroundColor}
-                        borderColor={borderColor}
-                        colorPalette={colorPalette}
-                        gridColor={gridColor}
-                        labelColor={labelColor}
-                        legendTextColor={legendTextColor}
-                        setBackgroundColor={setBackgroundColor}
-                        setBorderColor={setBorderColor}
-                        setColorPalette={setColorPalette}
-                        setGridColor={setGridColor}
-                        setLabelColor={setLabelColor}
-                        setLegendTextColor={setLegendTextColor}
-                        addColorPalette={addColorPalette}
-                        clearColorPalette={clearColorPalette}
-                        removeColorPalette={removeColorPalette}
-                        updateColorPalette={updateColorPalette}
-                    />
+                    <ColorsConfig />
                 </TabsContent>
                 <TabsContent value="ui-features" className="mt-0">
-                    <UIConfig
-                        label={label}
-                        setLabel={setLabel}
-                        labelAnchor={labelAnchor}
-                        setLabelAnchor={setLabelAnchor}
-                        labelEnabled={labelEnabled}
-                        labelFontFamily={labelFontFamily}
-                        setLabelFontFamily={setLabelFontFamily}
-                        labelFontStyle={labelFontStyle}
-                        setLabelFontStyle={setLabelFontStyle}
-                        labelSize={labelSize}
-                        setLabelSize={setLabelSize}
-                        legendEnabled={legendEnabled}
-                        toggleLabel={toggleLabel}
-                        toggleLegend={toggleLegend}
-                    >
-                        <AreaChartStyleConfig
-                            areaStyle={areaStyle}
-                            setAreaStyle={setAreaStyle}
-                            strokeWidth={strokeWidth}
-                            setStrokeWidth={setStrokeWidth}
-                            fillOpacity={fillOpacity}
-                            setFillOpacity={setFillOpacity}
-                            isAreaChart={isAreaChart}
-                            toggleIsAreaChart={toggleIsAreaChart}
-                            stackedEnabled={stackedEnabled}
-                            toggleStacked={toggleStacked}
-                            xAxisEnabled={xAxisEnabled}
-                            yAxisEnabled={yAxisEnabled}
-                            toggleXAxis={toggleXAxis}
-                            toggleYAxis={toggleYAxis}
-                            fillStart={fillStart}
-                            fillEnd={fillEnd}
-                            setFillRange={setFillRange}
-                        />
+                    <UIConfig>
+                        <AreaChartStyleConfig />
                     </UIConfig>
                 </TabsContent>
                 <TabsContent value="grid-layout" className="mt-0">
-                    <GridAndBoxModelConfig
-                        borderEnabled={borderEnabled}
-                        borderWidth={borderWidth}
-                        marginBottom={marginBottom}
-                        marginLeft={marginLeft}
-                        marginRight={marginRight}
-                        marginTop={marginTop}
-                        setBorderWidth={setBorderWidth}
-                        setMarginBottom={setMarginBottom}
-                        setMarginLeft={setMarginLeft}
-                        setMarginRight={setMarginRight}
-                        setMarginTop={setMarginTop}
-                        toggleBorder={toggleBorder}
-                        gridOrientation={gridOrientation}
-                        setGridOrientation={setGridOrientation}
-                        gridStyle={gridStyle}
-                        setGridStyle={setGridStyle}
-                        gridWidth={gridWidth}
-                        setGridWidth={setGridWidth}
-                        tooltipEnabled={tooltipEnabled}
-                        tooltipStyle={tooltipStyle}
-                        setTooltipStyle={setTooltipStyle}
-                        toggleTooltip={toggleTooltip}
-                    />
+                    <GridAndBoxModelConfig />
                 </TabsContent>
             </div>
         </Tabs>

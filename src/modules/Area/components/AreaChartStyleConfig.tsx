@@ -13,53 +13,38 @@ import {
 } from "@/components/ui/select";
 import {
     AREA_CHART_LINE_STYLE_OPTIONS,
-    AreaChartLineStyle,
     MAX_OPACITY,
     MAX_STROKE_WIDTH,
     MIN_OPACITY,
     MIN_STROKE_WIDTH,
 } from "@/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAreaChartStore } from "@/modules/Area/store";
 
-interface AreaChartStyleConfigProps {
-    areaStyle?: string;
-    setAreaStyle?: (value: AreaChartLineStyle) => void;
-    strokeWidth?: number;
-    setStrokeWidth?: (value: number) => void;
-    fillOpacity?: number;
-    fillStart?: number;
-    fillEnd?: number;
-    setFillOpacity?: (value: number) => void;
-    setFillRange?: (value: [number, number]) => void;
-    isAreaChart?: boolean;
-    toggleIsAreaChart?: () => void;
-    stackedEnabled?: boolean;
-    toggleStacked?: () => void;
-    xAxisEnabled?: boolean;
-    yAxisEnabled?: boolean;
-    toggleXAxis?: () => void;
-    toggleYAxis?: () => void;
-}
+export const AreaChartStyleConfig = () => {
+    // Area chart selectors
+    const areaStyle = useAreaChartStore((state) => state.lineStyle);
+    const setAreaStyle = useAreaChartStore((state) => state.setAreaStyle);
+    const strokeWidth = useAreaChartStore((state) => state.strokeWidth);
+    const setStrokeWidth = useAreaChartStore((state) => state.setStrokeWidth);
+    const {
+        opacity: fillOpacity,
+        start: fillStart,
+        end: fillEnd,
+    } = useAreaChartStore((state) => state.fill);
+    const setFillOpacity = useAreaChartStore((state) => state.setFillOpacity);
+    const setFillRange = useAreaChartStore((state) => state.setFillRange);
+    const isAreaChart = useAreaChartStore((state) => state.isAreaChart);
+    const toggleIsAreaChart = useAreaChartStore(
+        (state) => state.toggleIsAreaChart
+    );
+    const stackedEnabled = useAreaChartStore((state) => state.stackedEnabled);
+    const toggleStacked = useAreaChartStore((state) => state.toggleStacked);
+    const xAxisEnabled = useAreaChartStore((state) => state.xAxisEnabled);
+    const yAxisEnabled = useAreaChartStore((state) => state.yAxisEnabled);
+    const toggleXAxis = useAreaChartStore((state) => state.toggleXAxis);
+    const toggleYAxis = useAreaChartStore((state) => state.toggleYAxis);
 
-export const AreaChartStyleConfig = ({
-    areaStyle,
-    setAreaStyle,
-    strokeWidth,
-    setStrokeWidth,
-    fillOpacity,
-    setFillOpacity,
-    isAreaChart,
-    toggleIsAreaChart,
-    stackedEnabled,
-    toggleStacked,
-    xAxisEnabled,
-    yAxisEnabled,
-    toggleXAxis,
-    toggleYAxis,
-    fillStart,
-    fillEnd,
-    setFillRange,
-}: AreaChartStyleConfigProps) => {
     return (
         <Card className="border bg-card shadow-sm">
             <CardHeader className="pb-2">

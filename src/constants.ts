@@ -21,16 +21,16 @@ export const CHART_TYPES = [
 export type ChartType = (typeof CHART_TYPES)[number];
 
 // === Grid Types ===
-export const GRID_ORIENTATION_NONE = "NONE" as const;
-export const GRID_ORIENTATION_HORIZONTAL = "HORIZONTAL" as const;
-export const GRID_ORIENTATION_VERTICAL = "VERTICAL" as const;
-export const GRID_ORIENTATION_BOTH = "BOTH" as const;
+export const GRID_ORIENTATION_TYPE_NONE = "NONE" as const;
+export const GRID_ORIENTATION_TYPE_ONE = "TYPE_ONE" as const; // horizontal lines and for radar its polygon
+export const GRID_ORIENTATION_TYPE_TWO = "TYPE_TWO" as const; // vertical lines and for radar its circular lines
+export const GRID_ORIENTATION_TYPE_THREE = "TYPE_THREE" as const; // both horizontal and vertical lines and for radar its nothing
 
 export const GRID_ORIENTATION_OPTIONS = [
-    GRID_ORIENTATION_NONE,
-    GRID_ORIENTATION_HORIZONTAL,
-    GRID_ORIENTATION_VERTICAL,
-    GRID_ORIENTATION_BOTH,
+    GRID_ORIENTATION_TYPE_NONE,
+    GRID_ORIENTATION_TYPE_ONE,
+    GRID_ORIENTATION_TYPE_TWO,
+    GRID_ORIENTATION_TYPE_THREE,
 ] as const;
 export type GridOrientation = (typeof GRID_ORIENTATION_OPTIONS)[number];
 

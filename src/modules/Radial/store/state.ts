@@ -31,6 +31,8 @@ export type RadialChartActions = {
     setEndAngle: (angle: number) => void;
     setLegendPosition: (pos: RadialLegendPositionType) => void;
     setLegendTextSize: (size: number) => void;
+    setGap: (gap: number) => void;
+    toggleStacked: () => void;
 };
 
 // --- Store Type
@@ -106,6 +108,14 @@ export const createRadialChartStore = (
             setLegendTextSize: (size: number) =>
                 set((state) => {
                     state.legendTextSize = size;
+                }),
+            setGap: (gap: number) =>
+                set((state) => {
+                    state.gap = gap;
+                }),
+            toggleStacked: () =>
+                set((state) => {
+                    state.stacked = !state.stacked;
                 }),
         }))
     );

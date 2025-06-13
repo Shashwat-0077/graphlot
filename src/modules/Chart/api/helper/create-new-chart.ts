@@ -103,7 +103,8 @@ export async function createNewChart(
                 return (
                     chartType === CHART_TYPE_AREA ||
                     chartType === CHART_TYPE_BAR ||
-                    chartType === CHART_TYPE_RADAR
+                    chartType === CHART_TYPE_RADAR ||
+                    chartType === CHART_TYPE_RADIAL
                 );
             };
 

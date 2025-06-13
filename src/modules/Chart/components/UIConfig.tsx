@@ -15,30 +15,38 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "@/constants";
-import type { ChartTypographyStore } from "@/modules/Chart/store/state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useChartTypographyStore } from "@/modules/Chart/store";
 
-export const UIConfig = ({
-    label,
-    setLabel,
-    labelAnchor,
-    setLabelAnchor,
-    labelEnabled,
-    toggleLabel,
-    labelFontFamily,
-    setLabelFontFamily,
-    labelFontStyle,
-    setLabelFontStyle,
-    labelSize,
-    setLabelSize,
-    legendEnabled,
-    toggleLegend,
-    children,
-}: Partial<
-    ChartTypographyStore & {
-        children?: React.ReactNode;
-    }
->) => {
+export const UIConfig = ({ children }: { children?: React.ReactNode }) => {
+    // Typography selectors
+    const label = useChartTypographyStore((state) => state.label);
+    const setLabel = useChartTypographyStore((state) => state.setLabel);
+    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
+    const setLabelAnchor = useChartTypographyStore(
+        (state) => state.setLabelAnchor
+    );
+    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
+    const toggleLabel = useChartTypographyStore((state) => state.toggleLabel);
+    const labelFontFamily = useChartTypographyStore(
+        (state) => state.labelFontFamily
+    );
+    const setLabelFontFamily = useChartTypographyStore(
+        (state) => state.setLabelFontFamily
+    );
+    const labelFontStyle = useChartTypographyStore(
+        (state) => state.labelFontStyle
+    );
+    const setLabelFontStyle = useChartTypographyStore(
+        (state) => state.setLabelFontStyle
+    );
+    const labelSize = useChartTypographyStore((state) => state.labelSize);
+    const setLabelSize = useChartTypographyStore((state) => state.setLabelSize);
+    const legendEnabled = useChartTypographyStore(
+        (state) => state.legendEnabled
+    );
+    const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
+
     return (
         <div className="space-y-4">
             <Card className="border bg-card shadow-sm">

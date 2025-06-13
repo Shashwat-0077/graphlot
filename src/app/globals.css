@@ -3,6 +3,30 @@
 @tailwind utilities;
 
 
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted)) transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--muted));
+        border-radius: 20px;
+    }
+}
+
 @font-face {
     /* Name of the font */
     font-family: 'Playwrite-HR-Lijeva';

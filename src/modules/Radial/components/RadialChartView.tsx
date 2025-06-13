@@ -3,11 +3,7 @@
 import { useMemo } from "react";
 import { LabelList, RadialBar, RadialBarChart } from "recharts";
 
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useRadialChartStore } from "@/modules/Radial/store";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
@@ -25,7 +21,9 @@ import {
     useChartBoxModelStore,
     useChartColorStore,
     useChartTypographyStore,
+    useChartVisualStore,
 } from "@/modules/Chart/store";
+import { CustomTooltipContent } from "@/components/ui/CustomToolTip";
 
 export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8; // Limit for performance optimization
@@ -42,14 +40,57 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     const endAngle = useRadialChartStore((state) => state.endAngle);
     const legendPosition = useRadialChartStore((state) => state.legendPosition);
     const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
+    const gap = useRadialChartStore((state) => state.gap);
+    const stacked = useRadialChartStore((state) => state.stacked);
 
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Visual configuration from store
+
+    const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
+    const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
+
+    // Box model configuration from store
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
+    // Color configuration from store
+    const backgroundColor = useChartColorStore(
+        (state) => state.backgroundColor
+    );
+    const borderColor = useChartColorStore((state) => state.borderColor);
+    const colorPalette = useChartColorStore((state) => state.colorPalette);
+    const labelColor = useChartColorStore((state) => state.labelColor);
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
+
+    // Typography configuration from store
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -62,16 +103,6 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     const labelSize = useChartTypographyStore((state) => state.labelSize);
     const legendEnabled = useChartTypographyStore(
         (state) => state.legendEnabled
-    );
-
-    const backgroundColor = useChartColorStore(
-        (state) => state.backgroundColor
-    );
-    const borderColor = useChartColorStore((state) => state.borderColor);
-    const colorPalette = useChartColorStore((state) => state.colorPalette);
-    const labelColor = useChartColorStore((state) => state.labelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
     );
 
     const { data, config, isLoading, error } = useProcessData({
@@ -92,7 +123,6 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (isLoading) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -113,7 +143,6 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
         return (
             <ChartViewWrapper
                 bgColor={backgroundColor}
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 className="flex items-center justify-center"
@@ -153,7 +182,6 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (!xAxisField) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -214,7 +242,6 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
 
     return (
         <ChartViewWrapper
-            borderEnabled={borderEnabled}
             borderWidth={borderWidth}
             borderColor={borderColor}
             bgColor={backgroundColor}
@@ -231,7 +258,7 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
                         bottom: marginBottom,
                         left: marginLeft,
                     }}
-                    barCategoryGap={5}
+                    barCategoryGap={gap}
                     data={renderData}
                     innerRadius={innerRadius}
                     outerRadius={outerRadius}
@@ -264,14 +291,38 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
                         </text>
                     )}
 
-                    <ChartTooltip
-                        cursor={false}
-                        content={
-                            <ChartTooltipContent hideLabel nameKey="class" />
-                        }
-                    />
+                    {tooltipEnabled && (
+                        <ChartTooltip
+                            cursor={false}
+                            content={
+                                <CustomTooltipContent
+                                    indicator={tooltipStyle}
+                                    textColor={tooltipTextColor}
+                                    separatorEnabled={tooltipSeparatorEnabled}
+                                    totalEnabled={tooltipTotalEnabled}
+                                    backgroundColor={tooltipBackgroundColor}
+                                    separatorColor={tooltipSeparatorColor}
+                                />
+                            }
+                            wrapperStyle={{
+                                zIndex: 1000,
+                                borderRadius: `${tooltipBorderRadius}px`,
+                                borderWidth: `${tooltipBorderWidth}px`,
+                                borderColor: getRGBAString(
+                                    tooltipBorderColor,
+                                    true
+                                ),
+                                overflow: "hidden",
+                            }}
+                        />
+                    )}
 
-                    <RadialBar dataKey="count" background cornerRadius={10}>
+                    <RadialBar
+                        dataKey="count"
+                        background
+                        cornerRadius={10}
+                        stackId={stacked ? "a" : undefined}
+                    >
                         {legendEnabled && (
                             <LabelList
                                 position={legendPosition}

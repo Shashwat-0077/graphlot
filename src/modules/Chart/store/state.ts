@@ -13,7 +13,7 @@ import {
 } from "@/constants";
 import {
     defaultChartBoxModel,
-    defaultChartColorPalette,
+    defaultChartColor,
     defaultChartColors,
     defaultChartTypographySettings,
     defaultChartVisualSettings,
@@ -36,6 +36,10 @@ export type ChartVisualActions = {
     setGridWidth: (width: number) => void;
     toggleTooltip: () => void;
     setTooltipStyle: (style: TooltipStyle) => void;
+    setTooltipBorderWidth: (width: number) => void;
+    setTooltipBorderRadius: (radius: number) => void;
+    toggleTooltipTotalEnabled: () => void;
+    toggleTooltipSeparatorEnabled: () => void;
 };
 export type ChartTypographyActions = {
     setLabel: (label: string) => void;
@@ -52,7 +56,6 @@ export type ChartBoxModelActions = {
     setMarginLeft: (left?: number) => void;
     setMarginRight: (right?: number) => void;
     setBorderWidth: (width: number) => void;
-    toggleBorder: () => void;
 };
 export type ChartColorActions = {
     setBackgroundColor: (color: RGBAColor) => void;
@@ -65,6 +68,10 @@ export type ChartColorActions = {
     removeColorPalette: (index: number) => void;
     updateColorPalette: (index: number, color: RGBAColor) => void;
     clearColorPalette: () => void;
+    setTooltipBackgroundColor: (color: RGBAColor) => void;
+    setTooltipTextColor: (color: RGBAColor) => void;
+    setTooltipBorderColor: (color: RGBAColor) => void;
+    setTooltipSeparatorColor: (color: RGBAColor) => void;
 };
 
 export type ChartVisualStore = ChartVisualActions & ChartVisuals;
@@ -118,6 +125,23 @@ export const createChartVisualStore = (
             setTooltipStyle: (style) =>
                 set((state) => {
                     state.tooltipStyle = style;
+                }),
+            setTooltipBorderWidth: (width) =>
+                set((state) => {
+                    state.tooltipBorderWidth = width;
+                }),
+            setTooltipBorderRadius: (radius) =>
+                set((state) => {
+                    state.tooltipBorderRadius = radius;
+                }),
+            toggleTooltipTotalEnabled: () =>
+                set((state) => {
+                    state.tooltipTotalEnabled = !state.tooltipTotalEnabled;
+                }),
+            toggleTooltipSeparatorEnabled: () =>
+                set((state) => {
+                    state.tooltipSeparatorEnabled =
+                        !state.tooltipSeparatorEnabled;
                 }),
         }))
     );
@@ -187,10 +211,6 @@ export const createChartBoxModelStore = (
                 set((state) => {
                     state.borderWidth = width;
                 }),
-            toggleBorder: () =>
-                set((state) => {
-                    state.borderEnabled = !state.borderEnabled;
-                }),
         }))
     );
 };
@@ -224,7 +244,7 @@ export const createChartColorStore = (
                 set((state) => {
                     state.colorPalette = palette;
                 }),
-            addColorPalette: (color = defaultChartColorPalette) =>
+            addColorPalette: (color = defaultChartColor) =>
                 set((state) => {
                     state.colorPalette.push(color);
                 }),
@@ -239,6 +259,22 @@ export const createChartColorStore = (
             clearColorPalette: () =>
                 set((state) => {
                     state.colorPalette = [];
+                }),
+            setTooltipBackgroundColor: (color) =>
+                set((state) => {
+                    state.tooltipBackgroundColor = color;
+                }),
+            setTooltipTextColor: (color) =>
+                set((state) => {
+                    state.tooltipTextColor = color;
+                }),
+            setTooltipBorderColor: (color) =>
+                set((state) => {
+                    state.tooltipBorderColor = color;
+                }),
+            setTooltipSeparatorColor: (color) =>
+                set((state) => {
+                    state.tooltipSeparatorColor = color;
                 }),
         }))
     );

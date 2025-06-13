@@ -97,7 +97,7 @@ export default function ChatConfigs({ params }: Props) {
         <ChartConfigStoreProvider chartId={chart_id}>
             <StoreProvider chartId={chart_id}>
                 {/* <ChartView chartName={chart.name} userId={user_id} /> */}
-                <div className="px-4">
+                <div className="px-4 py-4">
                     <ChartView chartId={chart_id} userId={user_id} />
                     <ChartConfig chartId={chart_id} userId={user_id} />
                 </div>

@@ -27,6 +27,7 @@ import {
 } from "@/modules/Chart/store";
 import { DataSection } from "@/modules/Radial/components/DataSection";
 import { RadialChartStyleConfig } from "@/modules/Radial/components/RadialChartStyleConfig";
+import { SelectFieldsForRadial } from "@/modules/Radial/utils/selectFieldsForDonut";
 
 export const RadialChartConfig: ChartConfigComponent = ({
     chartId,
@@ -43,7 +44,6 @@ export const RadialChartConfig: ChartConfigComponent = ({
     });
 
     // Chart box model store selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
@@ -90,6 +90,8 @@ export const RadialChartConfig: ChartConfigComponent = ({
     const endAngle = useRadialChartStore((state) => state.endAngle);
     const legendPosition = useRadialChartStore((state) => state.legendPosition);
     const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
+    const gap = useRadialChartStore((state) => state.gap);
+    const stacked = useRadialChartStore((state) => state.stacked);
 
     // Store actions
     const setXAxisField = useRadialChartStore((state) => state.setXAxisField);
@@ -108,7 +110,6 @@ export const RadialChartConfig: ChartConfigComponent = ({
         });
 
         const chartBoxModelConfig = {
-            borderEnabled,
             borderWidth,
             marginBottom,
             marginLeft,
@@ -152,6 +153,8 @@ export const RadialChartConfig: ChartConfigComponent = ({
                         endAngle,
                         legendPosition,
                         legendTextSize,
+                        gap,
+                        stacked,
                     },
                 },
                 chart_box_model: chartBoxModelConfig,
@@ -231,7 +234,7 @@ export const RadialChartConfig: ChartConfigComponent = ({
     };
 
     const {
-        columns,
+        columns: allColumns,
         isLoading: columnsLoading,
         error,
     } = useChartColumns({
@@ -257,7 +260,7 @@ export const RadialChartConfig: ChartConfigComponent = ({
         );
     }
 
-    if (!columns || error) {
+    if (!allColumns || error) {
         return (
             <div className="mx-auto py-8">
                 <div className="flex h-60 flex-col items-center justify-center rounded-lg border bg-muted/5 text-center">
@@ -269,6 +272,8 @@ export const RadialChartConfig: ChartConfigComponent = ({
             </div>
         );
     }
+
+    const columns = SelectFieldsForRadial(allColumns);
 
     return (
         <div className="py-8">
@@ -354,106 +359,6 @@ export const RadialChartConfig: ChartConfigComponent = ({
 };
 
 function RadialConfigTabs() {
-    // Box model selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
-    const toggleBorder = useChartBoxModelStore((state) => state.toggleBorder);
-    const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
-    const setBorderWidth = useChartBoxModelStore(
-        (state) => state.setBorderWidth
-    );
-    const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
-    const setMarginBottom = useChartBoxModelStore(
-        (state) => state.setMarginBottom
-    );
-    const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
-    const setMarginLeft = useChartBoxModelStore((state) => state.setMarginLeft);
-    const marginRight = useChartBoxModelStore((state) => state.marginRight);
-    const setMarginRight = useChartBoxModelStore(
-        (state) => state.setMarginRight
-    );
-    const marginTop = useChartBoxModelStore((state) => state.marginTop);
-    const setMarginTop = useChartBoxModelStore((state) => state.setMarginTop);
-
-    // Color selectors
-    const backgroundColor = useChartColorStore(
-        (state) => state.backgroundColor
-    );
-    const setBackgroundColor = useChartColorStore(
-        (state) => state.setBackgroundColor
-    );
-    const borderColor = useChartColorStore((state) => state.borderColor);
-    const setBorderColor = useChartColorStore((state) => state.setBorderColor);
-    const labelColor = useChartColorStore((state) => state.labelColor);
-    const setLabelColor = useChartColorStore((state) => state.setLabelColor);
-    const legendTextColor = useChartColorStore(
-        (state) => state.legendTextColor
-    );
-    const setLegendTextColor = useChartColorStore(
-        (state) => state.setLegendTextColor
-    );
-    const colorPalette = useChartColorStore((state) => state.colorPalette);
-    const setColorPalette = useChartColorStore(
-        (state) => state.setColorPalette
-    );
-    const addColorPalette = useChartColorStore(
-        (state) => state.addColorPalette
-    );
-    const clearColorPalette = useChartColorStore(
-        (state) => state.clearColorPalette
-    );
-    const removeColorPalette = useChartColorStore(
-        (state) => state.removeColorPalette
-    );
-    const updateColorPalette = useChartColorStore(
-        (state) => state.updateColorPalette
-    );
-
-    // Typography selectors
-    const label = useChartTypographyStore((state) => state.label);
-    const setLabel = useChartTypographyStore((state) => state.setLabel);
-    const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
-    const setLabelAnchor = useChartTypographyStore(
-        (state) => state.setLabelAnchor
-    );
-    const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
-    const toggleLabel = useChartTypographyStore((state) => state.toggleLabel);
-    const labelFontFamily = useChartTypographyStore(
-        (state) => state.labelFontFamily
-    );
-    const setLabelFontFamily = useChartTypographyStore(
-        (state) => state.setLabelFontFamily
-    );
-    const labelFontStyle = useChartTypographyStore(
-        (state) => state.labelFontStyle
-    );
-    const setLabelFontStyle = useChartTypographyStore(
-        (state) => state.setLabelFontStyle
-    );
-    const labelSize = useChartTypographyStore((state) => state.labelSize);
-    const setLabelSize = useChartTypographyStore((state) => state.setLabelSize);
-    const legendEnabled = useChartTypographyStore(
-        (state) => state.legendEnabled
-    );
-    const toggleLegend = useChartTypographyStore((state) => state.toggleLegend);
-
-    // Radial chart selectors
-    const innerRadius = useRadialChartStore((state) => state.innerRadius);
-    const setInnerRadius = useRadialChartStore((state) => state.setInnerRadius);
-    const outerRadius = useRadialChartStore((state) => state.outerRadius);
-    const setOuterRadius = useRadialChartStore((state) => state.setOuterRadius);
-    const startAngle = useRadialChartStore((state) => state.startAngle);
-    const setStartAngle = useRadialChartStore((state) => state.setStartAngle);
-    const endAngle = useRadialChartStore((state) => state.endAngle);
-    const setEndAngle = useRadialChartStore((state) => state.setEndAngle);
-    const legendPosition = useRadialChartStore((state) => state.legendPosition);
-    const setLegendPosition = useRadialChartStore(
-        (state) => state.setLegendPosition
-    );
-    const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
-    const setLegendTextSize = useRadialChartStore(
-        (state) => state.setLegendTextSize
-    );
-
     return (
         <Tabs defaultValue="colors" className="w-full">
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 rounded-none bg-background">
@@ -469,80 +374,24 @@ function RadialConfigTabs() {
                         <span>UI Features</span>
                     </div>
                 </TabsTrigger>
-                <TabsTrigger value="grid-layout">
+                <TabsTrigger value="tooltip">
                     <div className="flex items-center gap-1">
                         <Sliders className="h-3 w-3" />
-                        <span>Grid</span>
+                        <span>Tooltip</span>
                     </div>
                 </TabsTrigger>
             </TabsList>
             <div className="p-4">
                 <TabsContent value="colors" className="mt-0">
-                    <ColorsConfig
-                        backgroundColor={backgroundColor}
-                        borderColor={borderColor}
-                        colorPalette={colorPalette}
-                        labelColor={labelColor}
-                        legendTextColor={legendTextColor}
-                        setBackgroundColor={setBackgroundColor}
-                        setBorderColor={setBorderColor}
-                        setColorPalette={setColorPalette}
-                        setLabelColor={setLabelColor}
-                        setLegendTextColor={setLegendTextColor}
-                        addColorPalette={addColorPalette}
-                        clearColorPalette={clearColorPalette}
-                        removeColorPalette={removeColorPalette}
-                        updateColorPalette={updateColorPalette}
-                    />
+                    <ColorsConfig />
                 </TabsContent>
                 <TabsContent value="ui-features" className="mt-0">
-                    <UIConfig
-                        label={label}
-                        setLabel={setLabel}
-                        labelAnchor={labelAnchor}
-                        setLabelAnchor={setLabelAnchor}
-                        labelEnabled={labelEnabled}
-                        labelFontFamily={labelFontFamily}
-                        setLabelFontFamily={setLabelFontFamily}
-                        labelFontStyle={labelFontStyle}
-                        setLabelFontStyle={setLabelFontStyle}
-                        labelSize={labelSize}
-                        setLabelSize={setLabelSize}
-                        legendEnabled={legendEnabled}
-                        toggleLabel={toggleLabel}
-                        toggleLegend={toggleLegend}
-                    >
-                        <RadialChartStyleConfig
-                            innerRadius={innerRadius}
-                            setInnerRadius={setInnerRadius}
-                            outerRadius={outerRadius}
-                            setOuterRadius={setOuterRadius}
-                            startAngle={startAngle}
-                            setStartAngle={setStartAngle}
-                            endAngle={endAngle}
-                            setEndAngle={setEndAngle}
-                            legendPosition={legendPosition}
-                            setLegendPosition={setLegendPosition}
-                            legendTextSize={legendTextSize}
-                            setLegendTextSize={setLegendTextSize}
-                        />
+                    <UIConfig>
+                        <RadialChartStyleConfig />
                     </UIConfig>
                 </TabsContent>
-                <TabsContent value="grid-layout" className="mt-0">
-                    <GridAndBoxModelConfig
-                        borderEnabled={borderEnabled}
-                        borderWidth={borderWidth}
-                        marginBottom={marginBottom}
-                        marginLeft={marginLeft}
-                        marginRight={marginRight}
-                        marginTop={marginTop}
-                        setBorderWidth={setBorderWidth}
-                        setMarginBottom={setMarginBottom}
-                        setMarginLeft={setMarginLeft}
-                        setMarginRight={setMarginRight}
-                        setMarginTop={setMarginTop}
-                        toggleBorder={toggleBorder}
-                    />
+                <TabsContent value="tooltip" className="mt-0">
+                    <GridAndBoxModelConfig showGrid={false} />
                 </TabsContent>
             </div>
         </Tabs>

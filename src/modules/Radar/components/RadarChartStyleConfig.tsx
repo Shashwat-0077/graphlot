@@ -3,24 +3,15 @@
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import { useRadarChartStore } from "@/modules/Radar/store";
 
-interface RadarChartStyleConfigProps {
-    strokeWidth: number;
-    setStrokeWidth: (width: number) => void;
-    xAxisEnabled: boolean;
-    yAxisEnabled: boolean;
-    toggleXAxis: () => void;
-    toggleYAxis: () => void;
-}
+export function RadarChartStyleConfig() {
+    // Radar chart selectors and actions
+    const strokeWidth = useRadarChartStore((state) => state.strokeWidth);
+    const setStrokeWidth = useRadarChartStore((state) => state.setStrokeWidth);
+    const xAxisEnabled = useRadarChartStore((state) => state.xAxisEnabled);
+    const toggleXAxis = useRadarChartStore((state) => state.toggleXAxis);
 
-export function RadarChartStyleConfig({
-    strokeWidth,
-    setStrokeWidth,
-    xAxisEnabled,
-    yAxisEnabled,
-    toggleXAxis,
-    toggleYAxis,
-}: RadarChartStyleConfigProps) {
     return (
         <div className="space-y-6">
             <div className="space-y-4">
@@ -53,14 +44,6 @@ export function RadarChartStyleConfig({
                         <ToggleSwitch
                             defaultChecked={xAxisEnabled}
                             toggleFunction={toggleXAxis}
-                        />
-                    </div>
-
-                    <div className="flex w-full items-center justify-between rounded-md bg-muted/10 p-3 transition-colors hover:bg-muted/20">
-                        <Label className="text-sm font-medium">Y Axis</Label>
-                        <ToggleSwitch
-                            defaultChecked={yAxisEnabled}
-                            toggleFunction={toggleYAxis}
                         />
                     </div>
                 </div>

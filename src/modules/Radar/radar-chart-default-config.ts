@@ -1,13 +1,11 @@
 import { ChartFilter, SORT_NONE, SortType } from "@/constants";
 
 export type RadarSpecificConfig = {
-    yAxisEnabled: boolean;
     xAxisEnabled: boolean;
     strokeWidth: number;
 };
 
 export const radarSpecificConfigDefaults: RadarSpecificConfig = {
-    yAxisEnabled: true,
     xAxisEnabled: true,
     strokeWidth: 2,
 };

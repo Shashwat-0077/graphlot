@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import {
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useBarChartStore } from "@/modules/Bar/store";
 import { getRGBAString } from "@/utils/colors";
 import {
@@ -17,10 +11,10 @@ import {
     FONT_STYLES_BOLD,
     FONT_STYLES_STRIKETHROUGH,
     FONT_STYLES_UNDERLINE,
-    GRID_ORIENTATION_BOTH,
-    GRID_ORIENTATION_HORIZONTAL,
-    GRID_ORIENTATION_NONE,
-    GRID_ORIENTATION_VERTICAL,
+    GRID_ORIENTATION_TYPE_THREE,
+    GRID_ORIENTATION_TYPE_ONE,
+    GRID_ORIENTATION_TYPE_NONE,
+    GRID_ORIENTATION_TYPE_TWO,
 } from "@/constants";
 import { ChartViewWrapper } from "@/modules/Chart/components/ChartViewWrapperComponent";
 import { WavyLoader } from "@/components/ui/Loader";
@@ -35,11 +29,16 @@ import {
     getGridStyle,
     getLabelAnchor,
 } from "@/modules/notion/utils/get-things";
+import { CustomTooltipContent } from "@/components/ui/CustomToolTip";
+import {
+    CustomChartLegend,
+    CustomChartLegendContent,
+} from "@/components/ui/CustomChartLegend";
 
 export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8;
 
-    // Chart visual store selectors
+    // Visual configuration from store
     const gridOrientation = useChartVisualStore(
         (state) => state.gridOrientation
     );
@@ -47,16 +46,27 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const gridWidth = useChartVisualStore((state) => state.gridWidth);
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
+    const tooltipBorderRadius = useChartVisualStore(
+        (state) => state.tooltipBorderRadius
+    );
+    const tooltipBorderWidth = useChartVisualStore(
+        (state) => state.tooltipBorderWidth
+    );
+    const tooltipTotalEnabled = useChartVisualStore(
+        (state) => state.tooltipTotalEnabled
+    );
+    const tooltipSeparatorEnabled = useChartVisualStore(
+        (state) => state.tooltipSeparatorEnabled
+    );
 
-    // Chart box model store selectors
-    const borderEnabled = useChartBoxModelStore((state) => state.borderEnabled);
+    // Box model configuration from store
     const borderWidth = useChartBoxModelStore((state) => state.borderWidth);
     const marginBottom = useChartBoxModelStore((state) => state.marginBottom);
     const marginLeft = useChartBoxModelStore((state) => state.marginLeft);
     const marginRight = useChartBoxModelStore((state) => state.marginRight);
     const marginTop = useChartBoxModelStore((state) => state.marginTop);
 
-    // Chart color store selectors
+    // Color configuration from store
     const backgroundColor = useChartColorStore(
         (state) => state.backgroundColor
     );
@@ -64,8 +74,23 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     const colorPalette = useChartColorStore((state) => state.colorPalette);
     const gridColor = useChartColorStore((state) => state.gridColor);
     const labelColor = useChartColorStore((state) => state.labelColor);
+    const legendTextColor = useChartColorStore(
+        (state) => state.legendTextColor
+    );
+    const tooltipTextColor = useChartColorStore(
+        (state) => state.tooltipTextColor
+    );
+    const tooltipBackgroundColor = useChartColorStore(
+        (state) => state.tooltipBackgroundColor
+    );
+    const tooltipSeparatorColor = useChartColorStore(
+        (state) => state.tooltipSeparatorColor
+    );
+    const tooltipBorderColor = useChartColorStore(
+        (state) => state.tooltipBorderColor
+    );
 
-    // Chart typography store selectors
+    // Typography configuration from store
     const label = useChartTypographyStore((state) => state.label);
     const labelAnchor = useChartTypographyStore((state) => state.labelAnchor);
     const labelEnabled = useChartTypographyStore((state) => state.labelEnabled);
@@ -116,7 +141,6 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (isLoading) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -136,7 +160,6 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (error || !data) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -177,7 +200,6 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
     if (!xAxisField || !yAxisField) {
         return (
             <ChartViewWrapper
-                borderEnabled={borderEnabled}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
                 bgColor={backgroundColor}
@@ -234,7 +256,6 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
 
     return (
         <ChartViewWrapper
-            borderEnabled={borderEnabled}
             borderWidth={borderWidth}
             borderColor={borderColor}
             bgColor={backgroundColor}
@@ -281,22 +302,17 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                         </text>
                     )}
 
-                    {legendEnabled && (
-                        <ChartLegend content={<ChartLegendContent />} />
-                    )}
-
-                    {gridOrientation !== GRID_ORIENTATION_NONE && (
+                    {gridOrientation !== GRID_ORIENTATION_TYPE_NONE && (
                         <CartesianGrid
                             vertical={
-                                gridOrientation === GRID_ORIENTATION_VERTICAL ||
-                                gridOrientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_TYPE_TWO ||
+                                gridOrientation === GRID_ORIENTATION_TYPE_THREE
                             }
                             horizontal={
-                                gridOrientation ===
-                                    GRID_ORIENTATION_HORIZONTAL ||
-                                gridOrientation === GRID_ORIENTATION_BOTH
+                                gridOrientation === GRID_ORIENTATION_TYPE_ONE ||
+                                gridOrientation === GRID_ORIENTATION_TYPE_THREE
                             }
-                            stroke={`rgba(${gridColor.r}, ${gridColor.g}, ${gridColor.b}, ${gridColor.a})`}
+                            stroke={getRGBAString(gridColor)}
                             strokeDasharray={getGridStyle(gridStyle, gridWidth)}
                         />
                     )}
@@ -321,8 +337,25 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                         <ChartTooltip
                             cursor={false}
                             content={
-                                <ChartTooltipContent indicator={tooltipStyle} />
+                                <CustomTooltipContent
+                                    indicator={tooltipStyle}
+                                    textColor={tooltipTextColor}
+                                    separatorEnabled={tooltipSeparatorEnabled}
+                                    totalEnabled={tooltipTotalEnabled}
+                                    backgroundColor={tooltipBackgroundColor}
+                                    separatorColor={tooltipSeparatorColor}
+                                />
                             }
+                            wrapperStyle={{
+                                zIndex: 1000,
+                                borderRadius: `${tooltipBorderRadius}px`,
+                                borderWidth: `${tooltipBorderWidth}px`,
+                                borderColor: getRGBAString(
+                                    tooltipBorderColor,
+                                    true
+                                ),
+                                overflow: "hidden",
+                            }}
                         />
                     )}
 
@@ -441,7 +474,7 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                                 fillOpacity={fillOpacity} // Keep this for tooltip colors
                                 stroke={configData[data_label].color} // Keep this for tooltip colors
                                 strokeWidth={strokeWidth} // Keep this for tooltip colors
-                                // @ts-expect-error i dont wanna wrap my head around recharts types, i know this works, if it doesn't work, i'll fix it later hehe
+                                // @ts-expect-error i don't wanna wrap my head around recharts types, i know this works, if it doesn't work, i'll fix it later hehe
                                 shape={shape}
                                 stackId="1"
                             />
@@ -449,6 +482,27 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                     })}
                 </BarChart>
             </ChartContainer>
+
+            {legendEnabled && (
+                <div className="mt-2 w-full">
+                    <CustomChartLegend
+                        orientation="horizontal"
+                        className="pb-2"
+                    >
+                        <CustomChartLegendContent
+                            textColor={legendTextColor}
+                            payload={config.map((key) => ({
+                                value: configData[key].label,
+                                color: configData[key].color,
+                                payload: {
+                                    fill: configData[key].color,
+                                    stroke: configData[key].color,
+                                },
+                            }))}
+                        />
+                    </CustomChartLegend>
+                </div>
+            )}
         </ChartViewWrapper>
     );
 };
