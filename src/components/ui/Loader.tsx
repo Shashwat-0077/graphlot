@@ -28,7 +28,7 @@ const LoadingBar = styled.div`
     width: 20px;
     height: 10px;
     margin: 0 5px;
-    background-color: #f2545b;
+    background-color: var(--primary);
     border-radius: 5px;
     animation: ${waveAnimation} 1s ease-in-out infinite;
 

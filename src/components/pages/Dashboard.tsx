@@ -107,7 +107,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         return (
             <div className="rounded-lg bg-muted p-3 shadow-lg">
                 <p className="font-medium text-white">{`${label}`}</p>
-                <p className="text-sm text-[#F2545B]">{`Charts: ${payload[0].value}`}</p>
+                <p className="text-sm text-primary">{`Charts: ${payload[0].value}`}</p>
             </div>
         );
     }
@@ -121,7 +121,7 @@ const PieCustomTooltip = ({ active, payload }: any) => {
         return (
             <div className="rounded-lg bg-muted p-3 shadow-lg">
                 <p className="font-medium text-white">{`${payload[0].name}`}</p>
-                <p className="text-sm text-[#F2545B]">{`Charts: ${payload[0].value}`}</p>
+                <p className="text-sm text-primary">{`Charts: ${payload[0].value}`}</p>
             </div>
         );
     }
@@ -189,8 +189,8 @@ export default function DashboardContent({ username }: { username: string }) {
             {/* Dashboard Header */}
             <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F2545B]/10">
-                        <LayoutDashboard className="h-6 w-6 text-[#F2545B]" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <LayoutDashboard className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">
@@ -203,7 +203,7 @@ export default function DashboardContent({ username }: { username: string }) {
                 </div>
                 <Button
                     asChild
-                    className="bg-[#F2545B] text-white hover:bg-[#d94850]"
+                    className="bg-primary text-white hover:bg-primary/90"
                 >
                     <Link href="/dashboard/new-collection">
                         <Plus className="mr-1.5 h-4 w-4" />
@@ -241,8 +241,8 @@ export default function DashboardContent({ username }: { username: string }) {
                                 </div>
                             </div>
 
-                            <div className="flex size-14 items-center justify-center rounded-full bg-[#F2545B]/10">
-                                <CollectionIcon className="size-7 text-[#F2545B]" />
+                            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+                                <CollectionIcon className="size-7 text-primary" />
                             </div>
                         </div>
                     </CardContent>
@@ -267,8 +267,8 @@ export default function DashboardContent({ username }: { username: string }) {
                                 </div>
                             </div>
 
-                            <div className="flex size-14 items-center justify-center rounded-full bg-[#F2545B]/10">
-                                <BarChart2 className="size-7 text-[#F2545B]" />
+                            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+                                <BarChart2 className="size-7 text-primary" />
                             </div>
                         </div>
                     </CardContent>
@@ -314,8 +314,8 @@ export default function DashboardContent({ username }: { username: string }) {
                                 </div>
                             </div>
 
-                            <div className="flex size-14 items-center justify-center rounded-full bg-[#F2545B]/10">
-                                <Calendar className="size-7 text-[#F2545B]" />
+                            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+                                <Calendar className="size-7 text-primary" />
                             </div>
                         </div>
                     </CardContent>
@@ -372,12 +372,15 @@ export default function DashboardContent({ username }: { username: string }) {
                                             type="monotone"
                                             dataKey="charts"
                                             name="Charts"
-                                            stroke="#F2545B"
+                                            stroke={COLORS[0]}
                                             strokeWidth={3}
-                                            dot={{ r: 4, fill: "#F2545B" }}
+                                            dot={{
+                                                r: 4,
+                                                fill: "#000",
+                                            }}
                                             activeDot={{
                                                 r: 6,
-                                                fill: "#F2545B",
+                                                fill: COLORS[0],
                                             }}
                                         />
                                     </LineChart>
@@ -403,7 +406,7 @@ export default function DashboardContent({ username }: { username: string }) {
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="text-[#F2545B] hover:bg-[#F2545B]/5 hover:text-[#F2545B]"
+                                className="text-primary hover:bg-primary/5 hover:text-primary"
                             >
                                 <Link href="/dashboard/collections">
                                     View All
@@ -426,7 +429,7 @@ export default function DashboardContent({ username }: { username: string }) {
                                 </p>
                                 <Button
                                     asChild
-                                    className="mt-6 bg-[#F2545B] text-white hover:bg-[#d94850]"
+                                    className="mt-6 bg-primary text-white hover:bg-primary/90"
                                 >
                                     <Link href="/dashboard/new-collection">
                                         <Plus className="mr-1.5 h-4 w-4" />
@@ -445,7 +448,7 @@ export default function DashboardContent({ username }: { username: string }) {
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F2545B]/10">
-                                                    <CollectionIcon className="h-5 w-5 text-[#F2545B]" />
+                                                    <CollectionIcon className="h-5 w-5 text-primary" />
                                                 </div>
                                                 <div>
                                                     <p className="font-medium">
@@ -464,7 +467,7 @@ export default function DashboardContent({ username }: { username: string }) {
                                             <div className="flex items-center gap-2">
                                                 <Badge
                                                     variant="secondary"
-                                                    className="bg-[#F2545B]/5 text-[#F2545B] hover:bg-[#F2545B]/10"
+                                                    className="bg-primary/5 text-primary hover:bg-primary/10"
                                                 >
                                                     {formatRelativeTime(
                                                         collection.updatedAt

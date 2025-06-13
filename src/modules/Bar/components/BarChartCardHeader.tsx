@@ -13,12 +13,12 @@ const BarChartConfig = {
 } satisfies ChartConfig;
 
 const BarChartData = [
-    { month: "January", desktop: 186 },
-    { month: "February", desktop: 305 },
-    { month: "March", desktop: 237 },
-    { month: "April", desktop: 73 },
-    { month: "May", desktop: 209 },
-    { month: "June", desktop: 214 },
+    { month: "January", desktop: 245 },
+    { month: "May", desktop: 290 },
+    { month: "February", desktop: 180 },
+    { month: "June", desktop: 510 },
+    { month: "March", desktop: 320 },
+    { month: "April", desktop: 165 },
 ];
 
 export const BarChartCardHeader = ({ className }: { className?: string }) => {

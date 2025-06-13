@@ -74,3 +74,13 @@ we will only have date as the X-Axis
 ### Y-Axis
 - Count only 
 
+
+
+### Numbers and dates
+
+if number then ask
+if repeated then 
+sum
+average
+whichever is lower
+whichever is higher

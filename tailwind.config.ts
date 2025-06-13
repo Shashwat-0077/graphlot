@@ -29,7 +29,7 @@ export default {
                     light: "#FFF3F0",
                     dark: "#e0e0e0",
                 },
-                primary: "#F2545B",
+                primary: "hsl(var(--primary))",
                 secondary: "#00AFB5",
                 violet: "#B18FCF",
                 card: {

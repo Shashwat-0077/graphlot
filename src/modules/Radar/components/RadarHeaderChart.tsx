@@ -17,12 +17,12 @@ const RadarChartConfig = {
 } satisfies ChartConfig;
 
 const RadarChartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "January", desktop: 140, mobile: 190 },
+    { month: "February", desktop: 260, mobile: 185 },
+    { month: "March", desktop: 220, mobile: 160 },
+    { month: "April", desktop: 180, mobile: 230 },
+    { month: "May", desktop: 260, mobile: 200 },
+    { month: "June", desktop: 290, mobile: 200 },
 ];
 
 export const RadarChartCardHeader = ({ className }: { className?: string }) => {
@@ -42,9 +42,25 @@ export const RadarChartCardHeader = ({ className }: { className?: string }) => {
                 <Radar
                     dataKey="desktop"
                     fill="var(--color-desktop)"
-                    fillOpacity={0.6}
+                    fillOpacity={0.4}
+                    dot={{
+                        r: 4,
+                        fillOpacity: 1,
+                        strokeWidth: 2,
+                        stroke: "var(--color-desktop)",
+                    }}
                 />
-                <Radar dataKey="mobile" fill="var(--color-mobile)" />
+                <Radar
+                    dataKey="mobile"
+                    fill="var(--color-mobile)"
+                    fillOpacity={0.4}
+                    dot={{
+                        r: 4,
+                        fillOpacity: 1,
+                        strokeWidth: 2,
+                        stroke: "var(--color-desktop)",
+                    }}
+                />
             </RadarChart>
         </ChartContainer>
     );

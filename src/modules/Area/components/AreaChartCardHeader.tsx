@@ -17,12 +17,12 @@ const AreaChartConfig = {
 } satisfies ChartConfig;
 
 const AreaChartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "January", desktop: 220, mobile: 95 },
+    { month: "February", desktop: 180, mobile: 160 },
+    { month: "March", desktop: 290, mobile: 140 },
+    { month: "April", desktop: 150, mobile: 210 },
+    { month: "May", desktop: 140, mobile: 180 },
+    { month: "June", desktop: 280, mobile: 190 },
 ];
 
 export const AreaChartCardHeader = ({ className }: { className?: string }) => {
@@ -80,6 +80,11 @@ export const AreaChartCardHeader = ({ className }: { className?: string }) => {
                     fillOpacity={0.4}
                     stroke="var(--color-mobile)"
                     stackId="a"
+                    dot={{
+                        r: 4,
+                        strokeWidth: 2,
+                        stroke: "var(--color-mobile)",
+                    }}
                 />
                 <Area
                     dataKey="desktop"
@@ -88,6 +93,11 @@ export const AreaChartCardHeader = ({ className }: { className?: string }) => {
                     fillOpacity={0.4}
                     stroke="var(--color-desktop)"
                     stackId="a"
+                    dot={{
+                        r: 4,
+                        strokeWidth: 2,
+                        stroke: "var(--color-mobile)",
+                    }}
                 />
             </AreaChart>
         </ChartContainer>
