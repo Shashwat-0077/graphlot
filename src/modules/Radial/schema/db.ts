@@ -24,6 +24,14 @@ export const RadialCharts = sqliteTable(
             .notNull()
             .$type<SortType>()
             .default(defaultRadialChartConfig.xAxisSortOrder),
+        yAxisField: text("y_axis_field")
+            .notNull()
+            .default(defaultRadialChartConfig.yAxisField), // Assuming yAxisField is same as xAxisField for radial charts
+        yAxisSortOrder: text("y_sort_order")
+            .notNull()
+            .$type<SortType>()
+            .default(defaultRadialChartConfig.yAxisSortOrder), // Assuming yAxisSortOrder is same as xAxisSortOrder for radial charts
+
         omitZeroValuesEnabled: integer("omit_zero_values_enabled", {
             mode: "boolean",
         })

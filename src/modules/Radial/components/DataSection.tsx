@@ -1,12 +1,13 @@
 "use client";
 
-import { Plus, Trash2, Database, BarChart } from "lucide-react";
+import { BarChart, Database, Plus, Trash2 } from "lucide-react";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Select,
     SelectContent,
@@ -14,150 +15,289 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import ClearAll from "@/modules/Chart/components/ClearAll";
-import { SORT_OPTIONS, type ChartFilter, type SortType } from "@/constants";
+import { SORT_OPTIONS, type SortType, type ChartFilter } from "@/constants";
+
+interface DataSectionProps {
+    xAxis: string;
+    setXAxis: (value: string) => void;
+    yAxis: string;
+    setYAxis: (value: string) => void;
+    XAxisColumns: { [key: string]: string[] };
+    YAxisColumns: { [key: string]: string[] };
+    sortX: string;
+    setSortX: (value: SortType) => void;
+    sortY: string;
+    setSortY: (value: SortType) => void;
+    omitZeroValuesEnabled: boolean;
+    setOmitZeroValuesEnabled: (value: boolean) => void;
+    clearFilters: () => void;
+    filters: ChartFilter[];
+    setFilterColumn: (value: string, index: number) => void;
+    setFilterOperation: (value: string, index: number) => void;
+    setFilterValue: (value: string, index: number) => void;
+    removeFilter: (index: number) => void;
+    addFilter: (filter: ChartFilter) => void;
+    onApply?: () => void;
+}
 
 export function DataSection({
     xAxis,
     setXAxis,
-    sortBy,
-    setSortBy,
+    yAxis,
+    setYAxis,
+    XAxisColumns,
+    YAxisColumns,
+    sortX,
+    setSortX,
+    sortY,
+    setSortY,
     omitZeroValuesEnabled,
     setOmitZeroValuesEnabled,
+    clearFilters,
     filters,
-    addFilter,
-    removeFilter,
     setFilterColumn,
     setFilterOperation,
     setFilterValue,
-    clearFilters,
+    removeFilter,
+    addFilter,
     onApply,
-    columns,
-}: {
-    xAxis: string;
-    setXAxis: (value: string) => void;
-    sortBy: SortType;
-    setSortBy: (value: SortType) => void;
-    omitZeroValuesEnabled: boolean;
-    setOmitZeroValuesEnabled: (value: boolean) => void;
-    filters: ChartFilter[];
-    addFilter: (filter: ChartFilter) => void;
-    removeFilter: (index: number) => void;
-    setFilterColumn: (value: string, index: number) => void;
-    setFilterOperation: (value: string, index: number) => void;
-    setFilterValue: (value: string, index: number) => void;
-    clearFilters: () => void;
-    onApply: () => void;
-    columns: Record<string, string[]>;
-}) {
+}: DataSectionProps) {
     return (
         <div className="space-y-6">
-            <Card>
+            <Card className="border shadow-sm">
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg font-medium">
                         <BarChart className="h-5 w-5" />
-                        Data Configuration
+                        Axis Configuration
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-lg border bg-muted/5 p-4">
-                        <div className="mb-3 flex items-center justify-between">
-                            <Label className="text-sm font-medium">
-                                Segment Configuration
-                            </Label>
-                            {xAxis && (
-                                <Badge variant="outline" className="text-xs">
-                                    {xAxis}
-                                </Badge>
-                            )}
-                        </div>
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
-                                <Label className="text-xs text-muted-foreground">
-                                    Column
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* X Axis */}
+                        <div className="rounded-lg border bg-muted/5 p-4">
+                            <div className="mb-3 flex items-center justify-between">
+                                <Label className="text-sm font-medium">
+                                    X Axis
                                 </Label>
-                                <Select onValueChange={setXAxis} value={xAxis}>
-                                    <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
-                                        <SelectValue placeholder="Select a Column" />
-                                    </SelectTrigger>
-                                    <SelectContent
-                                        className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
-                                        position="popper"
-                                        sideOffset={4}
+                                {xAxis && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-xs"
                                     >
-                                        {Object.keys(columns).map((key) => (
-                                            <div
-                                                className="mt-1 space-y-0.5"
-                                                key={key}
-                                            >
-                                                {columns[key].map(
-                                                    (col, index) => (
-                                                        <SelectItem
-                                                            key={index}
-                                                            value={col}
-                                                            className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        {xAxis}
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+                                    <Label className="text-xs text-muted-foreground">
+                                        Column
+                                    </Label>
+
+                                    <Select
+                                        onValueChange={setXAxis}
+                                        value={xAxis}
+                                    >
+                                        <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
+                                            <SelectValue placeholder="Select a Column" />
+                                        </SelectTrigger>
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {Object.keys(XAxisColumns).map(
+                                                (key) => {
+                                                    return (
+                                                        <div
+                                                            className="mt-1 space-y-0.5"
+                                                            key={key}
                                                         >
-                                                            <span className="block truncate text-left">
-                                                                {col}
-                                                            </span>
-                                                            <span className="block truncate text-left text-xs text-muted-foreground">
-                                                                {key}
-                                                            </span>
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </div>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
-                                <Label className="text-xs text-muted-foreground">
-                                    Sort By
-                                </Label>
-                                <Select
-                                    onValueChange={setSortBy}
-                                    value={sortBy}
-                                >
-                                    <SelectTrigger className="h-8 w-full rounded-md border border-input px-3 py-1 text-xs shadow-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
-                                        <div className="relative flex items-start [&>span]:flex [&>span]:flex-col [&>span]:items-start [&>span]:justify-start">
-                                            <SelectValue
-                                                placeholder="Select a Sort Order"
-                                                className="relative flex items-start justify-start text-xs"
-                                            />
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent
-                                        className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
-                                        position="popper"
-                                        sideOffset={4}
+                                                            {XAxisColumns[
+                                                                key
+                                                            ].map(
+                                                                (
+                                                                    col,
+                                                                    index
+                                                                ) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        value={
+                                                                            col
+                                                                        }
+                                                                        className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                                    >
+                                                                        <span className="block truncate text-left">
+                                                                            {
+                                                                                col
+                                                                            }
+                                                                        </span>
+                                                                        <span className="block truncate text-left text-xs text-muted-foreground">
+                                                                            {
+                                                                                key
+                                                                            }
+                                                                        </span>
+                                                                    </SelectItem>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+                                    <Label className="text-xs text-muted-foreground">
+                                        Sort
+                                    </Label>
+                                    <Select
+                                        onValueChange={setSortX}
+                                        value={sortX}
                                     >
-                                        {SORT_OPTIONS.map((option, index) => (
-                                            <SelectItem
-                                                key={index}
-                                                value={option}
-                                                className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-xs outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                            >
-                                                {option}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                        <SelectTrigger className="h-8 w-full rounded-md border border-input px-3 py-1 text-xs shadow-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                                            <div className="relative flex items-start [&>span]:flex [&>span]:flex-col [&>span]:items-start [&>span]:justify-start">
+                                                <SelectValue
+                                                    placeholder="Select a Column"
+                                                    className="relative flex items-start justify-start text-xs"
+                                                />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {SORT_OPTIONS.map((col, index) => (
+                                                <SelectItem
+                                                    key={index}
+                                                    value={col}
+                                                    className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-xs outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                >
+                                                    {col}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between rounded-md bg-muted/10 p-2">
-                                <Label className="text-xs">
-                                    Omit Zero Values
+                        </div>
+
+                        {/* Y Axis */}
+                        <div className="rounded-lg border bg-muted/5 p-4">
+                            <div className="mb-3 flex items-center justify-between">
+                                <Label className="text-sm font-medium">
+                                    Y Axis
                                 </Label>
-                                <ToggleSwitch
-                                    defaultChecked={omitZeroValuesEnabled}
-                                    toggleFunction={() => {
-                                        setOmitZeroValuesEnabled(
-                                            !omitZeroValuesEnabled
-                                        );
-                                    }}
-                                />
+                                {yAxis && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-xs"
+                                    >
+                                        {yAxis}
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+                                    <Label className="text-xs text-muted-foreground">
+                                        Column
+                                    </Label>
+                                    <Select
+                                        onValueChange={setYAxis}
+                                        value={yAxis}
+                                    >
+                                        <SelectTrigger className="h-10 min-w-1 rounded-md border border-input py-7 text-sm transition-colors hover:bg-muted/30 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:w-[70%] [&>span]:text-left">
+                                            <SelectValue placeholder="Select a Column" />
+                                        </SelectTrigger>
+                                        <SelectContent
+                                            className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                                            position="popper"
+                                            sideOffset={4}
+                                        >
+                                            {Object.keys(YAxisColumns).map(
+                                                (key) => {
+                                                    return (
+                                                        <div
+                                                            className="mt-1 space-y-0.5"
+                                                            key={key}
+                                                        >
+                                                            {YAxisColumns[
+                                                                key
+                                                            ].map(
+                                                                (
+                                                                    col,
+                                                                    index
+                                                                ) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        value={
+                                                                            col
+                                                                        }
+                                                                        className="relative flex w-full cursor-default select-none rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                                    >
+                                                                        <span className="block truncate text-left">
+                                                                            {
+                                                                                col
+                                                                            }
+                                                                        </span>
+                                                                        <span className="block truncate text-left text-xs text-muted-foreground">
+                                                                            {
+                                                                                key
+                                                                            }
+                                                                        </span>
+                                                                    </SelectItem>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+                                    <Label className="text-xs text-muted-foreground">
+                                        Sort
+                                    </Label>
+                                    <Select
+                                        onValueChange={setSortY}
+                                        value={sortY}
+                                    >
+                                        <SelectTrigger className="h-8 text-xs">
+                                            <SelectValue placeholder="Select a Column" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {SORT_OPTIONS.map((col, index) => (
+                                                <SelectItem
+                                                    key={index}
+                                                    value={col}
+                                                >
+                                                    {col}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex items-center justify-between rounded-md bg-muted/10 p-2">
+                                    <Label className="text-xs">
+                                        Omit Zero Values
+                                    </Label>
+                                    <ToggleSwitch
+                                        defaultChecked={omitZeroValuesEnabled}
+                                        toggleFunction={() => {
+                                            setOmitZeroValuesEnabled(
+                                                !omitZeroValuesEnabled
+                                            );
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

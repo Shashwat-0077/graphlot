@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { LabelList, RadialBar, RadialBarChart } from "recharts";
+import { RadialBar, RadialBarChart } from "recharts";
 
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useRadialChartStore } from "@/modules/Radial/store";
@@ -14,7 +14,6 @@ import {
     FONT_STYLES_BOLD,
     FONT_STYLES_STRIKETHROUGH,
     FONT_STYLES_UNDERLINE,
-    SORT_NONE,
 } from "@/constants";
 import { getLabelAnchor } from "@/modules/notion/utils/get-things";
 import {
@@ -24,6 +23,10 @@ import {
     useChartVisualStore,
 } from "@/modules/Chart/store";
 import { CustomTooltipContent } from "@/components/ui/CustomToolTip";
+import {
+    CustomChartLegend,
+    CustomChartLegendContent,
+} from "@/components/ui/CustomChartLegend";
 
 export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     const LIMIT = 8; // Limit for performance optimization
@@ -31,20 +34,20 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
     // Radial chart store selectors
     const xAxisField = useRadialChartStore((state) => state.xAxisField);
     const xAxisSortOrder = useRadialChartStore((state) => state.xAxisSortOrder);
-    // const omitZeroValuesEnabled = useRadialChartStore(
-    //     (state) => state.omitZeroValuesEnabled
-    // );
+    const yAxisField = useRadialChartStore((state) => state.yAxisField);
+    const yAxisSortOrder = useRadialChartStore((state) => state.yAxisSortOrder);
     const innerRadius = useRadialChartStore((state) => state.innerRadius);
     const outerRadius = useRadialChartStore((state) => state.outerRadius);
     const startAngle = useRadialChartStore((state) => state.startAngle);
     const endAngle = useRadialChartStore((state) => state.endAngle);
-    const legendPosition = useRadialChartStore((state) => state.legendPosition);
-    const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
     const gap = useRadialChartStore((state) => state.gap);
-    const stacked = useRadialChartStore((state) => state.stacked);
+    const trackEnabled = useRadialChartStore((state) => state.trackEnabled);
+    const borderRadius = useRadialChartStore((state) => state.borderRadius);
+    const offsetX = useRadialChartStore((state) => state.offset.x);
+    const offsetY = useRadialChartStore((state) => state.offset.y);
+    const trackColor = useRadialChartStore((state) => state.trackColor);
 
     // Visual configuration from store
-
     const tooltipEnabled = useChartVisualStore((state) => state.tooltipEnabled);
     const tooltipStyle = useChartVisualStore((state) => state.tooltipStyle);
     const tooltipBorderRadius = useChartVisualStore(
@@ -110,14 +113,17 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
         userId,
         xAxis: xAxisField,
         sortX: xAxisSortOrder,
-        yAxis: "count",
-        sortY: SORT_NONE,
+        yAxis: yAxisField,
+        sortY: yAxisSortOrder,
     });
 
     // Limit data for better performance if needed
     const limitedRadarChartData = useMemo(() => {
         return data.length > LIMIT ? data.slice(0, LIMIT) : data;
     }, [data]);
+
+    // Check if we're in count mode (yAxis is count)
+    const isCountMode = yAxisField === "count";
 
     // Loading state
     if (isLoading) {
@@ -216,127 +222,291 @@ export const RadialChartView: ChartViewComponent = ({ chartId, userId }) => {
         );
     }
 
+    // Build config data for each segment
     const configData: {
-        [key: string]: { label: string };
+        [key: string]: { label: string; color?: string };
     } = {};
 
-    for (let idx = 0; idx < config.length; idx++) {
-        const data_label = config[idx];
-        configData[data_label] = {
-            label:
-                data_label[0].toUpperCase() + data_label.slice(1).toLowerCase(),
-        };
+    if (isCountMode) {
+        // Count mode: each category gets its own color
+        limitedRadarChartData.forEach((d, idx) => {
+            configData[d.class] = {
+                label: d.class,
+                color: colorPalette[idx]
+                    ? getRGBAString(colorPalette[idx], true)
+                    : `rgba(255,255,255,1)`,
+            };
+        });
+    } else {
+        // Field mode: each field gets its own color
+        config.forEach((key, idx) => {
+            configData[key] = {
+                label: key.charAt(0).toUpperCase() + key.slice(1),
+                color: colorPalette[idx]
+                    ? getRGBAString(colorPalette[idx], true)
+                    : `rgba(255,255,255,1)`,
+            };
+        });
     }
 
-    const renderData = limitedRadarChartData.map((d, idx) => {
-        configData[d.class] = {
-            label: d.class,
-        };
-        return {
-            ...d,
-            fill: colorPalette[idx]
-                ? `rgb(${colorPalette[idx].r}, ${colorPalette[idx].g}, ${colorPalette[idx].b}`
-                : "rgb(255, 255, 255)",
-        };
+    // Transform data for proper radial bar rendering
+    const renderData = limitedRadarChartData.map((d) => {
+        if (isCountMode) {
+            // In count mode, we only have one value per item
+            return {
+                ...d,
+                _total: d[yAxisField] || 0,
+                _segments: [{ key: d.class, value: d[yAxisField] || 0 }],
+                fill: configData[d.class]?.color || "rgba(255,255,255,1)", // Add fill for count mode
+            };
+        } else {
+            // Calculate total for percentage calculations
+            const total = config.reduce(
+                (sum, key) => sum + ((d[key] as number) || 0),
+                0
+            );
+            return {
+                ...d,
+                _total: total,
+                _segments: config.map((key) => ({ key, value: d[key] || 0 })),
+            };
+        }
     });
+
+    // Transform payload for CustomTooltipContent
+    // eslint-disable-next-line
+    const transformTooltipPayload = (payload: any) => {
+        if (!payload || !payload.length) {
+            return [];
+        }
+
+        const data = payload[0].payload;
+
+        if (isCountMode) {
+            // Count mode: single entry
+            return [
+                {
+                    name: "Count",
+                    value: data[yAxisField] || 0,
+                    color:
+                        configData[data.class]?.color || "rgba(255,255,255,1)",
+                },
+            ];
+        } else {
+            // Field mode: multiple entries
+            return config.map((key) => ({
+                name: configData[key].label,
+                value: data[key] || 0,
+                color: configData[key].color || `rgba(255,255,255,1)`,
+            }));
+        }
+    };
 
     return (
         <ChartViewWrapper
             borderWidth={borderWidth}
             borderColor={borderColor}
-            bgColor={backgroundColor}
+            bgColor={backgroundColor} // Set to transparent to avoid background overlap
             className="flex items-center justify-center"
         >
-            <ChartContainer
-                config={configData}
-                className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
+            <div
+                className="relative h-full w-full overflow-hidden pt-10"
+                style={{
+                    backgroundColor: getRGBAString(backgroundColor, true),
+                }}
             >
-                <RadialBarChart
-                    margin={{
-                        top: marginTop,
-                        right: marginRight,
-                        bottom: marginBottom,
-                        left: marginLeft,
-                    }}
-                    barCategoryGap={gap}
-                    data={renderData}
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    startAngle={startAngle}
-                    endAngle={endAngle}
-                >
-                    {labelEnabled && (
-                        <text
-                            x={getLabelAnchor(labelAnchor)}
-                            y={30}
-                            style={{
-                                fontSize: `${labelSize}px`,
-                                fontFamily: labelFontFamily,
-                                textDecoration:
-                                    labelFontStyle === FONT_STYLES_UNDERLINE
-                                        ? "underline"
-                                        : labelFontStyle ===
-                                            FONT_STYLES_STRIKETHROUGH
-                                          ? "line-through"
-                                          : "none",
-                                fontWeight:
-                                    labelFontStyle === FONT_STYLES_BOLD
-                                        ? "bold"
-                                        : "normal",
-                                fill: getRGBAString(labelColor),
-                                textAnchor: labelAnchor,
-                            }}
-                        >
-                            {label}
-                        </text>
-                    )}
-
-                    {tooltipEnabled && (
-                        <ChartTooltip
-                            cursor={false}
-                            content={
-                                <CustomTooltipContent
-                                    indicator={tooltipStyle}
-                                    textColor={tooltipTextColor}
-                                    separatorEnabled={tooltipSeparatorEnabled}
-                                    totalEnabled={tooltipTotalEnabled}
-                                    backgroundColor={tooltipBackgroundColor}
-                                    separatorColor={tooltipSeparatorColor}
-                                />
-                            }
-                            wrapperStyle={{
-                                zIndex: 1000,
-                                borderRadius: `${tooltipBorderRadius}px`,
-                                borderWidth: `${tooltipBorderWidth}px`,
-                                borderColor: getRGBAString(
-                                    tooltipBorderColor,
-                                    true
-                                ),
-                                overflow: "hidden",
-                            }}
-                        />
-                    )}
-
-                    <RadialBar
-                        dataKey="count"
-                        background
-                        cornerRadius={10}
-                        stackId={stacked ? "a" : undefined}
+                {labelEnabled && (
+                    <p
+                        style={{
+                            position: "absolute",
+                            top: "0",
+                            left: getLabelAnchor(labelAnchor),
+                            transform: `translateX(-${getLabelAnchor(labelAnchor)})`,
+                            fontSize: `${labelSize}px`,
+                            fontFamily: labelFontFamily,
+                            textDecoration:
+                                labelFontStyle === FONT_STYLES_UNDERLINE
+                                    ? "underline"
+                                    : labelFontStyle ===
+                                        FONT_STYLES_STRIKETHROUGH
+                                      ? "line-through"
+                                      : "none",
+                            fontWeight:
+                                labelFontStyle === FONT_STYLES_BOLD
+                                    ? "bold"
+                                    : "normal",
+                            color: getRGBAString(labelColor),
+                        }}
                     >
-                        {legendEnabled && (
-                            <LabelList
-                                position={legendPosition}
-                                dataKey="class"
-                                className="capitalize"
-                                style={{
-                                    fill: getRGBAString(legendTextColor),
+                        {label}
+                    </p>
+                )}
+                <ChartContainer
+                    config={configData}
+                    className="mx-auto max-h-[500px] min-h-[270px] w-full break1200:min-h-[500px]"
+                >
+                    <RadialBarChart
+                        margin={{
+                            top: marginTop,
+                            right: marginRight,
+                            bottom: marginBottom,
+                            left: marginLeft,
+                        }}
+                        barCategoryGap={gap}
+                        data={renderData}
+                        innerRadius={innerRadius}
+                        outerRadius={outerRadius}
+                        startAngle={startAngle}
+                        endAngle={endAngle}
+                        style={{
+                            position: "relative",
+                            top: `${offsetY}px`,
+                            left: `${offsetX}px`,
+                        }}
+                    >
+                        <defs>
+                            {/* Background pattern */}
+                            <pattern
+                                id="bg"
+                                patternUnits="userSpaceOnUse"
+                                width="1"
+                                height="1"
+                            >
+                                <rect
+                                    width="1"
+                                    height="1"
+                                    fill={getRGBAString(backgroundColor, true)}
+                                />
+                            </pattern>
+
+                            {/* Override styles with high specificity */}
+                            <style>
+                                {`
+                .recharts-radial-bar-background-sector {
+                    fill: ${getRGBAString(trackColor, true)} !important;
+                    opacity: ${trackEnabled ? 1 : 0} !important;
+                }
+                
+                /* Target the specific Tailwind class that's overriding */
+                g[class*="fill-muted"] .recharts-radial-bar-background-sector,
+                [class*="\\[\\&_\\.recharts-radial-bar-background-sector\\]"] .recharts-radial-bar-background-sector {
+                    fill: ${getRGBAString(trackColor, true)} !important;
+                }
+            `}
+                            </style>
+                        </defs>
+
+                        {/* Rest of your chart content - tooltips, RadialBars, etc. */}
+                        {tooltipEnabled && (
+                            <ChartTooltip
+                                cursor={false}
+                                content={({ active, payload }) => (
+                                    <CustomTooltipContent
+                                        active={active}
+                                        payload={transformTooltipPayload(
+                                            payload
+                                        )}
+                                        label={payload?.[0]?.payload?.class}
+                                        indicator={tooltipStyle}
+                                        textColor={tooltipTextColor}
+                                        separatorEnabled={
+                                            tooltipSeparatorEnabled
+                                        }
+                                        totalEnabled={tooltipTotalEnabled}
+                                        backgroundColor={tooltipBackgroundColor}
+                                        separatorColor={tooltipSeparatorColor}
+                                    />
+                                )}
+                                wrapperStyle={{
+                                    zIndex: 1000,
+                                    borderRadius: `${tooltipBorderRadius}px`,
+                                    borderWidth: `${tooltipBorderWidth}px`,
+                                    borderColor: getRGBAString(
+                                        tooltipBorderColor,
+                                        true
+                                    ),
+                                    overflow: "hidden",
                                 }}
-                                fontSize={legendTextSize}
                             />
                         )}
-                    </RadialBar>
-                </RadialBarChart>
-            </ChartContainer>
+
+                        {/* Your RadialBar components */}
+                        {isCountMode ? (
+                            <RadialBar
+                                background={trackEnabled}
+                                dataKey={yAxisField}
+                                cornerRadius={borderRadius}
+                            />
+                        ) : (
+                            config.map((key, idx) => {
+                                const segmentColor = colorPalette[idx]
+                                    ? getRGBAString(colorPalette[idx], true)
+                                    : `rgba(255,255,255,1)`;
+
+                                return (
+                                    <RadialBar
+                                        background={idx === 0 && trackEnabled}
+                                        key={key}
+                                        dataKey={key}
+                                        fill={segmentColor}
+                                        cornerRadius={borderRadius}
+                                        stackId="stack"
+                                    />
+                                );
+                            })
+                        )}
+                    </RadialBarChart>
+                </ChartContainer>
+
+                {/* Legend configuration */}
+                {legendEnabled && (
+                    <div className="mt-2 w-full">
+                        <CustomChartLegend
+                            orientation="horizontal"
+                            className="pb-2"
+                        >
+                            <CustomChartLegendContent
+                                textColor={legendTextColor}
+                                payload={
+                                    isCountMode
+                                        ? // Count mode: show categories in legend
+                                          limitedRadarChartData.map((d) => ({
+                                              value: d.class,
+                                              color:
+                                                  configData[d.class]?.color ??
+                                                  "rgba(255,255,255,1)",
+                                              payload: {
+                                                  fill:
+                                                      configData[d.class]
+                                                          ?.color ??
+                                                      "rgba(255,255,255,1)",
+                                                  stroke:
+                                                      configData[d.class]
+                                                          ?.color ??
+                                                      "rgba(255,255,255,1)",
+                                              },
+                                          }))
+                                        : // Field mode: show fields in legend
+                                          config.map((key) => ({
+                                              value: configData[key].label,
+                                              color:
+                                                  configData[key].color ??
+                                                  "rgba(255,255,255,1)",
+                                              payload: {
+                                                  fill:
+                                                      configData[key].color ??
+                                                      "rgba(255,255,255,1)",
+                                                  stroke:
+                                                      configData[key].color ??
+                                                      "rgba(255,255,255,1)",
+                                              },
+                                          }))
+                                }
+                            />
+                        </CustomChartLegend>
+                    </div>
+                )}
+            </div>
         </ChartViewWrapper>
     );
 };

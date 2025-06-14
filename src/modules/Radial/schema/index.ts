@@ -34,9 +34,11 @@ const radialUpdateBase = createUpdateSchema(RadialCharts);
 export const RadialChartSchema = {
     Insert: radialInsertBase.extend({
         xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
     }),
     Select: radialSelectBase.extend({
         xAxisSortOrder: z.enum(SORT_OPTIONS),
+        yAxisSortOrder: z.enum(SORT_OPTIONS),
     }),
     Update: radialUpdateBase
         .extend({

@@ -79,8 +79,10 @@ export const RadialChartConfig: ChartConfigComponent = ({
 
     // Radial chart store selectors
     const xAxisField = useRadialChartStore((state) => state.xAxisField);
+    const yAxisField = useRadialChartStore((state) => state.yAxisField);
     const filters = useRadialChartStore((state) => state.filters);
     const xAxisSortOrder = useRadialChartStore((state) => state.xAxisSortOrder);
+    const yAxisSortOrder = useRadialChartStore((state) => state.yAxisSortOrder);
     const omitZeroValuesEnabled = useRadialChartStore(
         (state) => state.omitZeroValuesEnabled
     );
@@ -97,6 +99,10 @@ export const RadialChartConfig: ChartConfigComponent = ({
     const setXAxisField = useRadialChartStore((state) => state.setXAxisField);
     const setXAxisSortOrder = useRadialChartStore(
         (state) => state.setXAxisSortOrder
+    );
+    const setYAxisField = useRadialChartStore((state) => state.setYAxisField);
+    const setYAxisSortOrder = useRadialChartStore(
+        (state) => state.setYAxisSortOrder
     );
     const setFilters = useRadialChartStore((state) => state.setFilters);
     const setOmitZeroValuesEnabled = useRadialChartStore(
@@ -143,7 +149,9 @@ export const RadialChartConfig: ChartConfigComponent = ({
             json: {
                 radial_chart: {
                     xAxisField: xAxis,
-                    xAxisSortOrder: sortBy,
+                    xAxisSortOrder: xSortBy,
+                    yAxisField: yAxis,
+                    yAxisSortOrder: ySortBy,
                     omitZeroValuesEnabled: omitZeroValues,
                     filters: localFilters,
                     specificConfig: {
@@ -184,7 +192,9 @@ export const RadialChartConfig: ChartConfigComponent = ({
 
     // Local states
     const [xAxis, setXAxis] = useState(xAxisField);
-    const [sortBy, setSortBy] = useState(xAxisSortOrder);
+    const [yAxis, setYAxis] = useState(yAxisField);
+    const [xSortBy, setXSortBy] = useState(xAxisSortOrder);
+    const [ySortBy, setYSortBy] = useState(yAxisSortOrder);
     const [omitZeroValues, setOmitZeroValues] = useState(omitZeroValuesEnabled);
     const [localFilters, setLocalFilters] = useState<ChartFilter[]>(filters);
 
@@ -228,9 +238,11 @@ export const RadialChartConfig: ChartConfigComponent = ({
 
     const onApply = () => {
         setXAxisField(xAxis);
-        setXAxisSortOrder(sortBy);
+        setXAxisSortOrder(xSortBy);
         setFilters(localFilters);
         setOmitZeroValuesEnabled(omitZeroValues);
+        setYAxisField(yAxis);
+        setYAxisSortOrder(ySortBy);
     };
 
     const {
@@ -324,8 +336,8 @@ export const RadialChartConfig: ChartConfigComponent = ({
                 <DataSection
                     xAxis={xAxis}
                     setXAxis={setXAxis}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
+                    yAxis={yAxis}
+                    setYAxis={setYAxis}
                     omitZeroValuesEnabled={omitZeroValues}
                     setOmitZeroValuesEnabled={setOmitZeroValues}
                     filters={localFilters}
@@ -335,8 +347,13 @@ export const RadialChartConfig: ChartConfigComponent = ({
                     removeFilter={removeFilter}
                     clearFilters={clearFilters}
                     onApply={onApply}
-                    columns={columns}
                     addFilter={addFilter}
+                    XAxisColumns={columns}
+                    YAxisColumns={columns}
+                    setSortX={setXSortBy}
+                    setSortY={setYSortBy}
+                    sortX={xSortBy}
+                    sortY={ySortBy}
                 />
             </div>
 

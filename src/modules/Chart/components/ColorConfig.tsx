@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ColorPickerPopover from "@/components/ui/ColorPickerPopover";
 import { Label } from "@/components/ui/label";
 import ClearAll from "@/modules/Chart/components/ClearAll";
-import { getRGBAString, invertRGBA } from "@/utils/colors";
+import { getRGBAString } from "@/utils/colors";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChartColorStore } from "@/modules/Chart/store";
+import { ColorTile } from "@/components/ui/ColorTile";
 
 interface ColorsConfigProps {
     showBackground?: boolean;
@@ -22,6 +23,7 @@ interface ColorsConfigProps {
     showTooltipSeparator?: boolean;
     showTooltipText?: boolean;
     showColorPalette?: boolean;
+    children?: React.ReactNode;
 }
 
 export function ColorsConfig({
@@ -35,6 +37,7 @@ export function ColorsConfig({
     showTooltipSeparator = true,
     showTooltipText = true,
     showColorPalette = true,
+    children,
 }: ColorsConfigProps) {
     // Color selectors
     const backgroundColor = useChartColorStore(
@@ -114,377 +117,88 @@ export function ColorsConfig({
 
                     {/* Base Colors Tab */}
                     <TabsContent value="base-colors" className="p-4 pt-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            {/* Background Color */}
-                            {showBackground && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={backgroundColor}
-                                    setColor={setBackgroundColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(
-                                                        backgroundColor
-                                                    ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            backgroundColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Bg
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Background
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Background Color */}
+                        {showBackground && (
+                            <ColorTile
+                                color={backgroundColor}
+                                setColor={setBackgroundColor}
+                                label="Background"
+                            />
+                        )}
 
-                            {/* Text Color */}
-                            {showLegendText && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={legendTextColor}
-                                    setColor={setLegendTextColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(
-                                                        legendTextColor
-                                                    ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            legendTextColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Tx
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Legend Text
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Text Color */}
+                        {showLegendText && (
+                            <ColorTile
+                                color={legendTextColor}
+                                setColor={setLegendTextColor}
+                                label="Legend Text"
+                            />
+                        )}
 
-                            {/* Grid Color */}
-                            {showGrid && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={gridColor}
-                                    setColor={setGridColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(gridColor),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            gridColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Gr
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Grid
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Grid Color */}
+                        {showGrid && (
+                            <ColorTile
+                                color={gridColor}
+                                setColor={setGridColor}
+                                label="Grid"
+                            />
+                        )}
 
-                            {/* Border Color */}
-                            {showBorder && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={borderColor}
-                                    setColor={setBorderColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(borderColor),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            borderColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Br
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Border
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Border Color */}
+                        {showBorder && (
+                            <ColorTile
+                                color={borderColor}
+                                setColor={setBorderColor}
+                                label="Border"
+                            />
+                        )}
 
-                            {/* Label Color */}
-                            {showLabel && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={labelColor}
-                                    setColor={setLabelColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(labelColor),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            labelColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Lb
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Label
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Label Color */}
+                        {showLabel && (
+                            <ColorTile
+                                color={labelColor}
+                                setColor={setLabelColor}
+                                label="Label"
+                            />
+                        )}
 
-                            {/* Tooltip Background Color */}
-                            {showTooltipBackground && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={tooltipBackgroundColor}
-                                    setColor={setTooltipBackgroundColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor: getRGBAString(
-                                                    tooltipBackgroundColor
-                                                ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            tooltipBackgroundColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Tb
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Tooltip Background
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Tooltip Background Color */}
+                        {showTooltipBackground && (
+                            <ColorTile
+                                color={tooltipBackgroundColor}
+                                setColor={setTooltipBackgroundColor}
+                                label="Tooltip Background"
+                            />
+                        )}
 
-                            {/* Tooltip Border Color */}
-                            {showTooltipBorder && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={tooltipBorderColor}
-                                    setColor={setTooltipBorderColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(
-                                                        tooltipBorderColor
-                                                    ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            tooltipBorderColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Tb
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Tooltip Border
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Tooltip Border Color */}
+                        {showTooltipBorder && (
+                            <ColorTile
+                                color={tooltipBorderColor}
+                                setColor={setTooltipBorderColor}
+                                label="Tooltip Border"
+                            />
+                        )}
 
-                            {/* Tooltip Separator Color */}
-                            {showTooltipSeparator && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={tooltipSeparatorColor}
-                                    setColor={setTooltipSeparatorColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor: getRGBAString(
-                                                    tooltipSeparatorColor
-                                                ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            tooltipSeparatorColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Ts
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Tooltip Separator
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
+                        {/* Tooltip Separator Color */}
+                        {showTooltipSeparator && (
+                            <ColorTile
+                                color={tooltipSeparatorColor}
+                                setColor={setTooltipSeparatorColor}
+                                label="Tooltip Separator"
+                            />
+                        )}
 
-                            {/* Tooltip Text Color */}
-                            {showTooltipText && (
-                                <ColorPickerPopover
-                                    isSingleColor={true}
-                                    color={tooltipTextColor}
-                                    setColor={setTooltipTextColor}
-                                >
-                                    <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow">
-                                        <div
-                                            className="flex h-16 items-center justify-between p-3"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(
-                                                        tooltipTextColor
-                                                    ),
-                                            }}
-                                        >
-                                            <div
-                                                className="flex items-center gap-2"
-                                                style={{
-                                                    color: getRGBAString(
-                                                        invertRGBA(
-                                                            tooltipTextColor,
-                                                            true
-                                                        )
-                                                    ),
-                                                }}
-                                            >
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                                    <span className="text-xs">
-                                                        Tt
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium">
-                                                    Tooltip Text
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ColorPickerPopover>
-                            )}
-                        </div>
+                        {/* Tooltip Text Color */}
+                        {showTooltipText && (
+                            <ColorTile
+                                color={tooltipTextColor}
+                                setColor={setTooltipTextColor}
+                                label="Tooltip Text"
+                            />
+                        )}
+
+                        {children}
                     </TabsContent>
 
                     {/* Chart Colors Tab */}

@@ -1,23 +1,13 @@
 "use client";
 
-import { PieChart, Settings, Layers } from "lucide-react";
+import { PieChart, Square } from "lucide-react";
 
 import { Slider, DualRangeSlider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    RADIAL_LEGEND_POSITION_OPTIONS,
-    type RadialLegendPositionType,
-} from "@/constants";
 import { useRadialChartStore } from "@/modules/Radial/store";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import { NumberInput } from "@/components/ui/number-input";
 
 export function RadialChartStyleConfig() {
     // Radial chart selectors
@@ -29,18 +19,18 @@ export function RadialChartStyleConfig() {
     const setStartAngle = useRadialChartStore((state) => state.setStartAngle);
     const endAngle = useRadialChartStore((state) => state.endAngle);
     const setEndAngle = useRadialChartStore((state) => state.setEndAngle);
-    const legendPosition = useRadialChartStore((state) => state.legendPosition);
-    const setLegendPosition = useRadialChartStore(
-        (state) => state.setLegendPosition
-    );
-    const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
-    const setLegendTextSize = useRadialChartStore(
-        (state) => state.setLegendTextSize
-    );
     const gap = useRadialChartStore((state) => state.gap);
     const setGap = useRadialChartStore((state) => state.setGap);
-    const stacked = useRadialChartStore((state) => state.stacked);
-    const toggleStacked = useRadialChartStore((state) => state.toggleStacked);
+    const trackEnabled = useRadialChartStore((state) => state.trackEnabled);
+    const toggleTrack = useRadialChartStore((state) => state.toggleTrack);
+    const borderRadius = useRadialChartStore((state) => state.borderRadius);
+    const setBorderRadius = useRadialChartStore(
+        (state) => state.setBorderRadius
+    );
+    const offsetX = useRadialChartStore((state) => state.offset.x);
+    const offsetY = useRadialChartStore((state) => state.offset.y);
+    const setOffsetX = useRadialChartStore((state) => state.setOffsetX);
+    const setOffsetY = useRadialChartStore((state) => state.setOffsetY);
 
     return (
         <Card className="border bg-card shadow-sm">
@@ -53,46 +43,6 @@ export function RadialChartStyleConfig() {
             <CardContent className="space-y-4">
                 {/* Radial Chart Settings */}
                 <Label className="text-sm font-medium">Chart Dimensions</Label>
-
-                {/* Inner Radius */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-muted-foreground">
-                            Inner Radius
-                        </Label>
-                        <span className="text-xs text-muted-foreground">
-                            {innerRadius}
-                        </span>
-                    </div>
-                    <Slider
-                        value={[innerRadius]}
-                        min={0}
-                        max={250}
-                        step={1}
-                        onValueChange={(values) => setInnerRadius(values[0])}
-                        className="w-full"
-                    />
-                </div>
-
-                {/* Outer Radius */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-muted-foreground">
-                            Outer Radius
-                        </Label>
-                        <span className="text-xs text-muted-foreground">
-                            {outerRadius}
-                        </span>
-                    </div>
-                    <Slider
-                        value={[outerRadius]}
-                        min={0}
-                        max={250}
-                        step={1}
-                        onValueChange={(values) => setOuterRadius(values[0])}
-                        className="w-full"
-                    />
-                </div>
 
                 {/* Gap */}
                 <div className="space-y-2">
@@ -114,11 +64,55 @@ export function RadialChartStyleConfig() {
                     />
                 </div>
 
+                {/* Border Radius */}
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-muted-foreground">
+                            Border Radius
+                        </Label>
+                        <span className="text-xs text-muted-foreground">
+                            {borderRadius}
+                        </span>
+                    </div>
+                    <Slider
+                        value={[borderRadius]}
+                        min={0}
+                        max={30}
+                        step={1}
+                        onValueChange={(values) => setBorderRadius(values[0])}
+                        className="w-full"
+                    />
+                </div>
+
+                {/* Radius Range */}
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground">
+                        Radius Range
+                    </Label>
+
+                    <DualRangeSlider
+                        value={[innerRadius, outerRadius]}
+                        min={0}
+                        max={250}
+                        step={1}
+                        onValueChange={(values) => {
+                            setInnerRadius(values[0]);
+                            setOuterRadius(values[1]);
+                        }}
+                        className="w-full"
+                    />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Inner: {innerRadius}</span>
+                        <span>Outer: {outerRadius}</span>
+                    </div>
+                </div>
+
                 {/* Angle Range */}
                 <div className="space-y-2 pb-4">
                     <Label className="text-sm font-medium text-muted-foreground">
                         Angle Range
                     </Label>
+
                     <DualRangeSlider
                         value={[startAngle, endAngle]}
                         min={0}
@@ -136,83 +130,63 @@ export function RadialChartStyleConfig() {
                     </div>
                 </div>
 
-                {/* Legend Settings */}
+                {/* Chart Options */}
                 <div className="space-y-3 rounded-md border p-3">
-                    <div className="flex items-center gap-2">
-                        <Settings className="h-4 w-4 text-muted-foreground" />
-                        <Label className="text-sm font-medium">
-                            Legend Settings
-                        </Label>
-                    </div>
+                    <Label className="text-sm font-medium">Chart Options</Label>
 
-                    {/* Legend Position */}
-                    <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground">
-                            Position
-                        </Label>
-                        <Select
-                            onValueChange={(value) =>
-                                setLegendPosition(
-                                    value as RadialLegendPositionType
-                                )
-                            }
-                            value={legendPosition}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select position" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {RADIAL_LEGEND_POSITION_OPTIONS.map(
-                                    (position) => (
-                                        <SelectItem
-                                            key={position}
-                                            value={position}
-                                        >
-                                            {position.charAt(0).toUpperCase() +
-                                                position.slice(1)}
-                                        </SelectItem>
-                                    )
-                                )}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Legend Text Size */}
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-sm font-medium text-muted-foreground">
-                                Text Size
-                            </Label>
-                            <span className="text-xs text-muted-foreground">
-                                {legendTextSize}px
-                            </span>
+                    {/* Track Enabled */}
+                    {trackEnabled !== undefined && toggleTrack && (
+                        <div className="flex items-center justify-between rounded-md bg-muted/5 p-2">
+                            <div className="flex items-center gap-2">
+                                <Square className="h-3.5 w-3.5 text-muted-foreground" />
+                                <Label className="text-xs">Track</Label>
+                            </div>
+                            <ToggleSwitch
+                                defaultChecked={trackEnabled}
+                                toggleFunction={toggleTrack}
+                            />
                         </div>
-                        <Slider
-                            value={[legendTextSize]}
-                            min={8}
-                            max={24}
-                            step={1}
-                            onValueChange={(values) =>
-                                setLegendTextSize(values[0])
-                            }
-                            className="w-full"
-                        />
+                    )}
+                </div>
+                <div className="space-y-3 rounded-md border p-3">
+                    <Label className="text-sm font-medium text-muted-foreground">
+                        Offset (px)
+                    </Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-xs text-muted-foreground">
+                                X Offset
+                            </Label>
+                            <NumberInput
+                                min={-250}
+                                max={250}
+                                step={1}
+                                value={offsetX}
+                                onValueChange={(value) =>
+                                    setOffsetX(value || 0)
+                                }
+                                className="w-full"
+                                suffix="px"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs text-muted-foreground">
+                                Y offset
+                            </Label>
+                            <NumberInput
+                                min={-250}
+                                max={250}
+                                step={1}
+                                value={offsetY}
+                                onValueChange={(value) =>
+                                    setOffsetY(value || 0)
+                                }
+                                className="w-full"
+                                suffix="px"
+                            />
+                        </div>
                     </div>
                 </div>
-
-                {/* Stacked */}
-                {stacked !== undefined && toggleStacked && (
-                    <div className="flex items-center justify-between rounded-md bg-muted/10 p-3">
-                        <div className="flex items-center gap-2">
-                            <Layers className="h-4 w-4 text-muted-foreground" />
-                            <Label className="text-sm">Stacked</Label>
-                        </div>
-                        <ToggleSwitch
-                            defaultChecked={stacked}
-                            toggleFunction={toggleStacked}
-                        />
-                    </div>
-                )}
             </CardContent>
         </Card>
     );

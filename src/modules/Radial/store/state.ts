@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
 
-import { ChartFilter, RadialLegendPositionType, SortType } from "@/constants";
+import { ChartFilter, RGBAColor, SortType } from "@/constants";
 import { RadialChartSelect } from "@/modules/Radial/schema";
 import {
     defaultRadialChartConfig,
@@ -20,6 +20,8 @@ export type RadialChartState = Omit<
 export type RadialChartActions = {
     setXAxisField: (field: string) => void;
     setXAxisSortOrder: (order: SortType) => void;
+    setYAxisField: (field: string) => void;
+    setYAxisSortOrder: (order: SortType) => void;
     setOmitZeroValuesEnabled: (value: boolean) => void;
     setFilters: (filters: ChartFilter[]) => void;
     addFilter: (filter: ChartFilter) => void;
@@ -29,10 +31,12 @@ export type RadialChartActions = {
     setOuterRadius: (value: number) => void;
     setStartAngle: (angle: number) => void;
     setEndAngle: (angle: number) => void;
-    setLegendPosition: (pos: RadialLegendPositionType) => void;
-    setLegendTextSize: (size: number) => void;
     setGap: (gap: number) => void;
-    toggleStacked: () => void;
+    toggleTrack: () => void;
+    setTrackColor: (color: RGBAColor) => void;
+    setBorderRadius: (radius: number) => void;
+    setOffsetX: (x: number) => void;
+    setOffsetY: (y: number) => void;
 };
 
 // --- Store Type
@@ -64,6 +68,14 @@ export const createRadialChartStore = (
             setXAxisSortOrder: (order: SortType) =>
                 set((state) => {
                     state.xAxisSortOrder = order;
+                }),
+            setYAxisField: (field: string) =>
+                set((state) => {
+                    state.yAxisField = field;
+                }),
+            setYAxisSortOrder: (order: SortType) =>
+                set((state) => {
+                    state.yAxisSortOrder = order;
                 }),
             setOmitZeroValuesEnabled: (value: boolean) =>
                 set((state) => {
@@ -101,21 +113,29 @@ export const createRadialChartStore = (
                 set((state) => {
                     state.endAngle = angle;
                 }),
-            setLegendPosition: (pos: RadialLegendPositionType) =>
-                set((state) => {
-                    state.legendPosition = pos;
-                }),
-            setLegendTextSize: (size: number) =>
-                set((state) => {
-                    state.legendTextSize = size;
-                }),
             setGap: (gap: number) =>
                 set((state) => {
                     state.gap = gap;
                 }),
-            toggleStacked: () =>
+            toggleTrack: () =>
                 set((state) => {
-                    state.stacked = !state.stacked;
+                    state.trackEnabled = !state.trackEnabled;
+                }),
+            setTrackColor: (color: RGBAColor) =>
+                set((state) => {
+                    state.trackColor = color;
+                }),
+            setBorderRadius: (radius: number) =>
+                set((state) => {
+                    state.borderRadius = radius;
+                }),
+            setOffsetX: (x: number) =>
+                set((state) => {
+                    state.offset.x = x;
+                }),
+            setOffsetY: (y: number) =>
+                set((state) => {
+                    state.offset.y = y;
                 }),
         }))
     );
