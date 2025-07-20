@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import { useShallow } from "zustand/shallow";
 import {
     Calculator,
     Calendar,
@@ -38,27 +39,17 @@ type Props = {
 export const HeatMap = ({ weeks, maxCount }: Props) => {
     const {
         accent,
-        average_of_all_entries,
-        average_of_all_entries_color,
-        default_box_color,
-        label_enabled,
-        longest_streak,
-        longest_streak_color,
-        number_of_entries,
-        number_of_entries_color,
+        averageOfAllEntries,
+        buttonHoverEnabled,
+        defaultBoxColor,
+        legendEnabled,
+        longestStreak,
+        numberOfEntries,
         streak,
-        streak_color,
-        sum_of_all_entries,
-        sum_of_all_entries_color,
-        text_color,
-        tooltip_enabled,
-        average_of_all_entries_enabled,
-        button_hover_enabled,
-        longest_streak_enabled,
-        number_of_entries_enabled,
-        sum_of_all_entries_enabled,
-        streak_enabled,
-    } = useHeatmapChartStore((state) => state);
+        sumOfAllEntries,
+        textColor,
+        tooltipEnabled,
+    } = useHeatmapChartStore(useShallow((state) => state));
 
     const stats: {
         [key: string]: {
@@ -68,53 +59,53 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
             color: RGBAColor;
         };
     } = {
-        ...(longest_streak_enabled
+        ...(longestStreak.enabled
             ? {
                   longestStreak: {
                       name: "Longest Streak",
-                      value: longest_streak,
+                      value: longestStreak.value,
                       icon: Flame,
-                      color: longest_streak_color,
+                      color: longestStreak.color,
                   },
               }
             : {}),
-        ...(streak_enabled
+        ...(streak.enabled
             ? {
                   streak: {
                       name: "Streak",
-                      value: streak,
+                      value: streak.value,
                       icon: Zap,
-                      color: streak_color,
+                      color: streak.color,
                   },
               }
             : {}),
-        ...(sum_of_all_entries_enabled
+        ...(sumOfAllEntries.enabled
             ? {
                   total: {
                       name: "Total of all entries",
-                      value: sum_of_all_entries,
+                      value: sumOfAllEntries.value,
                       icon: Hash,
-                      color: sum_of_all_entries_color,
+                      color: sumOfAllEntries.color,
                   },
               }
             : {}),
-        ...(number_of_entries_enabled
+        ...(numberOfEntries.enabled
             ? {
                   numberOfEntries: {
                       name: "Number of entries",
-                      value: number_of_entries,
+                      value: numberOfEntries.value,
                       icon: FileText,
-                      color: number_of_entries_color,
+                      color: numberOfEntries.color,
                   },
               }
             : {}),
-        ...(average_of_all_entries_enabled
+        ...(averageOfAllEntries.enabled
             ? {
                   average: {
                       name: "Average",
-                      value: average_of_all_entries,
+                      value: averageOfAllEntries.value,
                       icon: Calculator,
-                      color: average_of_all_entries_color,
+                      color: averageOfAllEntries.color,
                   },
               }
             : {}),
@@ -158,10 +149,10 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
         <div
             className="container mx-auto max-w-[1450px]"
             style={{
-                color: `rgba(${text_color.r}, ${text_color.g}, ${text_color.b}, ${text_color.a}`,
+                color: `rgba(${textColor.r}, ${textColor.g}, ${textColor.b}, ${textColor.a}`,
             }}
         >
-            {label_enabled && (
+            {legendEnabled && (
                 <div className="flex justify-between py-5 pl-10">
                     <h1 className="text-4xl">Label</h1>
                     <div className="flex items-center justify-center gap-2 pr-5">
@@ -245,7 +236,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                                 {week.map((data, row_index) => {
                                     const boxColor =
                                         data.count === 0
-                                            ? default_box_color
+                                            ? defaultBoxColor
                                             : accent;
 
                                     const boxOpacity =
@@ -295,7 +286,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                                                 }}
                                             />
 
-                                            {tooltip_enabled && (
+                                            {tooltipEnabled && (
                                                 <div
                                                     className="absolute z-50 hidden gap-2 overflow-hidden rounded border bg-background text-sm group-hover:flex"
                                                     style={{
@@ -382,7 +373,7 @@ export const HeatMap = ({ weeks, maxCount }: Props) => {
                 <Button
                     className={cn(
                         "mt-10 w-80 max-w-[80%] items-center border bg-background hover:bg-background",
-                        button_hover_enabled &&
+                        buttonHoverEnabled &&
                             "opacity-0 transition-opacity duration-200 hover:opacity-100"
                     )}
                 >

@@ -268,7 +268,7 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                     accessibilityLayer
                     data={limitedBarChartData}
                     barSize={barWidth}
-                    barGap={barGap / 100} // Convert to percentage for Recharts
+                    barGap={barGap}
                     margin={{
                         top: marginTop,
                         right: marginRight,

@@ -1,4 +1,4 @@
-import { DayOfWeek } from "@/constants";
+import type { DayOfWeek } from "@/constants";
 
 export function getDayOfWeek(dateInput: string | Date): string {
     const days = [
@@ -60,8 +60,8 @@ export function getProcessedData(
 
     // Get the earliest date from the sorted values
     const earliestDate = new Date(
-        latestDate.getTime() - 1000 * 60 * 60 * 24 * 365 // a year before
-    );
+        latestDate.getTime() - 1000 * 60 * 60 * 24 * 365
+    ); // a year before
 
     // Initialize the result array and maxCount
     const weeks: { date: Date; count: number }[][] = [];

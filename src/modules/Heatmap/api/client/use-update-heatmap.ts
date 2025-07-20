@@ -16,18 +16,20 @@ type ResponseType = InferResponseType<
 
 export const useUpdateHeatmap = ({
     onSuccess: propOnSuccess,
+    onError: propOnError,
 }: {
     onSuccess: () => void;
+    onError?: (error: Error) => void;
 }) => {
     const queryClient = useQueryClient();
 
     return useMutation<ResponseType, Error, RequestType>({
         mutationFn: async ({ param, json }) => {
+            // BUG : heatmap is not updating properly
             const response = await client.api["heatmap-chart"][":id"].$put({
                 param,
                 json,
             });
-
             if (!response.ok) {
                 throw new Error("Failed to update heatmap chart");
             }
@@ -40,6 +42,12 @@ export const useUpdateHeatmap = ({
                 ["heatmap-chart", variables.param.id],
                 data
             );
+        },
+
+        onError: (error) => {
+            if (propOnError) {
+                propOnError(error);
+            }
         },
     });
 };

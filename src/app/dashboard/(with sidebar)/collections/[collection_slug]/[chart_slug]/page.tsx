@@ -10,6 +10,11 @@ import { useAuthSession } from "@/hooks/use-auth-session";
 import { ChartConfigStoreProvider } from "@/modules/Chart/store";
 import { AreaChartView } from "@/modules/Area/components/AreaChartView";
 import {
+    CHART_TYPE_AREA,
+    CHART_TYPE_BAR,
+    CHART_TYPE_HEATMAP,
+    CHART_TYPE_RADAR,
+    CHART_TYPE_RADIAL,
     ChartConfigComponent,
     ChartStateProvider,
     ChartViewComponent,
@@ -23,6 +28,9 @@ import { RadarChartStoreProvider } from "@/modules/Radar/store";
 import { RadialChartView } from "@/modules/Radial/components/RadialChartView";
 import { RadialChartConfig } from "@/modules/Radial/components/RadialConfig";
 import { RadialChartStoreProvider } from "@/modules/Radial/store";
+import { HeatmapChartView } from "@/modules/Heatmap/components/HeatmapChartView";
+import { HeatmapChartStoreProvider } from "@/modules/Heatmap/store";
+import { HeatmapConfig } from "@/modules/Heatmap/components/heatmapConfig";
 
 type Props = {
     params: Promise<{
@@ -84,11 +92,27 @@ export default function ChatConfigs({ params }: Props) {
             ChartStateProvider,
         ];
     } = {
-        Bar: [BarChartView, BarChartConfig, BarChartStoreProvider],
-        Radar: [RadarChartView, RadarChartConfig, RadarChartStoreProvider],
-        Area: [AreaChartView, AreaChartConfig, AreaChartStoreProvider],
-        Radial: [RadialChartView, RadialChartConfig, RadialChartStoreProvider],
-        // Heatmap: [HeatmapChartView, HeatmapConfig, HeatmapChartStoreProvider],
+        [CHART_TYPE_BAR]: [BarChartView, BarChartConfig, BarChartStoreProvider],
+        [CHART_TYPE_RADAR]: [
+            RadarChartView,
+            RadarChartConfig,
+            RadarChartStoreProvider,
+        ],
+        [CHART_TYPE_AREA]: [
+            AreaChartView,
+            AreaChartConfig,
+            AreaChartStoreProvider,
+        ],
+        [CHART_TYPE_RADIAL]: [
+            RadialChartView,
+            RadialChartConfig,
+            RadialChartStoreProvider,
+        ],
+        [CHART_TYPE_HEATMAP]: [
+            HeatmapChartView,
+            HeatmapConfig,
+            HeatmapChartStoreProvider,
+        ],
     };
 
     const [ChartView, ChartConfig, StoreProvider] = chartComponents[chart.type];

@@ -28,6 +28,7 @@ import {
 import { DataSection } from "@/modules/Radial/components/DataSection";
 import { RadialChartStyleConfig } from "@/modules/Radial/components/RadialChartStyleConfig";
 import { SelectFieldsForRadial } from "@/modules/Radial/utils/selectFieldsForDonut";
+import { ColorTile } from "@/components/ui/ColorTile";
 
 export const RadialChartConfig: ChartConfigComponent = ({
     chartId,
@@ -90,10 +91,11 @@ export const RadialChartConfig: ChartConfigComponent = ({
     const outerRadius = useRadialChartStore((state) => state.outerRadius);
     const startAngle = useRadialChartStore((state) => state.startAngle);
     const endAngle = useRadialChartStore((state) => state.endAngle);
-    const legendPosition = useRadialChartStore((state) => state.legendPosition);
-    const legendTextSize = useRadialChartStore((state) => state.legendTextSize);
     const gap = useRadialChartStore((state) => state.gap);
-    const stacked = useRadialChartStore((state) => state.stacked);
+    const trackEnabled = useRadialChartStore((state) => state.trackEnabled);
+    const trackColor = useRadialChartStore((state) => state.trackColor);
+    const offset = useRadialChartStore((state) => state.offset);
+    const borderRadius = useRadialChartStore((state) => state.borderRadius);
 
     // Store actions
     const setXAxisField = useRadialChartStore((state) => state.setXAxisField);
@@ -159,10 +161,11 @@ export const RadialChartConfig: ChartConfigComponent = ({
                         outerRadius,
                         startAngle,
                         endAngle,
-                        legendPosition,
-                        legendTextSize,
+                        trackEnabled,
+                        trackColor,
+                        offset,
                         gap,
-                        stacked,
+                        borderRadius,
                     },
                 },
                 chart_box_model: chartBoxModelConfig,
@@ -376,6 +379,9 @@ export const RadialChartConfig: ChartConfigComponent = ({
 };
 
 function RadialConfigTabs() {
+    const trackColor = useRadialChartStore((state) => state.trackColor);
+    const setTrackColor = useRadialChartStore((state) => state.setTrackColor);
+
     return (
         <Tabs defaultValue="colors" className="w-full">
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 rounded-none bg-background">
@@ -400,7 +406,13 @@ function RadialConfigTabs() {
             </TabsList>
             <div className="p-4">
                 <TabsContent value="colors" className="mt-0">
-                    <ColorsConfig />
+                    <ColorsConfig>
+                        <ColorTile
+                            color={trackColor}
+                            setColor={setTrackColor}
+                            label="Track Color"
+                        />
+                    </ColorsConfig>
                 </TabsContent>
                 <TabsContent value="ui-features" className="mt-0">
                     <UIConfig>

@@ -8,40 +8,42 @@ import { defaultHeatmapConfig } from "@/modules/Heatmap/heatmap-default-config";
 export type HeatmapChartState = Omit<HeatmapSelect, "chartId">;
 
 export type HeatmapChartActions = {
-    // Basic appearance
     setBackgroundColor: (color: RGBAColor) => void;
     setTextColor: (color: RGBAColor) => void;
     toggleTooltip: () => void;
     toggleLegend: () => void;
     toggleBorder: () => void;
-    toggleAverageOfAllEntries: () => void;
-    toggleLongestStreak: () => void;
-    toggleNumberOfEntries: () => void;
-    toggleSumOfAllEntries: () => void;
-    toggleStreak: () => void;
-    toggleLabel: () => void;
-
-    // Metric operations
     setMetric: (metric: string) => void;
+    toggleLabel: () => void;
+    setDateField: (dateField: string) => void;
+    setValueField: (valueField: string) => void;
+
     setStreak: (streak: number) => void;
-    setLongestStreak: (longestStreak: number) => void;
-    setSumOfAllEntries: (sum: number) => void;
-    setAverageOfAllEntries: (average: number) => void;
-    setNumberOfEntries: (count: number) => void;
-    toggleButtonHover: () => void;
-
-    // Color operations
-    setDefaultBoxColor: (color: RGBAColor) => void;
-    setAccent: (color: RGBAColor) => void;
-    setLongestStreakColor: (color: RGBAColor) => void;
-    setNumberOfEntriesColor: (color: RGBAColor) => void;
+    toggleStreak: () => void;
     setStreakColor: (color: RGBAColor) => void;
-    setSumOfAllEntriesColor: (color: RGBAColor) => void;
-    setAverageOfAllEntriesColor: (color: RGBAColor) => void;
-
     toggleDaysToIncludeInStreak: (day: DayOfWeek) => void;
     setDaysToIncludeInStreak: (days: DayOfWeek[]) => void;
     isDayIncludedInStreak: (day: DayOfWeek) => boolean;
+
+    setLongestStreak: (longestStreak: number) => void;
+    toggleLongestStreak: () => void;
+    setLongestStreakColor: (color: RGBAColor) => void;
+
+    setSumOfAllEntries: (sum: number) => void;
+    toggleSumOfAllEntries: () => void;
+    setSumOfAllEntriesColor: (color: RGBAColor) => void;
+
+    setAverageOfAllEntries: (average: number) => void;
+    toggleAverageOfAllEntries: () => void;
+    setAverageOfAllEntriesColor: (color: RGBAColor) => void;
+
+    setNumberOfEntries: (count: number) => void;
+    toggleNumberOfEntries: () => void;
+    setNumberOfEntriesColor: (color: RGBAColor) => void;
+
+    toggleButtonHover: () => void;
+    setDefaultBoxColor: (color: RGBAColor) => void;
+    setAccent: (color: RGBAColor) => void;
 
     // State operations
     reset: () => void;
@@ -78,7 +80,7 @@ export const createHeatmapChartStore = (
                 }),
             toggleLegend: () =>
                 set((state) => {
-                    state.labelEnabled = !state.labelEnabled;
+                    state.legendEnabled = !state.legendEnabled;
                 }),
             toggleBorder: () =>
                 set((state) => {
@@ -86,26 +88,35 @@ export const createHeatmapChartStore = (
                 }),
             toggleAverageOfAllEntries: () =>
                 set((state) => {
-                    state.averageOfAllEntriesEnabled =
-                        !state.averageOfAllEntriesEnabled;
+                    state.averageOfAllEntries.enabled =
+                        !state.averageOfAllEntries.enabled;
                 }),
+            setDateField: (dateField) =>
+                set((state) => {
+                    state.dateField = dateField;
+                }),
+            setValueField: (valueField) =>
+                set((state) => {
+                    state.valueField = valueField;
+                }),
+
             toggleLongestStreak: () =>
                 set((state) => {
-                    state.longestStreakEnabled = !state.longestStreakEnabled;
+                    state.longestStreak.enabled = !state.longestStreak.enabled;
                 }),
             toggleNumberOfEntries: () =>
                 set((state) => {
-                    state.numberOfEntriesEnabled =
-                        !state.numberOfEntriesEnabled;
+                    state.numberOfEntries.enabled =
+                        !state.numberOfEntries.enabled;
                 }),
             toggleSumOfAllEntries: () =>
                 set((state) => {
-                    state.sumOfAllEntriesEnabled =
-                        !state.sumOfAllEntriesEnabled;
+                    state.sumOfAllEntries.enabled =
+                        !state.sumOfAllEntries.enabled;
                 }),
             toggleStreak: () =>
                 set((state) => {
-                    state.streakEnabled = !state.streakEnabled;
+                    state.streak.enabled = !state.streak.enabled;
                 }),
             toggleLabel: () =>
                 set((state) => {
@@ -119,23 +130,23 @@ export const createHeatmapChartStore = (
                 }),
             setStreak: (streak) =>
                 set((state) => {
-                    state.streak = streak;
+                    state.streak.value = streak;
                 }),
             setLongestStreak: (longestStreak) =>
                 set((state) => {
-                    state.longestStreak = longestStreak;
+                    state.longestStreak.value = longestStreak;
                 }),
             setSumOfAllEntries: (sum) =>
                 set((state) => {
-                    state.sumOfAllEntries = sum;
+                    state.sumOfAllEntries.value = sum;
                 }),
             setAverageOfAllEntries: (average) =>
                 set((state) => {
-                    state.averageOfAllEntries = average;
+                    state.averageOfAllEntries.value = average;
                 }),
             setNumberOfEntries: (count) =>
                 set((state) => {
-                    state.numberOfEntries = count;
+                    state.numberOfEntries.value = count;
                 }),
             toggleButtonHover: () =>
                 set((state) => {
@@ -153,42 +164,42 @@ export const createHeatmapChartStore = (
                 }),
             setLongestStreakColor: (color) =>
                 set((state) => {
-                    state.longestStreakColor = color;
+                    state.longestStreak.color = color;
                 }),
             setNumberOfEntriesColor: (color) =>
                 set((state) => {
-                    state.numberOfEntriesColor = color;
+                    state.numberOfEntries.color = color;
                 }),
             setStreakColor: (color) =>
                 set((state) => {
-                    state.streakColor = color;
+                    state.streak.color = color;
                 }),
             setSumOfAllEntriesColor: (color) =>
                 set((state) => {
-                    state.sumOfAllEntriesColor = color;
+                    state.sumOfAllEntries.color = color;
                 }),
             setAverageOfAllEntriesColor: (color) =>
                 set((state) => {
-                    state.averageOfAllEntriesColor = color;
+                    state.averageOfAllEntries.color = color;
                 }),
 
             // Days to include in streak
             toggleDaysToIncludeInStreak: (day) =>
                 set((state) => {
-                    const daysSet = new Set(state.daysToIncludeInStreak);
+                    const daysSet = new Set(state.streak.daysToInclude);
                     if (daysSet.has(day)) {
                         daysSet.delete(day);
                     } else {
                         daysSet.add(day);
                     }
-                    state.daysToIncludeInStreak = Array.from(daysSet);
+                    state.streak.daysToInclude = Array.from(daysSet);
                 }),
             setDaysToIncludeInStreak: (days) =>
                 set((state) => {
-                    state.daysToIncludeInStreak = days;
+                    state.streak.daysToInclude = days;
                 }),
             isDayIncludedInStreak: (day) =>
-                get().daysToIncludeInStreak.includes(day),
+                get().streak.daysToInclude.includes(day),
 
             // State operations
             reset: () => set(() => ({ ...defaultHeatmapConfig })),

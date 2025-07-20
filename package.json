@@ -19,9 +19,8 @@
         "dev:tmux": "./scripts/tmux.sh"
     },
     "dependencies": {
-        "@auth/core": "^0.39.0",
+        "@auth/core": "0.40.0",
         "@auth/drizzle-adapter": "^1.9.0",
-        "@hono/auth-js": "^1.0.15",
         "@hono/zod-validator": "^0.4.3",
         "@hookform/resolvers": "^4.1.0",
         "@libsql/client": "^0.14.0",
@@ -53,8 +52,6 @@
         "@radix-ui/react-toggle": "^1.1.6",
         "@radix-ui/react-toggle-group": "^1.1.6",
         "@radix-ui/react-tooltip": "^1.2.0",
-        "@supabase/ssr": "^0.5.2",
-        "@supabase/supabase-js": "^2.48.1",
         "@tanstack/react-query": "^5.66.8",
         "@uiw/react-heat-map": "^2.3.2",
         "@uiw/react-tooltip": "^4.22.3",
