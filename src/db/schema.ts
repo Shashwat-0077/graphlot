@@ -1,9 +1,9 @@
-export * from "@/modules/auth/schema/db";
-export * from "@/modules/Area/schema/db";
-export * from "@/modules/Bar/schema/db";
-export * from "@/modules/ChartGroup/schema/db";
-export * from "@/modules/Chart/schema/db";
-export * from "@/modules/Collection/schema/db";
-export * from "@/modules/Heatmap/schema/db";
-export * from "@/modules/Radar/schema/db";
-export * from "@/modules/Radial/schema/db";
+export * from '@/modules/auth/schema';
+// export * from '@/modules/Area/schema/db';
+// export * from '@/modules/Bar/schema/db';
+// export * from '@/modules/ChartGroup/schema/db';
+// export * from '@/modules/Chart/schema/db';
+// export * from '@/modules/Collection/schema/db';
+// export * from '@/modules/Heatmap/schema/db';
+// export * from '@/modules/Radar/schema/db';
+// export * from '@/modules/Radial/schema/db';

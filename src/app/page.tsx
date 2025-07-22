@@ -1,22 +1,11 @@
-import { redirect } from "next/navigation";
+import Hero from '@/pages/home/hero';
+import TopBar from '@/pages/home/top-bar';
 
-import { auth } from "@/modules/auth";
-import SocialsButton from "@/modules/auth/components/SocialsButton";
-
-export default async function Home() {
-    const session = await auth();
-
-    if (session) {
-        redirect("/dashboard");
-    }
-
+export default function Home() {
     return (
-        <main className="grid h-dvh place-content-center overflow-hidden bg-background text-foreground">
-            <h1 className="z-50 text-center font-play-write text-4xl text-primary">
-                Momentum
-            </h1>
-
-            <SocialsButton />
-        </main>
+        <div className="min-h-screen">
+            <TopBar />
+            <Hero />
+        </div>
     );
 }

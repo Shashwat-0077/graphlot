@@ -1,51 +1,61 @@
-import { z } from "zod";
-import {
-    createInsertSchema,
-    createSelectSchema,
-    createUpdateSchema,
-} from "drizzle-zod";
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-import { Users, Accounts } from "@/modules/auth/schema/db";
+export const user = sqliteTable('user', {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull().unique(),
+    emailVerified: integer('email_verified', { mode: 'boolean' })
+        .$defaultFn(() => false)
+        .notNull(),
+    image: text('image'),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+        .$defaultFn(() => /* @__PURE__ */ new Date())
+        .notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+        .$defaultFn(() => /* @__PURE__ */ new Date())
+        .notNull(),
+});
 
-const baseUserInsertSchema = createInsertSchema(Users);
-const baseUserSelectSchema = createSelectSchema(Users);
-const baseUserUpdateSchema = createUpdateSchema(Users);
+export const session = sqliteTable('session', {
+    id: text('id').primaryKey(),
+    expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+    token: text('token').notNull().unique(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    userId: text('user_id')
+        .notNull()
+        .references(() => user.id, { onDelete: 'cascade' }),
+});
 
-const baseAccountInsertSchema = createInsertSchema(Accounts);
-const baseAccountSelectSchema = createSelectSchema(Accounts);
-const baseAccountUpdateSchema = createUpdateSchema(Accounts);
-
-export const UserSchema = {
-    Insert: baseUserInsertSchema.omit({
-        id: true,
+export const account = sqliteTable('account', {
+    id: text('id').primaryKey(),
+    accountId: text('account_id').notNull(),
+    providerId: text('provider_id').notNull(),
+    userId: text('user_id')
+        .notNull()
+        .references(() => user.id, { onDelete: 'cascade' }),
+    accessToken: text('access_token'),
+    refreshToken: text('refresh_token'),
+    idToken: text('id_token'),
+    accessTokenExpiresAt: integer('access_token_expires_at', {
+        mode: 'timestamp',
     }),
-    Select: baseUserSelectSchema,
-    Update: baseUserUpdateSchema.omit({
-        id: true,
+    refreshTokenExpiresAt: integer('refresh_token_expires_at', {
+        mode: 'timestamp',
     }),
-};
+    scope: text('scope'),
+    password: text('password'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
 
-export const AccountSchema = {
-    Insert: baseAccountInsertSchema,
-    Select: baseAccountSelectSchema,
-    Update: baseAccountUpdateSchema,
-};
-
-export const UserWithAccountSchema = {
-    Select: UserSchema.Select.extend({
-        accounts: z.array(AccountSchema.Select),
-    }),
-};
-
-// Types for the schemas
-export type UserInsert = z.infer<typeof UserSchema.Insert>;
-export type UserSelect = z.infer<typeof UserSchema.Select>;
-export type UserUpdate = z.infer<typeof UserSchema.Update>;
-
-export type AccountInsert = z.infer<typeof AccountSchema.Insert>;
-export type AccountSelect = z.infer<typeof AccountSchema.Select>;
-export type AccountUpdate = z.infer<typeof AccountSchema.Update>;
-
-export type UserWithAccountSelect = z.infer<
-    typeof UserWithAccountSchema.Select
->;
+export const verification = sqliteTable('verification', {
+    id: text('id').primaryKey(),
+    identifier: text('identifier').notNull(),
+    value: text('value').notNull(),
+    expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date()),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date()),
+});
