@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 
 import { migrate } from 'drizzle-orm/libsql/migrator';
+
 import { db } from '@/db';
 
 // ESM-safe __dirname

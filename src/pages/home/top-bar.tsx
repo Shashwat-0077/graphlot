@@ -1,32 +1,30 @@
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
+import ThemeToggler from '@/components/ui/theme-toggler';
 
 const TopBar = () => {
     return (
-        <div className="grid grid-cols-3 p-4">
-            <Image
-                src="/logo.svg"
-                alt="Graphlot Logo"
-                width={50}
-                height={50}
-                className="self-center justify-self-start"
-            />
+        <div className="flex items-center justify-between px-6 py-4 md:px-12 lg:px-20 sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+                <Image
+                    src="/logo.svg"
+                    alt="Graphlot Logo"
+                    width={40}
+                    height={40}
+                    className="h-10 w-10"
+                />
+            </div>
+
             <Image
                 src="/full-logo.svg"
                 alt="Graphlot Logo Text"
                 width={200}
                 height={50}
-                className="self-center justify-self-center"
+                className="hidden md:block"
             />
-            <div className="flex self-center justify-self-end gap-2">
-                <Button
-                    variant="outline"
-                    className="cursor-pointer"
-                >
-                    Login
-                </Button>
-                <Button className="cursor-pointer">Register</Button>
+
+            <div className="flex items-center gap-4">
+                <ThemeToggler />
             </div>
         </div>
     );
