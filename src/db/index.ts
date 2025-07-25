@@ -4,6 +4,7 @@ import { createClient } from '@libsql/client';
 import { env } from '@/lib/env';
 
 import * as schema from './schema';
+import * as _ from './relations';
 
 const client = createClient({
     url: env.TURSO_CONNECTION_URL,

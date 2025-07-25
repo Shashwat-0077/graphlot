@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 // Define server-only environment variables
 const serverEnvSchema = z.object({
-    NODE_ENV: z.string(),
     TURSO_CONNECTION_URL: z.url(),
     TURSO_AUTH_TOKEN: z.string(),
 

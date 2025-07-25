@@ -1,6 +1,6 @@
-import DotGrid from '@/pages/home/dot-grid';
-import Hero from '@/pages/home/hero';
-import TopBar from '@/pages/home/top-bar';
+import DotGrid from '@/pages-component/home/dot-grid';
+import Hero from '@/pages-component/home/hero';
+import TopBar from '@/pages-component/home/top-bar';
 
 export default function Home() {
     return (

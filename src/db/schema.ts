@@ -1,9 +1,8 @@
 export * from '@/modules/auth/schema';
-// export * from '@/modules/Area/schema/db';
-// export * from '@/modules/Bar/schema/db';
-// export * from '@/modules/ChartGroup/schema/db';
-// export * from '@/modules/Chart/schema/db';
-// export * from '@/modules/Collection/schema/db';
-// export * from '@/modules/Heatmap/schema/db';
-// export * from '@/modules/Radar/schema/db';
-// export * from '@/modules/Radial/schema/db';
+export * from '@/modules/area/schema';
+export * from '@/modules/bar/schema';
+export * from '@/modules/chart/schema';
+export * from '@/modules/collection/schema';
+export * from '@/modules/heatmap/schema';
+export * from '@/modules/radar/schema';
+export * from '@/modules/radial/schema';

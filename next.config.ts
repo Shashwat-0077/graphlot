@@ -1,3 +1,5 @@
+import path from 'path';
+
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -25,6 +27,11 @@ const nextConfig: NextConfig = {
                 pathname: '/**',
             },
         ],
+    },
+
+    webpack: (config) => {
+        config.resolve.alias['graphql'] = path.resolve(__dirname, 'node_modules/graphql');
+        return config;
     },
 };
 

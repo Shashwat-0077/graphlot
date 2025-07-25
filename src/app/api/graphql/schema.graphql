@@ -1,0 +1,659 @@
+# Generated GraphQL Schema
+
+scalar DateTime
+
+type Account {
+    id: String!
+    accountId: String!
+    providerId: String!
+    userId: String!
+    accessToken: String
+    refreshToken: String
+    idToken: String
+    accessTokenExpiresAt: Int
+    refreshTokenExpiresAt: Int
+    scope: String
+    password: String
+    createdAt: Int!
+    updatedAt: Int!
+    user: User
+}
+
+type Session {
+    id: String!
+    expiresAt: Int!
+    token: String!
+    createdAt: Int!
+    updatedAt: Int!
+    ipAddress: String
+    userAgent: String
+    userId: String!
+    user: User
+}
+
+type User {
+    id: String!
+    name: String!
+    email: String!
+    emailVerified: Int!
+    image: String
+    createdAt: Int!
+    updatedAt: Int!
+    accounts: [Account!]!
+    sessions: [Session!]!
+    collections: [Collections!]!
+}
+
+type Verification {
+    id: String!
+    identifier: String!
+    value: String!
+    expiresAt: Int!
+    createdAt: Int
+    updatedAt: Int
+}
+
+type AreaChart {
+    chartId: String!
+    xAxisField: String!
+    yAxisField: String!
+    xSortOrder: String!
+    ySortOrder: String!
+    omitZeroValuesEnabled: Int!
+    cumulativeEnabled: Int!
+    specificConfig: String!
+    chartMetadata: ChartMetadata
+}
+
+type BarChart {
+    chartId: String!
+    xAxisField: String!
+    yAxisField: String!
+    xSortOrder: String!
+    ySortOrder: String!
+    omitZeroValuesEnabled: Int!
+    cumulativeEnabled: Int!
+    specificConfig: String!
+    chartMetadata: ChartMetadata
+}
+
+type ChartBoxModel {
+    chartId: String!
+    marginTop: Float!
+    marginBottom: Float!
+    marginLeft: Float!
+    marginRight: Float!
+    borderWidth: Float!
+    chartMetadata: ChartMetadata
+}
+
+type ChartColors {
+    chartId: String!
+    backgroundColor: String!
+    colorPalette: String!
+    borderColor: String!
+    gridColor: String!
+    tooltipBackgroundColor: String!
+    tooltipTextColor: String!
+    tooltipSeparatorColor: String!
+    tooltipBorderColor: String!
+    labelColor: String!
+    legendTextColor: String!
+    chartMetadata: ChartMetadata
+}
+
+type ChartMetadata {
+    chartId: String!
+    collectionId: String!
+    name: String!
+    description: String!
+    databaseProvider: String!
+    databaseId: String!
+    databaseName: String!
+    type: String!
+    createdAt: Float!
+    updatedAt: Float!
+    collections: Collections
+    areaCharts: [AreaChart!]!
+    barCharts: [BarChart!]!
+    chartBoxModels: [ChartBoxModel!]!
+    chartColorses: [ChartColors!]!
+    chartTypographies: [ChartTypography!]!
+    chartVisuals: [ChartVisual!]!
+    heatmaps: [Heatmap!]!
+    radarCharts: [RadarChart!]!
+    radialCharts: [RadialChart!]!
+}
+
+type ChartTypography {
+    chartId: String!
+    label: String!
+    labelEnabled: Int!
+    labelSize: Float!
+    labelFontFamily: String!
+    labelFontStyle: String!
+    labelAnchor: String!
+    legendEnabled: Int!
+    chartMetadata: ChartMetadata
+}
+
+type ChartVisual {
+    chartId: String!
+    gridOrientation: String!
+    gridType: String!
+    gridWidth: Float!
+    tooltipEnabled: Int!
+    tooltipStyle: String!
+    tooltipBorderWidth: Float!
+    tooltipBorderRadius: Float!
+    tooltipTotalEnabled: Int!
+    tooltipSeparatorEnabled: Int!
+    chartMetadata: ChartMetadata
+}
+
+type Collections {
+    id: String!
+    userId: String!
+    name: String!
+    description: String!
+    chartCount: Int!
+    createdAt: Float!
+    updatedAt: Float!
+    user: User
+    chartMetadatas: [ChartMetadata!]!
+}
+
+type Heatmap {
+    chartId: String!
+    dateField: String!
+    valueField: String!
+    backgroundColor: String!
+    textColor: String!
+    tooltipEnabled: Int!
+    legendEnabled: Int!
+    borderEnabled: Int!
+    metric: String!
+    streak: String!
+    longestStreak: String!
+    sumOfAllEntries: String!
+    averageOfAllEntries: String!
+    numberOfEntries: String!
+    toggleButtonHover: Int!
+    defaultBoxColor: String!
+    accent: String!
+    chartMetadata: ChartMetadata
+    heatmapDatas: [HeatmapData!]!
+}
+
+type HeatmapData {
+    id: String!
+    heatmapId: String!
+    date: Float!
+    count: Int!
+    heatmap: Heatmap
+}
+
+type RadarChart {
+    chartId: String!
+    xAxisField: String!
+    yAxisField: String!
+    xSortOrder: String!
+    ySortOrder: String!
+    omitZeroValuesEnabled: Int!
+    cumulativeEnabled: Int!
+    specificConfig: String!
+    chartMetadata: ChartMetadata
+}
+
+type RadialChart {
+    chartId: String!
+    xAxisField: String!
+    xSortOrder: String!
+    yAxisField: String!
+    ySortOrder: String!
+    omitZeroValuesEnabled: Int!
+    specificConfig: String!
+    chartMetadata: ChartMetadata
+}
+
+input CreateAccountInput {
+    accountId: String
+    providerId: String
+    userId: String
+    accessToken: String
+    refreshToken: String
+    idToken: String
+    accessTokenExpiresAt: Int
+    refreshTokenExpiresAt: Int
+    scope: String
+    password: String
+    createdAt: Int
+    updatedAt: Int
+}
+
+input UpdateAccountInput {
+    id: String
+    accountId: String
+    providerId: String
+    userId: String
+    accessToken: String
+    refreshToken: String
+    idToken: String
+    accessTokenExpiresAt: Int
+    refreshTokenExpiresAt: Int
+    scope: String
+    password: String
+    createdAt: Int
+    updatedAt: Int
+}
+
+input CreateSessionInput {
+    expiresAt: Int
+    token: String
+    createdAt: Int
+    updatedAt: Int
+    ipAddress: String
+    userAgent: String
+    userId: String
+}
+
+input UpdateSessionInput {
+    id: String
+    expiresAt: Int
+    token: String
+    createdAt: Int
+    updatedAt: Int
+    ipAddress: String
+    userAgent: String
+    userId: String
+}
+
+input CreateUserInput {
+    name: String
+    email: String
+    emailVerified: Int
+    image: String
+    createdAt: Int
+    updatedAt: Int
+}
+
+input UpdateUserInput {
+    id: String
+    name: String
+    email: String
+    emailVerified: Int
+    image: String
+    createdAt: Int
+    updatedAt: Int
+}
+
+input CreateVerificationInput {
+    identifier: String
+    value: String
+    expiresAt: Int
+    createdAt: Int
+    updatedAt: Int
+}
+
+input UpdateVerificationInput {
+    id: String
+    identifier: String
+    value: String
+    expiresAt: Int
+    createdAt: Int
+    updatedAt: Int
+}
+
+input CreateAreaChartInput {
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input UpdateAreaChartInput {
+    chartId: String
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input CreateBarChartInput {
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input UpdateBarChartInput {
+    chartId: String
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input CreateChartBoxModelInput {
+    marginTop: Float
+    marginBottom: Float
+    marginLeft: Float
+    marginRight: Float
+    borderWidth: Float
+}
+
+input UpdateChartBoxModelInput {
+    chartId: String
+    marginTop: Float
+    marginBottom: Float
+    marginLeft: Float
+    marginRight: Float
+    borderWidth: Float
+}
+
+input CreateChartColorsInput {
+    backgroundColor: String
+    colorPalette: String
+    borderColor: String
+    gridColor: String
+    tooltipBackgroundColor: String
+    tooltipTextColor: String
+    tooltipSeparatorColor: String
+    tooltipBorderColor: String
+    labelColor: String
+    legendTextColor: String
+}
+
+input UpdateChartColorsInput {
+    chartId: String
+    backgroundColor: String
+    colorPalette: String
+    borderColor: String
+    gridColor: String
+    tooltipBackgroundColor: String
+    tooltipTextColor: String
+    tooltipSeparatorColor: String
+    tooltipBorderColor: String
+    labelColor: String
+    legendTextColor: String
+}
+
+input CreateChartMetadataInput {
+    collectionId: String
+    name: String
+    description: String
+    databaseProvider: String
+    databaseId: String
+    databaseName: String
+    type: String
+    createdAt: Float
+    updatedAt: Float
+}
+
+input UpdateChartMetadataInput {
+    chartId: String
+    collectionId: String
+    name: String
+    description: String
+    databaseProvider: String
+    databaseId: String
+    databaseName: String
+    type: String
+    createdAt: Float
+    updatedAt: Float
+}
+
+input CreateChartTypographyInput {
+    label: String
+    labelEnabled: Int
+    labelSize: Float
+    labelFontFamily: String
+    labelFontStyle: String
+    labelAnchor: String
+    legendEnabled: Int
+}
+
+input UpdateChartTypographyInput {
+    chartId: String
+    label: String
+    labelEnabled: Int
+    labelSize: Float
+    labelFontFamily: String
+    labelFontStyle: String
+    labelAnchor: String
+    legendEnabled: Int
+}
+
+input CreateChartVisualInput {
+    gridOrientation: String
+    gridType: String
+    gridWidth: Float
+    tooltipEnabled: Int
+    tooltipStyle: String
+    tooltipBorderWidth: Float
+    tooltipBorderRadius: Float
+    tooltipTotalEnabled: Int
+    tooltipSeparatorEnabled: Int
+}
+
+input UpdateChartVisualInput {
+    chartId: String
+    gridOrientation: String
+    gridType: String
+    gridWidth: Float
+    tooltipEnabled: Int
+    tooltipStyle: String
+    tooltipBorderWidth: Float
+    tooltipBorderRadius: Float
+    tooltipTotalEnabled: Int
+    tooltipSeparatorEnabled: Int
+}
+
+input CreateCollectionsInput {
+    userId: String
+    name: String
+    description: String
+    chartCount: Int
+    createdAt: Float
+    updatedAt: Float
+}
+
+input UpdateCollectionsInput {
+    id: String
+    userId: String
+    name: String
+    description: String
+    chartCount: Int
+    createdAt: Float
+    updatedAt: Float
+}
+
+input CreateHeatmapInput {
+    dateField: String
+    valueField: String
+    backgroundColor: String
+    textColor: String
+    tooltipEnabled: Int
+    legendEnabled: Int
+    borderEnabled: Int
+    metric: String
+    streak: String
+    longestStreak: String
+    sumOfAllEntries: String
+    averageOfAllEntries: String
+    numberOfEntries: String
+    toggleButtonHover: Int
+    defaultBoxColor: String
+    accent: String
+}
+
+input UpdateHeatmapInput {
+    chartId: String
+    dateField: String
+    valueField: String
+    backgroundColor: String
+    textColor: String
+    tooltipEnabled: Int
+    legendEnabled: Int
+    borderEnabled: Int
+    metric: String
+    streak: String
+    longestStreak: String
+    sumOfAllEntries: String
+    averageOfAllEntries: String
+    numberOfEntries: String
+    toggleButtonHover: Int
+    defaultBoxColor: String
+    accent: String
+}
+
+input CreateHeatmapDataInput {
+    heatmapId: String
+    date: Float
+    count: Int
+}
+
+input UpdateHeatmapDataInput {
+    id: String
+    heatmapId: String
+    date: Float
+    count: Int
+}
+
+input CreateRadarChartInput {
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input UpdateRadarChartInput {
+    chartId: String
+    xAxisField: String
+    yAxisField: String
+    xSortOrder: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    cumulativeEnabled: Int
+    specificConfig: String
+}
+
+input CreateRadialChartInput {
+    xAxisField: String
+    xSortOrder: String
+    yAxisField: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    specificConfig: String
+}
+
+input UpdateRadialChartInput {
+    chartId: String
+    xAxisField: String
+    xSortOrder: String
+    yAxisField: String
+    ySortOrder: String
+    omitZeroValuesEnabled: Int
+    specificConfig: String
+}
+
+type Query {
+    account(id: ID!): Account
+    accounts(limit: Int, offset: Int): [Account!]!
+    session(id: ID!): Session
+    sessions(limit: Int, offset: Int): [Session!]!
+    user(id: ID!): User
+    users(limit: Int, offset: Int): [User!]!
+    verification(id: ID!): Verification
+    verifications(limit: Int, offset: Int): [Verification!]!
+    areaChart(id: ID!): AreaChart
+    areaCharts(limit: Int, offset: Int): [AreaChart!]!
+    barChart(id: ID!): BarChart
+    barCharts(limit: Int, offset: Int): [BarChart!]!
+    chartBoxModel(id: ID!): ChartBoxModel
+    chartBoxModels(limit: Int, offset: Int): [ChartBoxModel!]!
+    chartColors(id: ID!): ChartColors
+    chartColors(limit: Int, offset: Int): [ChartColors!]!
+    chartMetadata(id: ID!): ChartMetadata
+    chartMetadata(limit: Int, offset: Int): [ChartMetadata!]!
+    chartTypography(id: ID!): ChartTypography
+    chartTypographies(limit: Int, offset: Int): [ChartTypography!]!
+    chartVisual(id: ID!): ChartVisual
+    chartVisuals(limit: Int, offset: Int): [ChartVisual!]!
+    collections(id: ID!): Collections
+    collections(limit: Int, offset: Int): [Collections!]!
+    heatmap(id: ID!): Heatmap
+    heatmaps(limit: Int, offset: Int): [Heatmap!]!
+    heatmapData(id: ID!): HeatmapData
+    heatmapData(limit: Int, offset: Int): [HeatmapData!]!
+    radarChart(id: ID!): RadarChart
+    radarCharts(limit: Int, offset: Int): [RadarChart!]!
+    radialChart(id: ID!): RadialChart
+    radialCharts(limit: Int, offset: Int): [RadialChart!]!
+}
+
+type Mutation {
+    createAccount(input: CreateAccountInput!): Account!
+    updateAccount(id: ID!, input: UpdateAccountInput!): Account!
+    deleteAccount(id: ID!): Boolean!
+    createSession(input: CreateSessionInput!): Session!
+    updateSession(id: ID!, input: UpdateSessionInput!): Session!
+    deleteSession(id: ID!): Boolean!
+    createUser(input: CreateUserInput!): User!
+    updateUser(id: ID!, input: UpdateUserInput!): User!
+    deleteUser(id: ID!): Boolean!
+    createVerification(input: CreateVerificationInput!): Verification!
+    updateVerification(id: ID!, input: UpdateVerificationInput!): Verification!
+    deleteVerification(id: ID!): Boolean!
+    createAreaChart(input: CreateAreaChartInput!): AreaChart!
+    updateAreaChart(id: ID!, input: UpdateAreaChartInput!): AreaChart!
+    deleteAreaChart(id: ID!): Boolean!
+    createBarChart(input: CreateBarChartInput!): BarChart!
+    updateBarChart(id: ID!, input: UpdateBarChartInput!): BarChart!
+    deleteBarChart(id: ID!): Boolean!
+    createChartBoxModel(input: CreateChartBoxModelInput!): ChartBoxModel!
+    updateChartBoxModel(id: ID!, input: UpdateChartBoxModelInput!): ChartBoxModel!
+    deleteChartBoxModel(id: ID!): Boolean!
+    createChartColors(input: CreateChartColorsInput!): ChartColors!
+    updateChartColors(id: ID!, input: UpdateChartColorsInput!): ChartColors!
+    deleteChartColors(id: ID!): Boolean!
+    createChartMetadata(input: CreateChartMetadataInput!): ChartMetadata!
+    updateChartMetadata(id: ID!, input: UpdateChartMetadataInput!): ChartMetadata!
+    deleteChartMetadata(id: ID!): Boolean!
+    createChartTypography(input: CreateChartTypographyInput!): ChartTypography!
+    updateChartTypography(id: ID!, input: UpdateChartTypographyInput!): ChartTypography!
+    deleteChartTypography(id: ID!): Boolean!
+    createChartVisual(input: CreateChartVisualInput!): ChartVisual!
+    updateChartVisual(id: ID!, input: UpdateChartVisualInput!): ChartVisual!
+    deleteChartVisual(id: ID!): Boolean!
+    createCollections(input: CreateCollectionsInput!): Collections!
+    updateCollections(id: ID!, input: UpdateCollectionsInput!): Collections!
+    deleteCollections(id: ID!): Boolean!
+    createHeatmap(input: CreateHeatmapInput!): Heatmap!
+    updateHeatmap(id: ID!, input: UpdateHeatmapInput!): Heatmap!
+    deleteHeatmap(id: ID!): Boolean!
+    createHeatmapData(input: CreateHeatmapDataInput!): HeatmapData!
+    updateHeatmapData(id: ID!, input: UpdateHeatmapDataInput!): HeatmapData!
+    deleteHeatmapData(id: ID!): Boolean!
+    createRadarChart(input: CreateRadarChartInput!): RadarChart!
+    updateRadarChart(id: ID!, input: UpdateRadarChartInput!): RadarChart!
+    deleteRadarChart(id: ID!): Boolean!
+    createRadialChart(input: CreateRadialChartInput!): RadialChart!
+    updateRadialChart(id: ID!, input: UpdateRadialChartInput!): RadialChart!
+    deleteRadialChart(id: ID!): Boolean!
+}

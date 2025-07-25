@@ -4,7 +4,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { SiNotion } from 'react-icons/si';
 
 import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth/client';
+import { authClient } from '@/modules/auth/client';
 
 export function GoogleButton() {
     return (

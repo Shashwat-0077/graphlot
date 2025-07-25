@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const ThemeToggler = () => {
+    const [mounted, setMounted] = React.useState(false);
     const { setTheme, theme } = useTheme();
 
     const currentIcon = {
@@ -20,6 +21,15 @@ const ThemeToggler = () => {
         dark: <Moon className="h-4 w-4 text-blue-400" />,
         system: <Laptop2 className="h-4 w-4" />,
     }[theme ?? 'system'];
+
+    // useEffect only runs on the client, so now we can safely show the UI
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
 
     return (
         <DropdownMenu>
