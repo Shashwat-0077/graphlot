@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations } from "drizzle-orm";
 
 import {
     ChartBoxModel,
@@ -11,7 +11,7 @@ import {
     BarCharts,
     RadialCharts,
     RadarCharts,
-} from '@/db/schema';
+} from "@/db/schema";
 
 export const chartMetadataRelations = relations(ChartMetadata, ({ one }) => ({
     collection: one(Collections, {
@@ -74,12 +74,15 @@ export const chartColorsRelations = relations(ChartColors, ({ one }) => ({
     }),
 }));
 
-export const chartTypographyRelations = relations(ChartTypography, ({ one }) => ({
-    chartMetadata: one(ChartMetadata, {
-        fields: [ChartTypography.chartId],
-        references: [ChartMetadata.chartId],
-    }),
-}));
+export const chartTypographyRelations = relations(
+    ChartTypography,
+    ({ one }) => ({
+        chartMetadata: one(ChartMetadata, {
+            fields: [ChartTypography.chartId],
+            references: [ChartMetadata.chartId],
+        }),
+    })
+);
 
 export const chartVisualRelations = relations(ChartVisual, ({ one }) => ({
     chartMetadata: one(ChartMetadata, {

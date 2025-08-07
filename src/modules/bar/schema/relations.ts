@@ -1,10 +1,10 @@
-import { relations } from 'drizzle-orm';
+import { relations } from "drizzle-orm";
 
-import { BarCharts, ChartMetadata } from '@/db/schema';
+import { BarCharts, ChartMetadataTable } from "@/db/schema";
 
 export const barChartsRelations = relations(BarCharts, ({ one }) => ({
-    chartMetadata: one(ChartMetadata, {
+    chartMetadata: one(ChartMetadataTable, {
         fields: [BarCharts.chartId],
-        references: [ChartMetadata.chartId],
+        references: [ChartMetadataTable.chartId],
     }),
 }));
