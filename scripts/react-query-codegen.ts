@@ -1,8 +1,12 @@
 /* eslint-disable */
 
-import { Project, SourceFile, SyntaxKind } from "ts-morph";
+import { Project, SourceFile, SyntaxKind, VariableDeclaration } from "ts-morph";
 import * as fs from "fs";
 import * as path from "path";
+
+import { singular } from "pluralize";
+
+import { convertZodToTypeScript } from "./zod-to-ts-generator";
 
 interface RouteInfo {
     path: string;
@@ -14,6 +18,8 @@ interface RouteInfo {
     paramsZodType?: string;
     queryZodType?: string;
     jsonZodType?: string;
+    queryOptions?: string;
+    mutationOptions?: string;
 }
 
 interface ConfigInfo {
@@ -80,74 +86,132 @@ class ReactQueryCodeGenerator {
             }
         }
 
-        // Extract module name from file path as fallback
         return { routeName, moduleName };
     }
 
     parseRouteConfig(sourceFile: SourceFile): RouteInfo[] {
         const routes: RouteInfo[] = [];
 
-        // Find the routeConfigs array
-        const variableDeclarations = sourceFile.getVariableDeclarations();
+        // Get the default export assignment
+        const exportAssignment = sourceFile.getExportAssignment(() => true);
+        if (!exportAssignment) {
+            return routes;
+        }
 
-        for (const declaration of variableDeclarations) {
-            if (declaration.getName() === "routeConfigs") {
-                const initializer = declaration.getInitializer();
-                if (
-                    initializer &&
-                    initializer.getKind() === SyntaxKind.ArrayLiteralExpression
-                ) {
-                    const arrayLiteral = initializer.asKindOrThrow(
-                        SyntaxKind.ArrayLiteralExpression
-                    );
+        let expression = exportAssignment.getExpression();
 
-                    for (const element of arrayLiteral.getElements()) {
-                        if (
-                            element.getKind() ===
-                            SyntaxKind.ObjectLiteralExpression
-                        ) {
-                            const route = this.parseRouteObject(
-                                element.asKindOrThrow(
-                                    SyntaxKind.ObjectLiteralExpression
-                                )
-                            );
-                            if (route) {
-                                routes.push(route);
-                            }
-                        } else if (
-                            element.getKind() === SyntaxKind.AsExpression
-                        ) {
-                            // Handle routes with type assertions like "as RouteConfig<...>"
-                            const asExpression = element.asKindOrThrow(
-                                SyntaxKind.AsExpression
-                            );
-                            const expression = asExpression.getExpression();
-                            const typeNode = asExpression.getTypeNode();
+        if (!expression) {
+            return routes;
+        }
 
-                            if (
-                                expression.getKind() ===
-                                SyntaxKind.ObjectLiteralExpression
-                            ) {
-                                const route = this.parseRouteObject(
-                                    expression.asKindOrThrow(
-                                        SyntaxKind.ObjectLiteralExpression
-                                    ),
-                                    typeNode
-                                );
-                                if (route) {
-                                    routes.push(route);
-                                }
-                            }
-                        }
+        // If it's an identifier, resolve it to its variable declaration
+        if (expression.getKind() === SyntaxKind.Identifier) {
+            const symbol = expression.getSymbol();
+            if (symbol) {
+                const decl = symbol.getDeclarations()[0];
+                if (VariableDeclaration.isVariableDeclaration(decl)) {
+                    const init = decl.getInitializer();
+                    if (init) {
+                        expression = init;
                     }
                 }
             }
         }
 
-        console.log(
-            `Found ${routes.length} routes in ${sourceFile.getFilePath()}`
-        );
+        // Now check if the resolved expression is an array literal
+        if (expression.getKind() === SyntaxKind.ArrayLiteralExpression) {
+            const arrayLiteral = expression.asKindOrThrow(
+                SyntaxKind.ArrayLiteralExpression
+            );
+            for (const element of arrayLiteral.getElements()) {
+                const route = this.parseRouteElement(element);
+                if (route) {
+                    routes.push(route);
+                }
+            }
+        }
+
         return routes;
+    }
+
+    private parseRouteElement(element: any): RouteInfo | null {
+        if (element.getKind() === SyntaxKind.CallExpression) {
+            return this.parseCallExpression(element);
+        }
+
+        return null;
+    }
+
+    private parseCallExpression(callExpression: any): RouteInfo | null {
+        const expression = callExpression.getExpression();
+        const args = callExpression.getArguments();
+
+        // Case 1: Direct function call like defineRoute({ ... })
+        if (expression.getKind() === SyntaxKind.Identifier) {
+            const functionName = expression.getText();
+
+            if (
+                args.length > 0 &&
+                args[0].getKind() === SyntaxKind.ObjectLiteralExpression
+            ) {
+                return this.parseRouteObject(args[0]);
+            }
+        }
+
+        // Case 2: Chained call like defineRouteWithVariables<Variables>()({ ... })
+        else if (expression.getKind() === SyntaxKind.CallExpression) {
+            const innerCall = expression.asKindOrThrow(
+                SyntaxKind.CallExpression
+            );
+            const innerExpression = innerCall.getExpression();
+
+            // This could be defineRouteWithVariables<Variables> or similar
+            if (
+                innerExpression.getKind() === SyntaxKind.Identifier ||
+                innerExpression.getKind() === SyntaxKind.CallExpression
+            ) {
+                const fullExpressionText = innerExpression.getText();
+
+                // Look for any route definition function
+                if (
+                    fullExpressionText.includes("defineRoute") ||
+                    fullExpressionText.includes("Route") ||
+                    (args.length > 0 &&
+                        args[0].getKind() ===
+                            SyntaxKind.ObjectLiteralExpression)
+                ) {
+                    if (
+                        args.length > 0 &&
+                        args[0].getKind() === SyntaxKind.ObjectLiteralExpression
+                    ) {
+                        return this.parseRouteObject(args[0]);
+                    }
+                }
+            }
+        }
+
+        // Case 3: Generic call expression with object argument (fallback)
+        else {
+            if (
+                args.length > 0 &&
+                args[0].getKind() === SyntaxKind.ObjectLiteralExpression
+            ) {
+                return this.parseRouteObject(args[0]);
+            }
+        }
+
+        // Case 4: Last resort - if we have any object literal argument, try to parse it
+        if (args.length > 0) {
+            for (let i = 0; i < args.length; i++) {
+                const arg = args[i];
+                if (arg.getKind() === SyntaxKind.ObjectLiteralExpression) {
+                    const result = this.parseRouteObject(arg);
+                    if (result) return result;
+                }
+            }
+        }
+
+        return null;
     }
 
     private parseRouteObject(
@@ -164,6 +228,8 @@ class ReactQueryCodeGenerator {
         let paramsZodType: string | undefined;
         let queryZodType: string | undefined;
         let jsonZodType: string | undefined;
+        let queryOptions: string | undefined;
+        let mutationOptions: string | undefined;
 
         // Extract Zod types from RouteConfig generic type parameters
         if (typeNode && typeNode.getKind() === SyntaxKind.TypeReference) {
@@ -194,6 +260,10 @@ class ReactQueryCodeGenerator {
                     path = value.getText().replace(/['"]/g, "");
                 } else if (name === "method" && value) {
                     method = value.getText().replace(/['"]/g, "");
+                } else if (name === "queryOptions" && value) {
+                    queryOptions = this.extractObjectLiteralAsString(value);
+                } else if (name === "mutationOptions" && value) {
+                    mutationOptions = this.extractObjectLiteralAsString(value);
                 } else if (
                     name === "validators" &&
                     value &&
@@ -210,32 +280,27 @@ class ReactQueryCodeGenerator {
                             SyntaxKind.PropertyAssignment
                         ) {
                             const validatorName = validatorProp.getName();
+                            const validatorValue =
+                                validatorProp.getInitializer();
+
                             if (validatorName === "params") {
                                 hasParams = true;
-                                // If we don't have the type from RouteConfig, try to extract it
-                                if (!paramsZodType) {
-                                    paramsZodType = validatorProp
-                                        .getInitializer()
-                                        ?.getText();
+                                if (!paramsZodType && validatorValue) {
+                                    paramsZodType = validatorValue.getText();
                                 }
-                                // Extract parameter names
                                 paramNames =
                                     this.extractParamNamesFromValidator(
-                                        validatorProp.getInitializer()
+                                        validatorValue
                                     );
                             } else if (validatorName === "query") {
                                 hasQuery = true;
-                                if (!queryZodType) {
-                                    queryZodType = validatorProp
-                                        .getInitializer()
-                                        ?.getText();
+                                if (!queryZodType && validatorValue) {
+                                    queryZodType = validatorValue.getText();
                                 }
                             } else if (validatorName === "json") {
                                 hasJson = true;
-                                if (!jsonZodType) {
-                                    jsonZodType = validatorProp
-                                        .getInitializer()
-                                        ?.getText();
+                                if (!jsonZodType && validatorValue) {
+                                    jsonZodType = validatorValue.getText();
                                 }
                             }
                         }
@@ -262,9 +327,6 @@ class ReactQueryCodeGenerator {
         }
 
         if (path && method) {
-            console.log(
-                `Parsed route: ${method} ${path} - params: ${paramNames.join(", ")}`
-            );
             return {
                 path,
                 method,
@@ -275,10 +337,22 @@ class ReactQueryCodeGenerator {
                 paramsZodType,
                 queryZodType,
                 jsonZodType,
+                queryOptions,
+                mutationOptions,
             };
         }
 
         return null;
+    }
+
+    private extractObjectLiteralAsString(value: any): string {
+        if (value.getKind() === SyntaxKind.ObjectLiteralExpression) {
+            // Get the full text of the object literal, preserving formatting
+            const objectText = value.getText();
+            // Clean up the object literal text to be properly formatted
+            return objectText;
+        }
+        return "";
     }
 
     private isEmptyZodType(zodType: string): boolean {
@@ -287,30 +361,6 @@ class ReactQueryCodeGenerator {
             zodType.includes("z.ZodObject<Record<string, never>>") ||
             zodType.trim() === "{}"
         );
-    }
-
-    private isZodTypeOptional(zodType: string): boolean {
-        // Check if all properties in the Zod object are optional
-        // This is a simple heuristic - you might need to enhance this for complex cases
-
-        // If the type contains only ZodOptional, then it's optional
-        const hasRequiredFields =
-            zodType.includes("z.ZodString") &&
-            !zodType.includes("z.ZodOptional<z.ZodString>");
-        const hasRequiredNumber =
-            zodType.includes("z.ZodNumber") &&
-            !zodType.includes("z.ZodOptional<z.ZodNumber>");
-        const hasRequiredBoolean =
-            zodType.includes("z.ZodBoolean") &&
-            !zodType.includes("z.ZodOptional<z.ZodBoolean>");
-
-        // If there are required fields, query is not optional
-        if (hasRequiredFields || hasRequiredNumber || hasRequiredBoolean) {
-            return false;
-        }
-
-        // If it only contains optional fields or is empty, it's optional
-        return true;
     }
 
     private extractParamNamesFromValidator(validator: any): string[] {
@@ -340,12 +390,114 @@ class ReactQueryCodeGenerator {
         return paramNames;
     }
 
+    // Helper method to convert Zod schema to TypeScript type
+    private convertZodSchemaToType(zodSchema: string): string {
+        try {
+            return convertZodToTypeScript(zodSchema);
+        } catch (error) {
+            console.warn(
+                `Failed to convert Zod schema to TypeScript: ${zodSchema}`,
+                error
+            );
+            // Fallback to z.infer approach if conversion fails
+            return `z.infer<${zodSchema}>`;
+        }
+    }
+
+    // NEW: Helper method to convert routeName to client path format
+    private convertRouteNameToClientPath(routeName: string): string {
+        // Split by slash and convert each segment to property access
+        const segments = routeName.split("/").filter((s) => s);
+        return segments.map((segment) => `["${segment}"]`).join("");
+    }
+
+    // NEW: Generate a unique identifier for each route
+    private generateRouteId(route: RouteInfo, routeName: string): string {
+        const method = route.method.toLowerCase();
+        const pathParts = route.path
+            .split("/")
+            .filter((s) => s)
+            .map((part) => {
+                // Convert :id to Id, :userId to UserId, etc.
+                if (part.startsWith(":")) {
+                    return this.capitalize(part.substring(1));
+                }
+                return this.capitalize(part);
+            })
+            .join("");
+
+        const routeBaseName = this.capitalize(routeName.split("/").pop() || "");
+
+        return `${method}${routeBaseName}${pathParts}`;
+    }
+
+    // Helper method to convert kebab-case to PascalCase
+    private kebabToPascalCase(str: string): string {
+        return str
+            .split("-")
+            .map((word) => this.capitalize(word))
+            .join("");
+    }
+
+    // NEW: Generate semantic hook names based on route purpose
+    private generateSemanticHookName(
+        route: RouteInfo,
+        routeName: string
+    ): string {
+        const method = route.method.toLowerCase();
+        const routeBaseName = this.capitalize(routeName.split("/").pop() || "");
+        const routeBaseSingular = singular(routeBaseName);
+
+        // Handle specific patterns for better naming
+        if (route.path === "/:id" && method === "get") {
+            return `useGet${routeBaseSingular}`;
+        }
+
+        if (route.path === "/:id" && method === "put") {
+            return `useUpdate${routeBaseSingular}`;
+        }
+
+        if (route.path === "/:id" && method === "delete") {
+            return `useDelete${routeBaseSingular}`;
+        }
+
+        // Handle nested resources like /:id/visuals or /:id/box-model
+        const pathSegments = route.path.split("/").filter((s) => s);
+        if (pathSegments.length >= 2) {
+            const resourceName = pathSegments[pathSegments.length - 1];
+            // Convert kebab-case to PascalCase (box-model -> BoxModel)
+            const resourceCapitalized = this.kebabToPascalCase(resourceName);
+
+            if (method === "get") {
+                return `useGet${routeBaseSingular}${resourceCapitalized}`;
+            }
+            if (method === "post") {
+                return `useUpdate${routeBaseSingular}${resourceCapitalized}`;
+            }
+        }
+
+        // Fallback to route ID based naming
+        const routeId = this.generateRouteId(route, routeName);
+        return `use${this.capitalize(routeId)}`;
+    }
+
+    // NEW: Generate clean type names
+    private generateTypeName(
+        route: RouteInfo,
+        routeName: string,
+        suffix: string
+    ): string {
+        const hookName = this.generateSemanticHookName(route, routeName);
+        const baseName = hookName.replace(/^use/, "");
+        return `${baseName}${suffix}`;
+    }
+
     generateReactQueryHooks(config: ConfigInfo): string {
         const { routeName, routes } = config;
 
         let imports = `import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
-import { z } from "zod";
+
 import { client } from "@/lib/rpc";
 
 `;
@@ -364,9 +516,12 @@ import { client } from "@/lib/rpc";
     }
 
     private generateQueryHook(route: RouteInfo, routeName: string): string {
-        const hookName = this.generateHookName(route, "use", routeName);
+        const hookName = this.generateSemanticHookName(route, routeName);
         const clientPath = this.generateClientPath(route);
         const queryKey = this.generateQueryKey(route, routeName);
+
+        // Convert routeName to proper client path format
+        const routeNamePath = this.convertRouteNameToClientPath(routeName);
 
         let functionParams = "()";
         let clientParams = "";
@@ -382,8 +537,15 @@ import { client } from "@/lib/rpc";
             route.paramsZodType &&
             !this.isEmptyZodType(route.paramsZodType)
         ) {
-            const paramsTypeName = `${hookName.replace("use", "")}Params`;
-            typeDefinitions += `type ${paramsTypeName} = z.infer<${route.paramsZodType}>;
+            const paramsTypeName = this.generateTypeName(
+                route,
+                routeName,
+                "Params"
+            );
+            const typeDefinition = this.convertZodSchemaToType(
+                route.paramsZodType
+            );
+            typeDefinitions += `type ${paramsTypeName} = ${typeDefinition};
 
 `;
             paramTypes.push(`params: ${paramsTypeName}`);
@@ -395,15 +557,18 @@ import { client } from "@/lib/rpc";
             route.queryZodType &&
             !this.isEmptyZodType(route.queryZodType)
         ) {
-            const queryTypeName = `${hookName.replace("use", "")}Query`;
-            typeDefinitions += `type ${queryTypeName} = z.infer<${route.queryZodType}>;
+            const queryTypeName = this.generateTypeName(
+                route,
+                routeName,
+                "Query"
+            );
+            const typeDefinition = this.convertZodSchemaToType(
+                route.queryZodType
+            );
+            typeDefinitions += `type ${queryTypeName} = ${typeDefinition};
 
 `;
-            // Check if all query fields are optional by examining the Zod type
-            const isQueryOptional = this.isZodTypeOptional(route.queryZodType);
-            paramTypes.push(
-                `query${isQueryOptional ? "?" : ""}: ${queryTypeName}`
-            );
+            paramTypes.push(`query: ${queryTypeName}`);
             paramNames.push("query");
         }
 
@@ -424,114 +589,88 @@ import { client } from "@/lib/rpc";
             clientParams = `{
                 ${clientParamParts.join(",\n                ")},
             }`;
-            queryKeyParams = `, ${paramNames.join(", ")}`;
+            // Use JSON.stringify for query key parameters
+            queryKeyParams = `, JSON.stringify({ ${paramNames.join(", ")} })`;
         }
 
         const methodCall = `$${route.method.toLowerCase()}`;
 
+        // Generate queryOptions spread
+        let queryOptionsSpread = "";
+        if (route.queryOptions) {
+            queryOptionsSpread = `
+        ...${route.queryOptions},`;
+        }
+
         return `${typeDefinitions}export const ${hookName} = ${functionParams} => {
-    const queryResult = useQuery({
+    return useQuery({
         queryKey: [${queryKey}${queryKeyParams}],
         queryFn: async () => {
-            const response = await client.api.v1.${routeName}${clientPath}.${methodCall}(${clientParams ? `${clientParams}` : ""});
+            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(${clientParams ? `${clientParams}` : ""});
 
             if (!response.ok) {
                 throw new Error("Failed to fetch ${routeName}");
             }
 
             return await response.json();
-        },
-        ${route.hasParams ? "" : "staleTime: 0,"}
+        },${queryOptionsSpread}
+        ${route.hasParams || route.queryOptions ? "" : "staleTime: 0,"}
     });
-
-    return queryResult;
 };
 
 `;
     }
 
     private generateMutationHook(route: RouteInfo, routeName: string): string {
-        const hookName = this.generateHookName(route, "use", routeName);
+        const hookName = this.generateSemanticHookName(route, routeName);
         const clientPath = this.generateClientPath(route);
         const methodCall = `$${route.method.toLowerCase()}`;
 
-        let typeDefinitions = "";
+        // Convert routeName to proper client path format
+        const routeNamePath = this.convertRouteNameToClientPath(routeName);
 
-        // Only generate type definitions for non-empty types for mutations
-        // We don't need separate types for mutations since we use InferRequestType
-        // But we can still generate them for reference if needed in the future
+        // Generate clean type names
+        const requestTypeName = this.generateTypeName(
+            route,
+            routeName,
+            "Request"
+        );
+        const responseTypeName = this.generateTypeName(
+            route,
+            routeName,
+            "Response"
+        );
 
-        return `type ${hookName.replace("use", "")}RequestType = InferRequestType<
-    (typeof client.api.v1.${routeName})${clientPath}["${methodCall}"]
+        // Generate mutationOptions spread
+        let mutationOptionsSpread = "";
+        if (route.mutationOptions) {
+            mutationOptionsSpread = `
+        ...${route.mutationOptions},`;
+        }
+
+        return `type ${requestTypeName} = InferRequestType<
+    (typeof client.api.v1${routeNamePath})${clientPath}["${methodCall}"]
 >;
-type ${hookName.replace("use", "")}ResponseType = InferResponseType<
-    (typeof client.api.v1.${routeName})${clientPath}["${methodCall}"],
+type ${responseTypeName} = InferResponseType<
+    (typeof client.api.v1${routeNamePath})${clientPath}["${methodCall}"],
     200
 >;
 
 export const ${hookName} = () => {
-    return useMutation<${hookName.replace("use", "")}ResponseType, Error, ${hookName.replace("use", "")}RequestType>({
+    return useMutation<${responseTypeName}, Error, ${requestTypeName}>({
         mutationFn: async (props) => {
-            const response = await client.api.v1.${routeName}${clientPath}.${methodCall}(props);
+            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
 
             if (!response.ok) {
                 throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
             }
 
             return await response.json();
-        },
+        },${mutationOptionsSpread}
     });
 };
 
 `;
-    }
-
-    private generateHookName(
-        route: RouteInfo,
-        prefix: string,
-        routeName: string
-    ): string {
-        const method = route.method.toLowerCase();
-        const routeNameSingular = this.getSingularForm(routeName);
-
-        // Handle special cases
-        if (route.path === "/all") {
-            if (method === "get") {
-                return `${prefix}${this.capitalize(routeName)}`;
-            }
-        }
-
-        if (route.path.includes("/:id") && method === "get") {
-            return `${prefix}${this.capitalize(routeNameSingular)}ById`;
-        }
-
-        if (route.path === "/create" && method === "post") {
-            return `${prefix}Create${this.capitalize(routeNameSingular)}`;
-        }
-
-        if (route.path.includes("/:id") && method === "put") {
-            return `${prefix}Update${this.capitalize(routeNameSingular)}`;
-        }
-
-        if (route.path.includes("/:id") && method === "delete") {
-            return `${prefix}Delete${this.capitalize(routeNameSingular)}`;
-        }
-
-        // Fallback logic
-        let pathPart = route.path
-            .replace(/^\//, "")
-            .replace(/\/:/g, "By")
-            .replace(/\//g, "");
-
-        if (!pathPart) {
-            pathPart = "all";
-        }
-
-        if (method === "get") {
-            return `${prefix}${this.capitalize(pathPart)}`;
-        }
-
-        return `${prefix}${this.capitalize(method)}${this.capitalize(pathPart)}`;
     }
 
     private generateClientPath(route: RouteInfo): string {
@@ -570,32 +709,21 @@ export const ${hookName} = () => {
     private generateQueryKey(route: RouteInfo, routeName: string): string {
         let path = route.path;
 
+        // Use the full routeName for query keys, replacing slashes with dots
+        const queryKeyRouteName = routeName.replace("/", ".");
+
         if (path === "/all" || path === "/") {
-            return `"${routeName}", "all"`;
+            return `"${queryKeyRouteName}", "all"`;
         }
 
         // Remove parameters for query key
         const cleanPath = path.replace(/\/:\w+/g, "").replace(/^\//, "");
 
         if (cleanPath) {
-            return `"${routeName}", "${cleanPath}"`;
+            return `"${queryKeyRouteName}", "${cleanPath}"`;
         }
 
-        return `"${routeName}"`;
-    }
-
-    private getSingularForm(plural: string): string {
-        // Simple singularization - you might want to use a library for more complex cases
-        if (plural.endsWith("ies")) {
-            return plural.slice(0, -3) + "y";
-        }
-        if (plural.endsWith("es")) {
-            return plural.slice(0, -2);
-        }
-        if (plural.endsWith("s")) {
-            return plural.slice(0, -1);
-        }
-        return plural;
+        return `"${queryKeyRouteName}"`;
     }
 
     private capitalize(str: string): string {
@@ -605,52 +733,68 @@ export const ${hookName} = () => {
     async generate(rootDir: string) {
         const configFiles = this.findConfigFiles(rootDir);
 
-        for (const configFile of configFiles) {
-            console.log(`Processing: ${configFile}`);
-
-            // Read file content to parse directives
-            const content = fs.readFileSync(configFile, "utf-8");
-            const { routeName } = this.parseConfigDirectives(content);
-
-            // Add the file to the project
-            const sourceFile = this.project.addSourceFileAtPath(configFile);
-
-            // Parse routes
-            const routes = this.parseRouteConfig(sourceFile);
-
-            if (routes.length === 0) {
-                console.log(`No routes found in ${configFile}`);
-                continue;
-            }
-
-            // Extract module name from path as fallback
-            const pathParts = configFile.split(path.sep);
-            const modulesIndex = pathParts.findIndex(
-                (part) => part === "modules"
+        // Log the initial discovery
+        if (configFiles.length === 0) {
+            console.log(
+                "No config files found with 'react-query-codegen' directive."
             );
-            const fallbackModuleName = pathParts[modulesIndex + 1];
+            return;
+        }
 
-            const config: ConfigInfo = {
-                routeName: routeName || fallbackModuleName,
-                moduleName: fallbackModuleName,
-                routes,
-            };
+        console.log(`Found ${configFiles.length} config file(s) to process:`);
+        configFiles.forEach((file) => {
+            console.log(`  - ${file}`);
+        });
 
-            // Generate hooks
-            const hooksCode = this.generateReactQueryHooks(config);
+        for (const configFile of configFiles) {
+            try {
+                console.log(`Processing: ${configFile}`);
 
-            // Create output directory
-            const outputDir = path.join(path.dirname(configFile), "client");
-            if (!fs.existsSync(outputDir)) {
-                fs.mkdirSync(outputDir, { recursive: true });
+                // Read file content to parse directives
+                const content = fs.readFileSync(configFile, "utf-8");
+                const { routeName } = this.parseConfigDirectives(content);
+
+                // Add the file to the project
+                const sourceFile = this.project.addSourceFileAtPath(configFile);
+
+                // Parse routes
+                const routes = this.parseRouteConfig(sourceFile);
+
+                if (routes.length === 0) {
+                    console.log(`  ⚠ No routes found in ${configFile}`);
+                    continue;
+                }
+
+                // Extract module name from path as fallback
+                const pathParts = configFile.split(path.sep);
+                const modulesIndex = pathParts.findIndex(
+                    (part) => part === "modules"
+                );
+                const fallbackModuleName = pathParts[modulesIndex + 1];
+
+                const config: ConfigInfo = {
+                    routeName: routeName || fallbackModuleName,
+                    moduleName: fallbackModuleName,
+                    routes,
+                };
+
+                // Generate hooks
+                const hooksCode = this.generateReactQueryHooks(config);
+
+                // Create output directory
+                const outputDir = path.join(path.dirname(configFile), "client");
+                if (!fs.existsSync(outputDir)) {
+                    fs.mkdirSync(outputDir, { recursive: true });
+                }
+
+                // Write output file
+                const outputFile = path.join(outputDir, "index.ts");
+                fs.writeFileSync(outputFile, hooksCode);
+
+                console.log(`✓ Generated: ${outputFile}`);
+            } catch (error) {
+                console.error(`✗ Error processing ${configFile}:`, error);
             }
-
-            // Write output file
-            const outputFile = path.join(outputDir, "index.ts");
-            fs.writeFileSync(outputFile, hooksCode);
-
-            console.log(`Generated: ${outputFile}`);
-            console.log(`Route name used: ${config.routeName}`);
         }
     }
 }

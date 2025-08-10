@@ -2,37 +2,37 @@
 "hono-codegen";
 "react-query-codegen";
 
-import z from "zod";
+import { z } from "zod";
 
+import { defineRoute, defineRouteWithVariables } from "@/utils/defineRoute";
+import { CollectionSchema } from "@/modules/collection/schema/types";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import {
     fetchAllCollections,
     fetchCollectionById,
-} from "@/modules/collection/handlers/read";
+} from "@/modules/collection/api/handlers/read";
+import { createCollection } from "@/modules/collection/api/handlers/create";
+import { updateCollection } from "@/modules/collection/api/handlers/update";
+import { deleteCollection } from "@/modules/collection/api/handlers/delete";
 import { Variables } from "@/modules/collection/api/variables";
-import { createCollection } from "@/modules/collection/handlers/create";
-import { updateCollection } from "@/modules/collection/handlers/update";
-import { CollectionSchema } from "@/modules/collection/schema/types";
-import { deleteCollection } from "@/modules/collection/handlers/delete";
-import { RouteConfig } from "@/types";
 
-export const routeConfigs: RouteConfig<Variables>[] = [
-    {
+const collectionRouteConfigs = [
+    defineRoute({
         path: "/all",
         method: "GET",
         middlewares: [authMiddleWare],
         validators: {},
         handler: async (c) => {
-            const userId = c.get("userId");
+            const userId = c.get("userId") as string;
             const response = await fetchAllCollections(userId);
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            const { collections } = response;
-            return c.json({ collections }, 200);
+            return c.json({ collections: response.collections }, 200);
         },
-    },
-    {
+    }),
+
+    defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [authMiddleWare],
@@ -43,21 +43,15 @@ export const routeConfigs: RouteConfig<Variables>[] = [
         },
         handler: async (c) => {
             const { id } = c.req.valid("param");
-
             const response = await fetchCollectionById(id);
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            const { collection } = response;
-            return c.json({ collection }, 200);
+            return c.json({ collection: response.collection }, 200);
         },
-    } as RouteConfig<
-        Variables,
-        z.ZodObject<{ id: z.ZodString }>,
-        z.ZodObject<Record<string, never>>,
-        z.ZodObject<Record<string, never>>
-    >,
-    {
+    }),
+
+    defineRouteWithVariables<Variables>()({
         path: "/create",
         method: "POST",
         middlewares: [authMiddleWare],
@@ -67,84 +61,68 @@ export const routeConfigs: RouteConfig<Variables>[] = [
         handler: async (c) => {
             const userId = c.get("userId");
             const { name, description } = c.req.valid("json");
-
             const response = await createCollection({
-                userId: userId,
+                userId,
                 newCollection: { name, description },
             });
-
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-
-            const { collection } = response;
-            return c.json({ collection }, 200);
+            return c.json({ collection: response.collection }, 200);
         },
-    } as RouteConfig<
-        Variables,
-        z.ZodObject<Record<string, never>>,
-        z.ZodObject<Record<string, never>>,
-        typeof CollectionSchema.Insert
-    >,
-    {
+    }),
+
+    defineRouteWithVariables<Variables>()({
         path: "/:id",
         method: "PUT",
         middlewares: [authMiddleWare],
         validators: {
-            params: z.object({ id: z.string().nonempty() }),
+            params: z.object({
+                id: z.string().nonempty(),
+            }),
             json: CollectionSchema.Update,
         },
         handler: async (c) => {
             const userId = c.get("userId");
             const { id } = c.req.valid("param");
             const body = c.req.valid("json");
-
             const response = await updateCollection({
-                userId: userId,
+                userId,
                 collectionId: id,
                 newCollection: body,
             });
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-
             return c.json({ collectionId: response.collectionId }, 200);
         },
-    } as RouteConfig<
-        Variables,
-        z.ZodObject<{ id: z.ZodString }>,
-        z.ZodObject<Record<string, never>>,
-        typeof CollectionSchema.Update
-    >,
-    {
+    }),
+
+    defineRouteWithVariables<Variables>()({
         path: "/:id",
         method: "DELETE",
         middlewares: [authMiddleWare],
         validators: {
-            params: z.object({ id: z.string().nonempty() }),
+            params: z.object({
+                id: z.string().nonempty(),
+            }),
         },
         handler: async (c) => {
-            const { id } = c.req.valid("param");
             const userId = c.get("userId");
-
+            const { id } = c.req.valid("param");
             const response = await deleteCollection({
                 userId,
                 collectionId: id,
             });
-
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-
             return c.json(
                 { deleted: true, collectionId: response.collectionId },
                 200
             );
         },
-    } as RouteConfig<
-        Variables,
-        z.ZodObject<{ id: z.ZodString }>,
-        z.ZodObject<Record<string, never>>,
-        z.ZodObject<Record<string, never>>
-    >,
+    }),
 ];
+
+export default collectionRouteConfigs;

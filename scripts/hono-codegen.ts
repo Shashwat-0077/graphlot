@@ -41,30 +41,26 @@ class HonoGenerator {
     parseConfigFile(filePath: string): {
         routes: ParsedRoute[];
         imports: Set<string>;
-        variables: string;
+        variables: string | null;
     } {
         const sourceFile = this.project.addSourceFileAtPath(filePath);
         const routes: ParsedRoute[] = [];
         const imports = new Set<string>();
-        let variables = "Variables";
+        let variables: string | null = null;
 
-        // Find RouteConfig array
+        // Find the route config array (could be named differently now)
         const variableDeclarations = sourceFile.getVariableDeclarations();
-        const routeConfigDeclaration = variableDeclarations.find(
-            (decl) =>
-                decl.getType().getSymbol()?.getName().includes("RouteConfig") ||
-                decl.getText().includes("RouteConfig")
-        );
+        const routeConfigDeclaration = variableDeclarations.find((decl) => {
+            const declText = decl.getText();
+            return (
+                declText.includes("defineRoute") ||
+                declText.includes("RouteConfig") ||
+                decl.getName().toLowerCase().includes("route")
+            );
+        });
 
         if (!routeConfigDeclaration) {
-            throw new Error(`No RouteConfig array found in ${filePath}`);
-        }
-
-        // Extract Variables type from RouteConfig generic
-        const typeText = routeConfigDeclaration.getText();
-        const variablesMatch = typeText.match(/RouteConfig<(\w+)>/);
-        if (variablesMatch) {
-            variables = variablesMatch[1];
+            throw new Error(`No route config array found in ${filePath}`);
         }
 
         const initializer = routeConfigDeclaration.getInitializer();
@@ -72,7 +68,7 @@ class HonoGenerator {
             !initializer ||
             initializer.getKind() !== SyntaxKind.ArrayLiteralExpression
         ) {
-            throw new Error(`Invalid RouteConfig array in ${filePath}`);
+            throw new Error(`Invalid route config array in ${filePath}`);
         }
 
         // Parse each route config - get array elements properly
@@ -81,33 +77,57 @@ class HonoGenerator {
             .getElements();
 
         arrayElements.forEach((element) => {
-            // Handle both direct object literals and type assertions (as RouteConfig<...>)
-            let objectLiteral = element;
-            if (element.getKind() === SyntaxKind.AsExpression) {
-                // Cast to AsExpression to access getExpression()
-                objectLiteral = (
-                    element as import("ts-morph").AsExpression
-                ).getExpression();
-            }
-
-            if (
-                objectLiteral.getKind() === SyntaxKind.ObjectLiteralExpression
-            ) {
-                const route = this.parseRouteObject(objectLiteral, imports);
+            // Handle defineRoute() call expressions
+            if (element.getKind() === SyntaxKind.CallExpression) {
+                const callExpr = element as import("ts-morph").CallExpression;
+                const route = this.parseCallExpression(callExpr, imports);
                 if (route) {
                     routes.push(route);
                 }
             }
+            // Handle direct object literals (legacy support)
+            else if (element.getKind() === SyntaxKind.ObjectLiteralExpression) {
+                const route = this.parseRouteObject(element, imports);
+                if (route) {
+                    routes.push(route);
+                }
+            }
+            // Handle type assertions (as RouteConfig<...>)
+            else if (element.getKind() === SyntaxKind.AsExpression) {
+                const asExpr = element as import("ts-morph").AsExpression;
+                const expression = asExpr.getExpression();
+                if (
+                    expression.getKind() === SyntaxKind.ObjectLiteralExpression
+                ) {
+                    const route = this.parseRouteObject(expression, imports);
+                    if (route) {
+                        routes.push(route);
+                    }
+                }
+            }
         });
 
-        // Extract imports from the source file (excluding RouteConfig)
+        // Extract imports from the source file and check for Variables import
         sourceFile.getImportDeclarations().forEach((importDecl) => {
             const moduleSpecifier = importDecl.getModuleSpecifierValue();
             const namedImports = importDecl
                 .getNamedImports()
                 .map((ni) => ni.getName())
-                .filter((name) => name !== "RouteConfig"); // Exclude RouteConfig
+                .filter(
+                    (name) =>
+                        name !== "RouteConfig" &&
+                        name !== "defineRoute" &&
+                        name !== "defineRouteWithVariables"
+                );
             const defaultImport = importDecl.getDefaultImport()?.getText();
+
+            // Check if Variables is imported
+            const originalNamedImports = importDecl
+                .getNamedImports()
+                .map((ni) => ni.getName());
+            if (originalNamedImports.includes("Variables")) {
+                variables = "Variables";
+            }
 
             if (namedImports.length > 0) {
                 imports.add(
@@ -122,6 +142,57 @@ class HonoGenerator {
         });
 
         return { routes, imports, variables };
+    }
+
+    private parseCallExpression(
+        callExpr: import("ts-morph").CallExpression,
+        imports: Set<string>
+    ): ParsedRoute | null {
+        const expression = callExpr.getExpression();
+        let objectLiteral = null;
+
+        // Handle defineRoute() - simple call
+        if (expression.getText() === "defineRoute") {
+            const args = callExpr.getArguments();
+            if (
+                args.length > 0 &&
+                args[0].getKind() === SyntaxKind.ObjectLiteralExpression
+            ) {
+                objectLiteral = args[0];
+            }
+        }
+        // Handle defineRouteWithVariables<Variables>()() - chained call
+        else if (callExpr.getKind() === SyntaxKind.CallExpression) {
+            // Check if this is a call to a call expression (chained call)
+            const innerExpression = callExpr.getExpression();
+
+            if (innerExpression.getKind() === SyntaxKind.CallExpression) {
+                const innerCallExpr =
+                    innerExpression as import("ts-morph").CallExpression;
+                const innerExpressionText = innerCallExpr
+                    .getExpression()
+                    .getText();
+
+                // Check if the inner call starts with defineRouteWithVariables
+                if (
+                    innerExpressionText.startsWith("defineRouteWithVariables")
+                ) {
+                    const args = callExpr.getArguments();
+                    if (
+                        args.length > 0 &&
+                        args[0].getKind() === SyntaxKind.ObjectLiteralExpression
+                    ) {
+                        objectLiteral = args[0];
+                    }
+                }
+            }
+        }
+
+        if (objectLiteral) {
+            return this.parseRouteObject(objectLiteral, imports);
+        }
+
+        return null;
     }
 
     private parseRouteObject(
@@ -249,7 +320,7 @@ class HonoGenerator {
     generateHonoCode(
         routes: ParsedRoute[],
         imports: Set<string>,
-        variables: string
+        variables: string | null
     ): string {
         const importStatements = [
             'import { z } from "zod";',
@@ -264,7 +335,9 @@ class HonoGenerator {
             ),
         ].join("\n");
 
-        let honoChain = `const app = new Hono<{ Variables: ${variables} }>()`;
+        let honoChain = variables
+            ? `const app = new Hono<{ Variables: ${variables} }>()`
+            : `const app = new Hono()`;
 
         routes.forEach((route) => {
             honoChain += this.generateRouteMethod(route);

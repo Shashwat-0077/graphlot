@@ -1,11 +1,11 @@
-import DotGrid from '@/pages-components/home/dot-grid';
-import Hero from '@/pages-components/home/hero';
-import TopBar from '@/pages-components/home/top-bar';
+import DotGrid from "@/page-components/home/dot-grid";
+import Hero from "@/page-components/home/hero";
+import TopBar from "@/page-components/home/top-bar";
 
 export default function Home() {
     return (
         <div className="min-h-screen">
-            <div className="relative h-screen w-screen overflow-hidden bg-background">
+            <div className="bg-background relative h-screen w-screen overflow-hidden">
                 <DotGrid />
                 <TopBar />
                 <main className="h-[calc(100vh-76px)]">
