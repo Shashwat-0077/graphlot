@@ -7,14 +7,13 @@ import {
 } from "@/modules/chart-types/radar/schema/types";
 import { RadarCharts } from "@/modules/chart-types/radar/schema";
 import { CHART_TYPE_RADAR } from "@/constants";
-
 import {
     ChartColors,
     ChartBoxModel,
     ChartMetadata,
     ChartTypography,
     ChartVisual,
-} from "@/modules/chart/chart-metadata/schema";
+} from "@/modules/chart-attributes/schema";
 
 export async function fetchRadarChartsByCollection(
     collection_id: string

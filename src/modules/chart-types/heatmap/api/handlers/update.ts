@@ -3,8 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { HeatmapCharts } from "@/modules/chart-types/heatmap/schema";
 import { HeatmapUpdate } from "@/modules/chart-types/heatmap/schema/types";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 type UpdateResult =
     | { ok: true; chartId: string }

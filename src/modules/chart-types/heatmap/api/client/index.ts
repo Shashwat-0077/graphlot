@@ -7,7 +7,7 @@ type GetHeatmapParams = {
   id: string;
 };
 
-export const useGetHeatmap = (params: GetHeatmapParams) => {
+export const useGetHeatmap = ({params}: {params: GetHeatmapParams}) => {
     return useQuery({
         queryKey: ["charts.heatmap", JSON.stringify({ params })],
         queryFn: async () => {
@@ -26,10 +26,10 @@ export const useGetHeatmap = (params: GetHeatmapParams) => {
 };
 
 type UpdateHeatmapRequest = InferRequestType<
-    (typeof client.api.v1["charts"]["heatmap"])[":id"]["$put"]
+    (typeof client.api.v1)["charts"]["heatmap"][":id"]["$put"]
 >;
 type UpdateHeatmapResponse = InferResponseType<
-    (typeof client.api.v1["charts"]["heatmap"])[":id"]["$put"],
+    (typeof client.api.v1)["charts"]["heatmap"][":id"]["$put"],
     200
 >;
 

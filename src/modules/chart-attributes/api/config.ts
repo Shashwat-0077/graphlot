@@ -8,6 +8,7 @@ import { defineRoute } from "@/utils/defineRoute";
 import {
     fetchChartAttribute,
     fetchChartMetadata,
+    fetchMetadataByCollection,
 } from "@/modules/chart-attributes/api/handler/read";
 import {
     updateChartAttribute,
@@ -21,9 +22,31 @@ import {
     ChartVisualSchema,
 } from "@/modules/chart-attributes/schema/types";
 import { deleteChart } from "@/modules/chart-attributes/api/handler/delete";
+import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
+import { createChart } from "@/modules/chart-attributes/api/handler/create";
 
 const chartRouteConfig = [
     // chart metadata
+    defineRoute({
+        path: "/:collection_id",
+        queryHookName: "useGetChartByCollection",
+        method: "GET",
+        middlewares: [],
+        validators: {
+            params: z.object({
+                collection_id: z.string().nonempty(),
+            }),
+        },
+        handler: async (c) => {
+            const { collection_id } = c.req.valid("param");
+            const response = await fetchMetadataByCollection(collection_id);
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+            return c.json(response.metadata, 200);
+        },
+    }),
     defineRoute({
         path: "/:id",
         method: "GET",
@@ -38,10 +61,29 @@ const chartRouteConfig = [
             const response = await fetchChartMetadata(id);
 
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ chart: response.metadata });
+            return c.json(response.metadata, 200);
         },
+    }),
+    defineRoute({
+        path: "/",
+        method: "POST",
+        middlewares: [authMiddleWare],
+        validators: {
+            json: ChartMetadataSchema.Insert,
+        },
+        handler: async (c) => {
+            const data = c.req.valid("json");
+            const response = await createChart(data);
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+            return c.json(response.chart, 200);
+        },
+        includeOnSuccess: true,
+        includeOnError: true,
     }),
     defineRoute({
         path: "/:id",
@@ -59,10 +101,10 @@ const chartRouteConfig = [
             const response = await updateChartMetadata(id, data);
 
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
 
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
     defineRoute({
@@ -78,9 +120,9 @@ const chartRouteConfig = [
             const { id } = c.req.valid("param");
             const response = await deleteChart(id);
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
 
@@ -99,15 +141,15 @@ const chartRouteConfig = [
             const response = await fetchChartAttribute(id, "visuals");
 
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
 
-            return c.json({ visuals: response.data });
+            return c.json(response.data, 200);
         },
     }),
     defineRoute({
         path: "/:id/visuals",
-        method: "POST",
+        method: "PUT",
         middlewares: [],
         validators: {
             params: z.object({
@@ -121,10 +163,10 @@ const chartRouteConfig = [
             const response = await updateChartAttribute(id, "visuals", data);
 
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
 
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
 
@@ -142,14 +184,14 @@ const chartRouteConfig = [
             const { id } = c.req.valid("param");
             const response = await fetchChartAttribute(id, "typography");
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ typography: response.data });
+            return c.json(response.data, 200);
         },
     }),
     defineRoute({
         path: "/:id/typography",
-        method: "POST",
+        method: "PUT",
         middlewares: [],
         validators: {
             params: z.object({
@@ -162,9 +204,9 @@ const chartRouteConfig = [
             const data = c.req.valid("json");
             const response = await updateChartAttribute(id, "typography", data);
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
 
@@ -182,14 +224,14 @@ const chartRouteConfig = [
             const { id } = c.req.valid("param");
             const response = await fetchChartAttribute(id, "boxModel");
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ boxModel: response.data });
+            return c.json(response.data, 200);
         },
     }),
     defineRoute({
         path: "/:id/box-model",
-        method: "POST",
+        method: "PUT",
         middlewares: [],
         validators: {
             params: z.object({
@@ -202,9 +244,9 @@ const chartRouteConfig = [
             const data = c.req.valid("json");
             const response = await updateChartAttribute(id, "boxModel", data);
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
 
@@ -222,14 +264,14 @@ const chartRouteConfig = [
             const { id } = c.req.valid("param");
             const response = await fetchChartAttribute(id, "colors");
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ colors: response.data });
+            return c.json(response.data, 200);
         },
     }),
     defineRoute({
         path: "/:id/colors",
-        method: "POST",
+        method: "PUT",
         middlewares: [],
         validators: {
             params: z.object({
@@ -242,9 +284,9 @@ const chartRouteConfig = [
             const data = c.req.valid("json");
             const response = await updateChartAttribute(id, "colors", data);
             if (!response.ok) {
-                return c.json({ error: response.error });
+                return c.json({ error: response.error }, 500);
             }
-            return c.json({ chartId: response.chartId });
+            return c.json(response.chartId, 200);
         },
     }),
 ];

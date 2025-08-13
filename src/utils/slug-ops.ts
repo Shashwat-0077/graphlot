@@ -1,4 +1,4 @@
-import slugify from 'slugify';
+import slugify from "slugify";
 
 export function getSlug(object: { id: string; name: string }) {
     const slug = slugify(object.name, { lower: true, strict: true });

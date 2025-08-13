@@ -4,7 +4,7 @@ import { Project, SourceFile, SyntaxKind, VariableDeclaration } from "ts-morph";
 import * as fs from "fs";
 import * as path from "path";
 
-import { singular } from "pluralize";
+import pluralize, { singular } from "pluralize";
 
 import { convertZodToTypeScript } from "./zod-to-ts-generator";
 
@@ -20,12 +20,23 @@ interface RouteInfo {
     jsonZodType?: string;
     queryOptions?: string;
     mutationOptions?: string;
+    queryHookName?: string; // New optional field for custom hook names
+    includeOnSuccess?: boolean; // New field for onSuccess callback
+    includeOnError?: boolean; // New field for onError callback
 }
 
 interface ConfigInfo {
     routeName: string;
     moduleName: string;
     routes: RouteInfo[];
+}
+
+interface ImportUsage {
+    useQuery: boolean;
+    useMutation: boolean;
+    inferRequestType: boolean;
+    inferResponseType: boolean;
+    client: boolean;
 }
 
 class ReactQueryCodeGenerator {
@@ -230,6 +241,9 @@ class ReactQueryCodeGenerator {
         let jsonZodType: string | undefined;
         let queryOptions: string | undefined;
         let mutationOptions: string | undefined;
+        let queryHookName: string | undefined; // New field for custom hook name
+        let includeOnSuccess = false; // New field for onSuccess callback
+        let includeOnError = false; // New field for onError callback
 
         // Extract Zod types from RouteConfig generic type parameters
         if (typeNode && typeNode.getKind() === SyntaxKind.TypeReference) {
@@ -260,6 +274,17 @@ class ReactQueryCodeGenerator {
                     path = value.getText().replace(/['"]/g, "");
                 } else if (name === "method" && value) {
                     method = value.getText().replace(/['"]/g, "");
+                } else if (name === "queryHookName" && value) {
+                    // Parse the custom hook name
+                    queryHookName = value.getText().replace(/['"]/g, "");
+                } else if (name === "includeOnSuccess" && value) {
+                    // Parse includeOnSuccess boolean
+                    const valueText = value.getText();
+                    includeOnSuccess = valueText === "true";
+                } else if (name === "includeOnError" && value) {
+                    // Parse includeOnError boolean
+                    const valueText = value.getText();
+                    includeOnError = valueText === "true";
                 } else if (name === "queryOptions" && value) {
                     queryOptions = this.extractObjectLiteralAsString(value);
                 } else if (name === "mutationOptions" && value) {
@@ -339,6 +364,9 @@ class ReactQueryCodeGenerator {
                 jsonZodType,
                 queryOptions,
                 mutationOptions,
+                queryHookName, // Include the custom hook name
+                includeOnSuccess, // Include the onSuccess flag
+                includeOnError, // Include the onError flag
             };
         }
 
@@ -404,31 +432,88 @@ class ReactQueryCodeGenerator {
         }
     }
 
-    // NEW: Helper method to convert routeName to client path format
+    // Helper method to convert routeName to client path format
     private convertRouteNameToClientPath(routeName: string): string {
         // Split by slash and convert each segment to property access
         const segments = routeName.split("/").filter((s) => s);
         return segments.map((segment) => `["${segment}"]`).join("");
     }
 
-    // NEW: Generate a unique identifier for each route
-    private generateRouteId(route: RouteInfo, routeName: string): string {
+    // IMPROVED: Better semantic hook name generation with custom name support
+    private generateSemanticHookName(
+        route: RouteInfo,
+        routeName: string
+    ): string {
+        // If custom hook name is provided, use it directly
+        if (route.queryHookName && route.queryHookName.trim()) {
+            return route.queryHookName.trim();
+        }
+
+        // Otherwise, generate the name using existing logic
         const method = route.method.toLowerCase();
-        const pathParts = route.path
-            .split("/")
-            .filter((s) => s)
-            .map((part) => {
-                // Convert :id to Id, :userId to UserId, etc.
-                if (part.startsWith(":")) {
-                    return this.capitalize(part.substring(1));
-                }
-                return this.capitalize(part);
-            })
+        const routeSegments = routeName.split("/").filter((s) => s);
+        const resourceName = routeSegments[routeSegments.length - 1] || "";
+
+        // Convert to singular form for better naming
+        const resourceSingular = singular(resourceName);
+        const resourceCapitalized = this.capitalize(resourceSingular);
+
+        // Handle different path patterns
+        const pathSegments = route.path.split("/").filter((s) => s);
+
+        // Root collection endpoints
+        if (route.path === "/" || route.path === "/all") {
+            if (method === "get")
+                return `useGet${pluralize(resourceCapitalized)}`;
+            if (method === "post") return `useCreate${resourceCapitalized}`;
+        }
+
+        // Create endpoints
+        if (
+            route.path === "/create" ||
+            (route.path === "/" && method === "post")
+        ) {
+            return `useCreate${resourceCapitalized}`;
+        }
+
+        // Single resource by ID
+        if (route.path === "/:id") {
+            if (method === "get") return `useGet${resourceCapitalized}`;
+            if (method === "put" || method === "patch")
+                return `useUpdate${resourceCapitalized}`;
+            if (method === "delete") return `useDelete${resourceCapitalized}`;
+        }
+
+        // Nested resources (e.g., /:id/comments, /:id/box-model)
+        if (pathSegments.length >= 2) {
+            const lastSegment = pathSegments[pathSegments.length - 1];
+            const nestedResource = this.kebabToPascalCase(lastSegment);
+
+            if (method === "get")
+                return `useGet${resourceCapitalized}${nestedResource}`;
+            if (method === "post")
+                return `useCreate${resourceCapitalized}${nestedResource}`;
+            if (method === "put" || method === "patch")
+                return `useUpdate${resourceCapitalized}${nestedResource}`;
+            if (method === "delete")
+                return `useDelete${resourceCapitalized}${nestedResource}`;
+        }
+
+        // Custom endpoints (e.g., /search, /export, /analytics)
+        if (pathSegments.length === 1 && !pathSegments[0].startsWith(":")) {
+            const action = this.capitalize(pathSegments[0]);
+            if (method === "get")
+                return `use${action}${pluralize(resourceCapitalized)}`;
+            if (method === "post") return `use${action}${resourceCapitalized}`;
+        }
+
+        // Fallback: use method + resource + path description
+        const pathDescription = pathSegments
+            .filter((s) => !s.startsWith(":"))
+            .map((s) => this.kebabToPascalCase(s))
             .join("");
 
-        const routeBaseName = this.capitalize(routeName.split("/").pop() || "");
-
-        return `${method}${routeBaseName}${pathParts}`;
+        return `use${this.capitalize(method)}${resourceCapitalized}${pathDescription}`;
     }
 
     // Helper method to convert kebab-case to PascalCase
@@ -439,49 +524,7 @@ class ReactQueryCodeGenerator {
             .join("");
     }
 
-    // NEW: Generate semantic hook names based on route purpose
-    private generateSemanticHookName(
-        route: RouteInfo,
-        routeName: string
-    ): string {
-        const method = route.method.toLowerCase();
-        const routeBaseName = this.capitalize(routeName.split("/").pop() || "");
-        const routeBaseSingular = singular(routeBaseName);
-
-        // Handle specific patterns for better naming
-        if (route.path === "/:id" && method === "get") {
-            return `useGet${routeBaseSingular}`;
-        }
-
-        if (route.path === "/:id" && method === "put") {
-            return `useUpdate${routeBaseSingular}`;
-        }
-
-        if (route.path === "/:id" && method === "delete") {
-            return `useDelete${routeBaseSingular}`;
-        }
-
-        // Handle nested resources like /:id/visuals or /:id/box-model
-        const pathSegments = route.path.split("/").filter((s) => s);
-        if (pathSegments.length >= 2) {
-            const resourceName = pathSegments[pathSegments.length - 1];
-            // Convert kebab-case to PascalCase (box-model -> BoxModel)
-            const resourceCapitalized = this.kebabToPascalCase(resourceName);
-
-            if (method === "get") {
-                return `useGet${routeBaseSingular}${resourceCapitalized}`;
-            }
-            if (method === "post") {
-                return `useUpdate${routeBaseSingular}${resourceCapitalized}`;
-            }
-        }
-
-        // Fallback to route ID based naming
-        const routeId = this.generateRouteId(route, routeName);
-        return `use${this.capitalize(routeId)}`;
-    }
-
-    // NEW: Generate clean type names
+    // Clean type name generation - now also considers custom hook names
     private generateTypeName(
         route: RouteInfo,
         routeName: string,
@@ -492,15 +535,77 @@ class ReactQueryCodeGenerator {
         return `${baseName}${suffix}`;
     }
 
+    // NEW: Analyze import usage across all routes
+    private analyzeImportUsage(routes: RouteInfo[]): ImportUsage {
+        const usage: ImportUsage = {
+            useQuery: false,
+            useMutation: false,
+            inferRequestType: false,
+            inferResponseType: false,
+            client: true, // Always needed for API calls
+        };
+
+        for (const route of routes) {
+            if (route.method === "GET") {
+                usage.useQuery = true;
+            } else {
+                usage.useMutation = true;
+                usage.inferRequestType = true;
+                usage.inferResponseType = true;
+            }
+
+            // If we already found all imports are needed, no need to continue
+            if (
+                usage.useQuery &&
+                usage.useMutation &&
+                usage.inferRequestType &&
+                usage.inferResponseType
+            ) {
+                break;
+            }
+        }
+
+        return usage;
+    }
+
+    // NEW: Generate optimized imports based on usage
+    private generateOptimizedImports(usage: ImportUsage): string {
+        const imports: string[] = [];
+
+        // React Query imports
+        const reactQueryImports: string[] = [];
+        if (usage.useQuery) reactQueryImports.push("useQuery");
+        if (usage.useMutation) reactQueryImports.push("useMutation");
+
+        if (reactQueryImports.length > 0) {
+            imports.push(
+                `import { ${reactQueryImports.join(", ")} } from "@tanstack/react-query";`
+            );
+        }
+
+        // Hono type imports
+        const honoImports: string[] = [];
+        if (usage.inferRequestType) honoImports.push("InferRequestType");
+        if (usage.inferResponseType) honoImports.push("InferResponseType");
+
+        if (honoImports.length > 0) {
+            imports.push(`import { ${honoImports.join(", ")} } from "hono";`);
+        }
+
+        // Client import (always needed)
+        if (usage.client) {
+            imports.push(`import { client } from "@/lib/rpc";`);
+        }
+
+        return imports.join("\n") + (imports.length > 0 ? "\n\n" : "");
+    }
+
     generateReactQueryHooks(config: ConfigInfo): string {
         const { routeName, routes } = config;
 
-        let imports = `import { useQuery, useMutation } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
-
-import { client } from "@/lib/rpc";
-
-`;
+        // Analyze which imports are actually needed
+        const importUsage = this.analyzeImportUsage(routes);
+        const imports = this.generateOptimizedImports(importUsage);
 
         let hooks = "";
 
@@ -515,12 +620,11 @@ import { client } from "@/lib/rpc";
         return imports + hooks;
     }
 
+    // IMPROVED: Query hook with better parameter wrapping
     private generateQueryHook(route: RouteInfo, routeName: string): string {
         const hookName = this.generateSemanticHookName(route, routeName);
         const clientPath = this.generateClientPath(route);
         const queryKey = this.generateQueryKey(route, routeName);
-
-        // Convert routeName to proper client path format
         const routeNamePath = this.convertRouteNameToClientPath(routeName);
 
         let functionParams = "()";
@@ -528,9 +632,9 @@ import { client } from "@/lib/rpc";
         let queryKeyParams = "";
         let typeDefinitions = "";
 
-        // Generate type definitions and function parameters
         const paramTypes: string[] = [];
         const paramNames: string[] = [];
+        const paramProps: string[] = [];
 
         if (
             route.hasParams &&
@@ -550,6 +654,7 @@ import { client } from "@/lib/rpc";
 `;
             paramTypes.push(`params: ${paramsTypeName}`);
             paramNames.push("params");
+            paramProps.push("params");
         }
 
         if (
@@ -570,11 +675,12 @@ import { client } from "@/lib/rpc";
 `;
             paramTypes.push(`query: ${queryTypeName}`);
             paramNames.push("query");
+            paramProps.push("query");
         }
 
-        // Update function parameters
+        // FIXED: Proper parameter wrapping
         if (paramTypes.length > 0) {
-            functionParams = `(${paramTypes.join(", ")})`;
+            functionParams = `({${paramProps.join(", ")}}: {${paramTypes.join("; ")}})`;
         }
 
         // Generate client parameters
@@ -589,13 +695,11 @@ import { client } from "@/lib/rpc";
             clientParams = `{
                 ${clientParamParts.join(",\n                ")},
             }`;
-            // Use JSON.stringify for query key parameters
             queryKeyParams = `, JSON.stringify({ ${paramNames.join(", ")} })`;
         }
 
         const methodCall = `$${route.method.toLowerCase()}`;
 
-        // Generate queryOptions spread
         let queryOptionsSpread = "";
         if (route.queryOptions) {
             queryOptionsSpread = `
@@ -625,11 +729,8 @@ import { client } from "@/lib/rpc";
         const hookName = this.generateSemanticHookName(route, routeName);
         const clientPath = this.generateClientPath(route);
         const methodCall = `$${route.method.toLowerCase()}`;
-
-        // Convert routeName to proper client path format
         const routeNamePath = this.convertRouteNameToClientPath(routeName);
 
-        // Generate clean type names
         const requestTypeName = this.generateTypeName(
             route,
             routeName,
@@ -641,18 +742,90 @@ import { client } from "@/lib/rpc";
             "Response"
         );
 
-        // Generate mutationOptions spread
         let mutationOptionsSpread = "";
         if (route.mutationOptions) {
             mutationOptionsSpread = `
         ...${route.mutationOptions},`;
         }
 
-        return `type ${requestTypeName} = InferRequestType<
-    (typeof client.api.v1${routeNamePath})${clientPath}["${methodCall}"]
+        // Check if we need to include onSuccess and onError callbacks
+        const includeCallbacks = route.includeOnSuccess || route.includeOnError;
+
+        if (includeCallbacks) {
+            // Generate hook with callback parameters
+            let callbackTypes: string[] = [];
+            let callbackParams: string[] = [];
+            let callbackImplementations: string[] = [];
+
+            if (route.includeOnSuccess) {
+                callbackTypes.push(`onSuccess?: (
+    data: ${responseTypeName},
+    variables: ${requestTypeName},
+    context: unknown
+) => void`);
+                callbackParams.push("onSuccess");
+                callbackImplementations.push(`onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+        }`);
+            }
+
+            if (route.includeOnError) {
+                callbackTypes.push(`onError?: (
+    error: Error,
+    variables: ${requestTypeName},
+    context: unknown
+) => void`);
+                callbackParams.push("onError");
+                callbackImplementations.push(`onError: (error, variables, context) => {
+            onError?.(error, variables, context);
+        }`);
+            }
+
+            const functionParams =
+                callbackTypes.length > 0
+                    ? `{
+${callbackParams.join(",\n")},
+}: {
+${callbackTypes.join(";\n")};
+}`
+                    : "()";
+
+            const callbackImplStr =
+                callbackImplementations.length > 0
+                    ? `
+        ${callbackImplementations.join(",\n        ")},`
+                    : "";
+
+            return `type ${requestTypeName} = InferRequestType<
+    (typeof client.api.v1)${routeNamePath}${clientPath}["${methodCall}"]
 >;
 type ${responseTypeName} = InferResponseType<
-    (typeof client.api.v1${routeNamePath})${clientPath}["${methodCall}"],
+    (typeof client.api.v1)${routeNamePath}${clientPath}["${methodCall}"],
+    200
+>;
+
+export const ${hookName} = (${functionParams}) => {
+    return useMutation<${responseTypeName}, Error, ${requestTypeName}>({
+        mutationFn: async (props) => {
+            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
+
+            if (!response.ok) {
+                throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
+            }
+
+            return await response.json();
+        },${mutationOptionsSpread}${callbackImplStr}
+    });
+};
+
+`;
+        } else {
+            // Generate hook without callback parameters (original behavior)
+            return `type ${requestTypeName} = InferRequestType<
+    (typeof client.api.v1)${routeNamePath}${clientPath}["${methodCall}"]
+>;
+type ${responseTypeName} = InferResponseType<
+    (typeof client.api.v1)${routeNamePath}${clientPath}["${methodCall}"],
     200
 >;
 
@@ -671,30 +844,17 @@ export const ${hookName} = () => {
 };
 
 `;
+        }
     }
 
     private generateClientPath(route: RouteInfo): string {
         let path = route.path;
 
-        // Handle specific path cases
-        if (path === "/all") {
-            return '["all"]';
-        }
+        if (path === "/all") return '["all"]';
+        if (path === "/create") return '["create"]';
+        if (path === "/:id") return '[":id"]';
+        if (path === "/") return "";
 
-        if (path === "/create") {
-            return '["create"]';
-        }
-
-        if (path === "/:id") {
-            return '[":id"]';
-        }
-
-        // Handle root path
-        if (path === "/") {
-            return "";
-        }
-
-        // Split path and create bracket notation
         const segments = path.split("/").filter((s) => s);
         return segments
             .map((segment) => {
@@ -708,15 +868,12 @@ export const ${hookName} = () => {
 
     private generateQueryKey(route: RouteInfo, routeName: string): string {
         let path = route.path;
-
-        // Use the full routeName for query keys, replacing slashes with dots
         const queryKeyRouteName = routeName.replace("/", ".");
 
         if (path === "/all" || path === "/") {
             return `"${queryKeyRouteName}", "all"`;
         }
 
-        // Remove parameters for query key
         const cleanPath = path.replace(/\/:\w+/g, "").replace(/^\//, "");
 
         if (cleanPath) {
@@ -733,7 +890,6 @@ export const ${hookName} = () => {
     async generate(rootDir: string) {
         const configFiles = this.findConfigFiles(rootDir);
 
-        // Log the initial discovery
         if (configFiles.length === 0) {
             console.log(
                 "No config files found with 'react-query-codegen' directive."
@@ -750,14 +906,10 @@ export const ${hookName} = () => {
             try {
                 console.log(`Processing: ${configFile}`);
 
-                // Read file content to parse directives
                 const content = fs.readFileSync(configFile, "utf-8");
                 const { routeName } = this.parseConfigDirectives(content);
 
-                // Add the file to the project
                 const sourceFile = this.project.addSourceFileAtPath(configFile);
-
-                // Parse routes
                 const routes = this.parseRouteConfig(sourceFile);
 
                 if (routes.length === 0) {
@@ -765,7 +917,6 @@ export const ${hookName} = () => {
                     continue;
                 }
 
-                // Extract module name from path as fallback
                 const pathParts = configFile.split(path.sep);
                 const modulesIndex = pathParts.findIndex(
                     (part) => part === "modules"
@@ -778,16 +929,13 @@ export const ${hookName} = () => {
                     routes,
                 };
 
-                // Generate hooks
                 const hooksCode = this.generateReactQueryHooks(config);
 
-                // Create output directory
                 const outputDir = path.join(path.dirname(configFile), "client");
                 if (!fs.existsSync(outputDir)) {
                     fs.mkdirSync(outputDir, { recursive: true });
                 }
 
-                // Write output file
                 const outputFile = path.join(outputDir, "index.ts");
                 fs.writeFileSync(outputFile, hooksCode);
 

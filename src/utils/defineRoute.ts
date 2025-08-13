@@ -17,6 +17,7 @@ export function defineRoute<
 >(config: {
     path: string;
     method: HttpMethod;
+    queryHookName?: string;
     middlewares?: MiddlewareHandler<{ Variables: TVariables }>[];
     validators?: {
         params?: TParams;
@@ -51,6 +52,9 @@ export function defineRoute<
         >,
         "mutationFn"
     >;
+
+    includeOnSuccess?: boolean;
+    includeOnError?: boolean;
 }): RouteConfig<TVariables, TParams, TQuery, TBody, TResponseData> {
     return {
         middlewares: [],
@@ -71,6 +75,7 @@ export function defineRouteWithVariables<
     >(config: {
         path: string;
         method: HttpMethod;
+        queryHookName?: string;
         middlewares?: MiddlewareHandler<{ Variables: TVariables }>[];
         validators?: {
             params?: TParams;
@@ -105,6 +110,9 @@ export function defineRouteWithVariables<
             >,
             "mutationFn"
         >;
+
+        includeOnSuccess?: boolean;
+        includeOnError?: boolean;
     }): RouteConfig<TVariables, TParams, TQuery, TBody, TResponseData> {
         return {
             middlewares: config.middlewares || [],

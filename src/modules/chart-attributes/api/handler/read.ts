@@ -127,3 +127,44 @@ export async function fetchChartMetadata(id: string): Promise<
         };
     }
 }
+
+export async function fetchMetadataByCollection(id: string): Promise<
+    | {
+          ok: true;
+          metadata: ChartMetadataSelect[];
+      }
+    | {
+          ok: false;
+          error: string;
+          details?: unknown;
+      }
+> {
+    try {
+        const results = await db
+            .select()
+            .from(ChartMetadata)
+            .where(eq(ChartMetadata.collectionId, id))
+            .all();
+
+        if (!results) {
+            return {
+                ok: false,
+                error: `No metadata found for collection ${id}`,
+            };
+        }
+
+        return {
+            ok: true,
+            metadata: results,
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
+            details: error,
+        };
+    }
+}

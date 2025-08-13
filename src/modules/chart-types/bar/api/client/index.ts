@@ -7,7 +7,7 @@ type GetBarParams = {
   id: string;
 };
 
-export const useGetBar = (params: GetBarParams) => {
+export const useGetBar = ({params}: {params: GetBarParams}) => {
     return useQuery({
         queryKey: ["charts.bar", JSON.stringify({ params })],
         queryFn: async () => {
@@ -26,10 +26,10 @@ export const useGetBar = (params: GetBarParams) => {
 };
 
 type UpdateBarRequest = InferRequestType<
-    (typeof client.api.v1["charts"]["bar"])[":id"]["$put"]
+    (typeof client.api.v1)["charts"]["bar"][":id"]["$put"]
 >;
 type UpdateBarResponse = InferResponseType<
-    (typeof client.api.v1["charts"]["bar"])[":id"]["$put"],
+    (typeof client.api.v1)["charts"]["bar"][":id"]["$put"],
     200
 >;
 

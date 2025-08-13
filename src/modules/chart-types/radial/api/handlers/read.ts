@@ -7,14 +7,13 @@ import {
 } from "@/modules/chart-types/radial/schema/types";
 import { RadialCharts } from "@/modules/chart-types/radial/schema";
 import { CHART_TYPE_RADIAL } from "@/constants";
-
 import {
     ChartMetadata,
     ChartTypography,
     ChartBoxModel,
     ChartColors,
     ChartVisual,
-} from "@/modules/chart/chart-metadata/schema";
+} from "@/modules/chart-attributes/schema";
 
 // Fetch all radial charts for a given collection
 export async function fetchRadialChartsByCollection(

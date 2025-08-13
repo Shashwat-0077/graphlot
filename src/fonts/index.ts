@@ -1,4 +1,4 @@
-import { Righteous, Ubuntu } from 'next/font/google';
+import { Righteous, Ubuntu } from "next/font/google";
 
 // const geistSans = Geist({
 //     variable: '--font-geist-sans',
@@ -11,13 +11,14 @@ import { Righteous, Ubuntu } from 'next/font/google';
 // });
 
 export const righteous = Righteous({
-    variable: '--font-righteous',
-    weight: ['400'],
+    variable: "--font-righteous",
+    weight: ["400"],
+    subsets: ["latin"],
 });
 
 export const ubuntu = Ubuntu({
-    variable: '--font-ubuntu',
-    subsets: ['latin'],
-    weight: ['300', '400', '500', '700'],
-    style: ['normal'],
+    variable: "--font-ubuntu",
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "700"],
+    style: ["normal"],
 });

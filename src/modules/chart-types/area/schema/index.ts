@@ -6,7 +6,7 @@ import {
     areaSpecificConfigDefaults,
 } from "@/modules/chart-types/area/default-area-config";
 import { SortType } from "@/constants";
-import { ChartMetadata } from "@/modules/chart-attributes/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 export const AREA_CHARTS_TABLE_NAME = "area_chart";
 export const AreaCharts = sqliteTable(AREA_CHARTS_TABLE_NAME, {

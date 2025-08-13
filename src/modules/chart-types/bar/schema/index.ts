@@ -6,8 +6,7 @@ import {
     barSpecificConfigDefaults,
     defaultBarChartConfig,
 } from "@/modules/chart-types/bar/default-bar-config";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 export const BAR_CHARTS_TABLE_NAME = "bar_chart";
 export const BarCharts = sqliteTable(BAR_CHARTS_TABLE_NAME, {

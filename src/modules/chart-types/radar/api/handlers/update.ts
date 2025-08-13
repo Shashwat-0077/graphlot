@@ -3,8 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { RadarCharts } from "@/modules/chart-types/radar/schema";
 import { RadarChartUpdate } from "@/modules/chart-types/radar/schema/types";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 type UpdateResult =
     | { ok: true; chartId: string }

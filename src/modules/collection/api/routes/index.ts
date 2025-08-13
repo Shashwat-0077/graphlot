@@ -14,12 +14,12 @@ const app = new Hono<{ Variables: Variables }>()
     .get("/all",
         authMiddleWare,
         async (c) => {
-        const userId = c.get("userId") as string;
+        const userId = c.get("userId");
                     const response = await fetchAllCollections(userId);
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
                     }
-                    return c.json({ collections: response.collections }, 200);
+                    return c.json(response.collections, 200);
     }
     )
     .get("/:id",
@@ -33,7 +33,7 @@ const app = new Hono<{ Variables: Variables }>()
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
                     }
-                    return c.json({ collection: response.collection }, 200);
+                    return c.json(response.collection, 200);
     }
     )
     .post("/create",
@@ -49,7 +49,7 @@ const app = new Hono<{ Variables: Variables }>()
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
                     }
-                    return c.json({ collection: response.collection }, 200);
+                    return c.json(response.collection, 200);
     }
     )
     .put("/:id",
@@ -70,7 +70,7 @@ const app = new Hono<{ Variables: Variables }>()
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
                     }
-                    return c.json({ collectionId: response.collectionId }, 200);
+                    return c.json(response.collectionId, 200);
     }
     )
     .delete("/:id",
@@ -88,10 +88,7 @@ const app = new Hono<{ Variables: Variables }>()
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
                     }
-                    return c.json(
-                        { deleted: true, collectionId: response.collectionId },
-                        200
-                    );
+                    return c.json(response.collectionId, 200);
     }
     );
 

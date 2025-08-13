@@ -3,7 +3,7 @@ import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 
-export const useGetCollectionsAll = () => {
+export const useGetCollections = () => {
     return useQuery({
         queryKey: ["collections", "all"],
         queryFn: async () => {
@@ -23,7 +23,7 @@ type GetCollectionParams = {
   id: string;
 };
 
-export const useGetCollection = (params: GetCollectionParams) => {
+export const useGetCollection = ({params}: {params: GetCollectionParams}) => {
     return useQuery({
         queryKey: ["collections", JSON.stringify({ params })],
         queryFn: async () => {
@@ -41,16 +41,16 @@ export const useGetCollection = (params: GetCollectionParams) => {
     });
 };
 
-type PostCollectionsCreateRequest = InferRequestType<
-    (typeof client.api.v1["collections"])["create"]["$post"]
+type CreateCollectionRequest = InferRequestType<
+    (typeof client.api.v1)["collections"]["create"]["$post"]
 >;
-type PostCollectionsCreateResponse = InferResponseType<
-    (typeof client.api.v1["collections"])["create"]["$post"],
+type CreateCollectionResponse = InferResponseType<
+    (typeof client.api.v1)["collections"]["create"]["$post"],
     200
 >;
 
-export const usePostCollectionsCreate = () => {
-    return useMutation<PostCollectionsCreateResponse, Error, PostCollectionsCreateRequest>({
+export const useCreateCollection = () => {
+    return useMutation<CreateCollectionResponse, Error, CreateCollectionRequest>({
         mutationFn: async (props) => {
             const response = await client.api.v1["collections"]["create"].$post(props);
 
@@ -64,10 +64,10 @@ export const usePostCollectionsCreate = () => {
 };
 
 type UpdateCollectionRequest = InferRequestType<
-    (typeof client.api.v1["collections"])[":id"]["$put"]
+    (typeof client.api.v1)["collections"][":id"]["$put"]
 >;
 type UpdateCollectionResponse = InferResponseType<
-    (typeof client.api.v1["collections"])[":id"]["$put"],
+    (typeof client.api.v1)["collections"][":id"]["$put"],
     200
 >;
 
@@ -86,10 +86,10 @@ export const useUpdateCollection = () => {
 };
 
 type DeleteCollectionRequest = InferRequestType<
-    (typeof client.api.v1["collections"])[":id"]["$delete"]
+    (typeof client.api.v1)["collections"][":id"]["$delete"]
 >;
 type DeleteCollectionResponse = InferResponseType<
-    (typeof client.api.v1["collections"])[":id"]["$delete"],
+    (typeof client.api.v1)["collections"][":id"]["$delete"],
     200
 >;
 

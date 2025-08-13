@@ -7,8 +7,7 @@ import {
     radialSpecificConfigDefaults,
 } from "@/modules/chart-types/radial/default-radial-config";
 import { SortType } from "@/constants";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 export const RADIAL_CHARTS_TABLE_NAME = "radial_chart";
 export const RadialCharts = sqliteTable(RADIAL_CHARTS_TABLE_NAME, {

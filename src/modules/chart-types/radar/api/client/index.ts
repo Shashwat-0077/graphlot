@@ -7,7 +7,7 @@ type GetRadarParams = {
   id: string;
 };
 
-export const useGetRadar = (params: GetRadarParams) => {
+export const useGetRadar = ({params}: {params: GetRadarParams}) => {
     return useQuery({
         queryKey: ["charts.radar", JSON.stringify({ params })],
         queryFn: async () => {
@@ -26,10 +26,10 @@ export const useGetRadar = (params: GetRadarParams) => {
 };
 
 type UpdateRadarRequest = InferRequestType<
-    (typeof client.api.v1["charts"]["radar"])[":id"]["$put"]
+    (typeof client.api.v1)["charts"]["radar"][":id"]["$put"]
 >;
 type UpdateRadarResponse = InferResponseType<
-    (typeof client.api.v1["charts"]["radar"])[":id"]["$put"],
+    (typeof client.api.v1)["charts"]["radar"][":id"]["$put"],
     200
 >;
 

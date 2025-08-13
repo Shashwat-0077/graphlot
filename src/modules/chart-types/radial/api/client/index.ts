@@ -7,7 +7,7 @@ type GetRadialParams = {
   id: string;
 };
 
-export const useGetRadial = (params: GetRadialParams) => {
+export const useGetRadial = ({params}: {params: GetRadialParams}) => {
     return useQuery({
         queryKey: ["charts.radial", JSON.stringify({ params })],
         queryFn: async () => {
@@ -26,10 +26,10 @@ export const useGetRadial = (params: GetRadialParams) => {
 };
 
 type UpdateRadialRequest = InferRequestType<
-    (typeof client.api.v1["charts"]["radial"])[":id"]["$put"]
+    (typeof client.api.v1)["charts"]["radial"][":id"]["$put"]
 >;
 type UpdateRadialResponse = InferResponseType<
-    (typeof client.api.v1["charts"]["radial"])[":id"]["$put"],
+    (typeof client.api.v1)["charts"]["radial"][":id"]["$put"],
     200
 >;
 

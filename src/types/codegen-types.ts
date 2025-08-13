@@ -40,6 +40,7 @@ export interface RouteConfig<
 > {
     path: string;
     method: HttpMethod;
+    queryHookName?: string;
     middlewares?: MiddlewareHandler<{ Variables: TVariables }>[];
     validators: {
         params?: TParams;
@@ -70,4 +71,7 @@ export interface RouteConfig<
         >,
         "mutationFn"
     >;
+
+    includeOnSuccess?: boolean;
+    includeOnError?: boolean;
 }

@@ -9,6 +9,7 @@ import barRoutes from "@/modules/chart-types/bar/api/routes";
 import radialRoutes from "@/modules/chart-types/radial/api/routes";
 import radarRoutes from "@/modules/chart-types/radar/api/routes";
 import chartRoutes from "@/modules/chart-attributes/api/routes";
+import notionRoutes from "@/modules/notion/api/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,8 @@ const routes = app
     .route("/charts/radial", radialRoutes)
     .route("/charts/radar", radarRoutes)
     .route("/charts/bar", barRoutes)
-    .route("/charts", chartRoutes);
+    .route("/charts", chartRoutes)
+    .route("/notion", notionRoutes);
 
 // Export handlers and types
 export type AppType = typeof routes;

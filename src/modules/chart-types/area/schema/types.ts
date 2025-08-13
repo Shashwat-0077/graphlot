@@ -10,21 +10,20 @@ import {
     AreaCharts,
 } from "@/modules/chart-types/area/schema";
 import { CHART_TYPE_AREA, SORT_OPTIONS } from "@/constants";
-
-import {
-    CHART_BOX_MODEL_TABLE_NAME,
-    CHART_COLOR_TABLE_NAME,
-    CHART_TYPOGRAPHY_TABLE_NAME,
-    CHART_VISUAL_TABLE_NAME,
-    CHART_METADATA_TABLE_NAME,
-} from "@/modules/chart/chart-metadata/schema";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
     ChartVisualSchema,
-} from "@/modules/chart/chart-metadata/schema/types";
+} from "@/modules/chart-attributes/schema/types";
+import {
+    CHART_BOX_MODEL_TABLE_NAME,
+    CHART_COLOR_TABLE_NAME,
+    CHART_METADATA_TABLE_NAME,
+    CHART_TYPOGRAPHY_TABLE_NAME,
+    CHART_VISUAL_TABLE_NAME,
+} from "@/modules/chart-attributes/schema";
 
 // Base schemas from AreaCharts table
 const areaInsertBase = createInsertSchema(AreaCharts);

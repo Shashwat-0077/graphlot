@@ -17,18 +17,18 @@ import { deleteCollection } from "@/modules/collection/api/handlers/delete";
 import { Variables } from "@/modules/collection/api/variables";
 
 const collectionRouteConfigs = [
-    defineRoute({
+    defineRouteWithVariables<Variables>()({
         path: "/all",
         method: "GET",
         middlewares: [authMiddleWare],
         validators: {},
         handler: async (c) => {
-            const userId = c.get("userId") as string;
+            const userId = c.get("userId");
             const response = await fetchAllCollections(userId);
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            return c.json({ collections: response.collections }, 200);
+            return c.json(response.collections, 200);
         },
     }),
 
@@ -47,7 +47,7 @@ const collectionRouteConfigs = [
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            return c.json({ collection: response.collection }, 200);
+            return c.json(response.collection, 200);
         },
     }),
 
@@ -68,7 +68,7 @@ const collectionRouteConfigs = [
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            return c.json({ collection: response.collection }, 200);
+            return c.json(response.collection, 200);
         },
     }),
 
@@ -94,7 +94,7 @@ const collectionRouteConfigs = [
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            return c.json({ collectionId: response.collectionId }, 200);
+            return c.json(response.collectionId, 200);
         },
     }),
 
@@ -117,10 +117,7 @@ const collectionRouteConfigs = [
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
             }
-            return c.json(
-                { deleted: true, collectionId: response.collectionId },
-                200
-            );
+            return c.json(response.collectionId, 200);
         },
     }),
 ];

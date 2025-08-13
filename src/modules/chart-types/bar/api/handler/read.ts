@@ -7,14 +7,13 @@ import {
 } from "@/modules/chart-types/bar/schema/types";
 import { BarCharts } from "@/modules/chart-types/bar/schema";
 import { CHART_TYPE_BAR } from "@/constants";
-
 import {
     ChartColors,
     ChartBoxModel,
     ChartMetadata,
     ChartTypography,
     ChartVisual,
-} from "@/modules/chart/chart-metadata/schema";
+} from "@/modules/chart-attributes/schema";
 
 export async function fetchBarChartsByCollection(
     collection_id: string

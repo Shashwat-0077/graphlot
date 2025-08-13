@@ -6,8 +6,7 @@ import {
     RadarSpecificConfig,
     radarSpecificConfigDefaults,
 } from "@/modules/chart-types/radar/default-radar-config";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 export const RADAR_CHARTS_TABLE_NAME = "radar_chart";
 export const RadarCharts = sqliteTable(RADAR_CHARTS_TABLE_NAME, {

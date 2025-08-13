@@ -3,8 +3,7 @@ import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 
 import { RGBAColor } from "@/constants";
 import { defaultHeatmapConfig } from "@/modules/chart-types/heatmap/default-heatmap-config";
-
-import { ChartMetadata } from "@/modules/chart/chart-metadata/schema";
+import { ChartMetadata } from "@/modules/chart-attributes/schema";
 
 export const HEATMAP_CHARTS_TABLE_NAME = "heatmap";
 

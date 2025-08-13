@@ -10,21 +10,20 @@ import {
     RADIAL_CHARTS_TABLE_NAME,
 } from "@/modules/chart-types/radial/schema";
 import { CHART_TYPE_RADIAL, SORT_OPTIONS } from "@/constants";
-
 import {
     CHART_BOX_MODEL_TABLE_NAME,
     CHART_COLOR_TABLE_NAME,
     CHART_METADATA_TABLE_NAME,
     CHART_TYPOGRAPHY_TABLE_NAME,
     CHART_VISUAL_TABLE_NAME,
-} from "@/modules/chart/chart-metadata/schema";
+} from "@/modules/chart-attributes/schema";
 import {
     ChartBoxModelSchema,
     ChartColorSchema,
     ChartMetadataSchema,
     ChartTypographySchema,
     ChartVisualSchema,
-} from "@/modules/chart/chart-metadata/schema/types";
+} from "@/modules/chart-attributes/schema/types";
 
 // Base schemas from RadialCharts table
 const radialInsertBase = createInsertSchema(RadialCharts);

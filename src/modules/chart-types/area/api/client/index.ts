@@ -7,7 +7,7 @@ type GetAreaParams = {
   id: string;
 };
 
-export const useGetArea = (params: GetAreaParams) => {
+export const useGetArea = ({params}: {params: GetAreaParams}) => {
     return useQuery({
         queryKey: ["charts.area", JSON.stringify({ params })],
         queryFn: async () => {
@@ -26,10 +26,10 @@ export const useGetArea = (params: GetAreaParams) => {
 };
 
 type UpdateAreaRequest = InferRequestType<
-    (typeof client.api.v1["charts"]["area"])[":id"]["$put"]
+    (typeof client.api.v1)["charts"]["area"][":id"]["$put"]
 >;
 type UpdateAreaResponse = InferResponseType<
-    (typeof client.api.v1["charts"]["area"])[":id"]["$put"],
+    (typeof client.api.v1)["charts"]["area"][":id"]["$put"],
     200
 >;
 
