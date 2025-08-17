@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import { defineRoute } from "@/utils/defineRoute"; // wherever you save it
+import { defineRoute } from "@/utils"; // wherever you save it
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchRadialChartById } from "@/modules/chart-types/radial/api/handlers/read";
 import { RadialChartSchema } from "@/modules/chart-types/radial/schema/types";

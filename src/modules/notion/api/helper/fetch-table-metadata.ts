@@ -2,10 +2,12 @@ import { GetDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 
 import { getNotionClient } from "@/lib/notion";
 
-export async function fetchTableMetaData({
+export async function fetchNotionTableMetaData({
     databaseId,
+    userId,
 }: {
     databaseId: string;
+    userId?: string;
 }): Promise<
     | {
           ok: true;
@@ -13,7 +15,7 @@ export async function fetchTableMetaData({
       }
     | { ok: false; error: string }
 > {
-    const notionClient = await getNotionClient();
+    const notionClient = await getNotionClient(userId);
 
     if (notionClient.success === false) {
         return {

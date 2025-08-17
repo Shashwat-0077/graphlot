@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import { defineRoute } from "@/utils/defineRoute"; // wherever you save it
+import { defineRoute } from "@/utils"; // wherever you save it
 import { fetchBarChartById } from "@/modules/chart-types/bar/api/handler/read";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { updateBarChart } from "@/modules/chart-types/bar/api/handler/update";

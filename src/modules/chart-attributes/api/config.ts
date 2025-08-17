@@ -4,10 +4,12 @@
 
 import z from "zod";
 
-import { defineRoute } from "@/utils/defineRoute";
+import { defineRoute } from "@/utils";
 import {
     fetchChartAttribute,
+    fetchChartData,
     fetchChartMetadata,
+    fetchChartSchema,
     fetchMetadataByCollection,
 } from "@/modules/chart-attributes/api/handler/read";
 import {
@@ -28,18 +30,18 @@ import { createChart } from "@/modules/chart-attributes/api/handler/create";
 const chartRouteConfig = [
     // chart metadata
     defineRoute({
-        path: "/:collection_id",
-        queryHookName: "useGetChartByCollection",
+        path: "/",
         method: "GET",
+        queryHookName: "useGetChartByCollection",
         middlewares: [],
         validators: {
-            params: z.object({
-                collection_id: z.string().nonempty(),
+            query: z.object({
+                collectionId: z.string().nonempty(),
             }),
         },
         handler: async (c) => {
-            const { collection_id } = c.req.valid("param");
-            const response = await fetchMetadataByCollection(collection_id);
+            const { collectionId } = c.req.valid("query");
+            const response = await fetchMetadataByCollection(collectionId);
 
             if (!response.ok) {
                 return c.json({ error: response.error }, 500);
@@ -123,6 +125,66 @@ const chartRouteConfig = [
                 return c.json({ error: response.error }, 500);
             }
             return c.json(response.chartId, 200);
+        },
+    }),
+    defineRoute({
+        path: "/:id/table-schema",
+        method: "GET",
+        middlewares: [],
+        validators: {
+            params: z.object({
+                id: z.string().nonempty(),
+            }),
+            query: z.object({
+                userId: z.string().nonempty(),
+            }),
+        },
+        handler: async (c) => {
+            const { id } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
+
+            const response = await fetchChartSchema({
+                chartId: id,
+                userId,
+            });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            const { ok: _, ...rest } = response;
+
+            return c.json(rest, 200);
+        },
+    }),
+    defineRoute({
+        path: "/:id/table-data",
+        method: "GET",
+        middlewares: [],
+        validators: {
+            params: z.object({
+                id: z.string().nonempty(),
+            }),
+            query: z.object({
+                userId: z.string().nonempty(),
+            }),
+        },
+        handler: async (c) => {
+            const { id } = c.req.valid("param");
+            const { userId } = c.req.valid("query");
+
+            const response = await fetchChartData({
+                chartId: id,
+                userId,
+            });
+
+            if (!response.ok) {
+                return c.json({ error: response.error }, 500);
+            }
+
+            const { data } = response;
+
+            return c.json(data, 200);
         },
     }),
 

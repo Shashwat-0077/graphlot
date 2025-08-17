@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import { defineRoute } from "@/utils/defineRoute"; // wherever you save it
+import { defineRoute } from "@/utils"; // wherever you save it
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchHeatmapById } from "@/modules/chart-types/heatmap/api/handlers/read";
 import { updateHeatmap } from "@/modules/chart-types/heatmap/api/handlers/update";

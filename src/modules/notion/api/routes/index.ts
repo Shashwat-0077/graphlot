@@ -3,16 +3,16 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
-import { fetchDatabases } from "@/modules/notion/api/helper/fetch-databases";
-import { fetchTableData } from "@/modules/notion/api/helper/fetch-table-data";
-import { fetchTableSchema } from "@/modules/notion/api/helper/fetch-table-schema";
-import { fetchTableMetaData } from "@/modules/notion/api/helper/fetch-table-metadata";
+import { fetchNotionDatabases } from "@/modules/notion/api/helper/fetch-databases";
+import { fetchNotionTableData } from "@/modules/notion/api/helper/fetch-table-data";
+import { fetchNotionTableSchema } from "@/modules/notion/api/helper/fetch-table-schema";
+import { fetchNotionTableMetaData } from "@/modules/notion/api/helper/fetch-table-metadata";
 
 const app = new Hono()
     .get("/databases",
         authMiddleWare,
         async (c) => {
-        const response = await fetchDatabases();
+        const response = await fetchNotionDatabases();
                     if (!response.ok) {
                         return c.json(response.error, 500);
                     }
@@ -30,7 +30,7 @@ const app = new Hono()
         async (c) => {
         const { notionTableId } = c.req.valid("param");
         
-                    const response = await fetchTableData({
+                    const response = await fetchNotionTableData({
                         databaseId: notionTableId,
                     });
         
@@ -51,7 +51,7 @@ const app = new Hono()
         async (c) => {
         const { notionTableId } = c.req.valid("param");
         
-                    const response = await fetchTableSchema({
+                    const response = await fetchNotionTableSchema({
                         databaseId: notionTableId,
                     });
         
@@ -72,7 +72,7 @@ const app = new Hono()
         async (c) => {
         const { notionTableId } = c.req.valid("param");
         
-                    const response = await fetchTableMetaData({
+                    const response = await fetchNotionTableMetaData({
                         databaseId: notionTableId,
                     });
         

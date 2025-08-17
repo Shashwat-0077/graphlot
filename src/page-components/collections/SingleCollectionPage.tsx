@@ -24,10 +24,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCollection } from "@/modules/collection/api/client";
-import { useGetChartByCollection } from "@/modules/chart-attributes/api/client";
 import { ChartTypeFilter } from "@/modules/chart-attributes/components/chart-type-filter";
 import { ChartCardLoader } from "@/modules/chart-attributes/components/chart-card-loader";
 import { EmptyCharts } from "@/modules/chart-attributes/components/empty-charts";
+import { useGetChartByCollection } from "@/modules/chart-attributes/api/client";
 
 export default function SingleCollectionPage() {
     const { collection_slug } = useParams<{ collection_slug: string }>();
@@ -54,8 +54,8 @@ export default function SingleCollectionPage() {
         isLoading: isChartsLoading,
         error: chartError,
     } = useGetChartByCollection({
-        params: {
-            collection_id,
+        query: {
+            collectionId: collection_id,
         },
     });
 

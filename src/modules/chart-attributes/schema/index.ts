@@ -21,8 +21,8 @@ import {
     TooltipStyle,
 } from "@/constants";
 import {
-    defaultChartBoxModel,
-    defaultChartColors,
+    defaultChartBoxModelSettings,
+    defaultChartColorsSettings,
     defaultChartTypographySettings,
     defaultChartVisualSettings,
 } from "@/modules/chart-attributes/default-config";
@@ -65,6 +65,9 @@ export const ChartVisual = sqliteTable(CHART_VISUAL_TABLE_NAME, {
     chartId: text("chart_id")
         .primaryKey()
         .references(() => ChartMetadata.chartId, { onDelete: "cascade" }),
+    gridEnabled: integer("grid_enabled", { mode: "boolean" })
+        .notNull()
+        .default(defaultChartVisualSettings.gridEnabled),
     gridOrientation: text("grid_orientation")
         .notNull()
         .$type<GridOrientation>()
@@ -139,19 +142,19 @@ export const ChartBoxModel = sqliteTable(CHART_BOX_MODEL_TABLE_NAME, {
         .references(() => ChartMetadata.chartId, { onDelete: "cascade" }),
     marginTop: real("margin_top")
         .notNull()
-        .default(defaultChartBoxModel.marginTop),
+        .default(defaultChartBoxModelSettings.marginTop),
     marginBottom: real("margin_bottom")
         .notNull()
-        .default(defaultChartBoxModel.marginBottom),
+        .default(defaultChartBoxModelSettings.marginBottom),
     marginLeft: real("margin_left")
         .notNull()
-        .default(defaultChartBoxModel.marginLeft),
+        .default(defaultChartBoxModelSettings.marginLeft),
     marginRight: real("margin_right")
         .notNull()
-        .default(defaultChartBoxModel.marginRight),
+        .default(defaultChartBoxModelSettings.marginRight),
     borderWidth: real("border_width")
         .notNull()
-        .default(defaultChartBoxModel.borderWidth),
+        .default(defaultChartBoxModelSettings.borderWidth),
 });
 
 export const CHART_COLOR_TABLE_NAME = "chart_colors";
@@ -161,46 +164,46 @@ export const ChartColors = sqliteTable(CHART_COLOR_TABLE_NAME, {
         .references(() => ChartMetadata.chartId, { onDelete: "cascade" }),
     backgroundColor: text("background_color", { mode: "json" })
         .notNull()
-        .default(defaultChartColors.backgroundColor)
+        .default(defaultChartColorsSettings.backgroundColor)
         .$type<RGBAColor>(),
     colorPalette: text("color_palette", { mode: "json" })
         .notNull()
-        .default(defaultChartColors.colorPalette)
+        .default(defaultChartColorsSettings.colorPalette)
         .$type<RGBAColor[]>(),
     borderColor: text("border_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.borderColor),
+        .default(defaultChartColorsSettings.borderColor),
     gridColor: text("grid_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.gridColor),
+        .default(defaultChartColorsSettings.gridColor),
     tooltipBackgroundColor: text("tooltip_background_color", {
         mode: "json",
     })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.tooltipBackgroundColor),
+        .default(defaultChartColorsSettings.tooltipBackgroundColor),
     tooltipTextColor: text("tooltip_text_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.tooltipTextColor),
+        .default(defaultChartColorsSettings.tooltipTextColor),
     tooltipSeparatorColor: text("tooltip_separator_color", {
         mode: "json",
     })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.tooltipSeparatorColor),
+        .default(defaultChartColorsSettings.tooltipSeparatorColor),
     tooltipBorderColor: text("tooltip_border_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.tooltipBorderColor),
+        .default(defaultChartColorsSettings.tooltipBorderColor),
     labelColor: text("label_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.labelColor),
+        .default(defaultChartColorsSettings.labelColor),
     legendTextColor: text("legend_text_color", { mode: "json" })
         .notNull()
         .$type<RGBAColor>()
-        .default(defaultChartColors.legendTextColor),
+        .default(defaultChartColorsSettings.legendTextColor),
 });

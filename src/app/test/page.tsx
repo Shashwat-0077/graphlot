@@ -1,17 +1,21 @@
-import { headers } from "next/headers";
-import React from "react";
+"use client";
 
-import { auth } from "@/modules/auth";
+import { useState } from "react";
 
-const page = async () => {
-    const response = await auth.api.getAccessToken({
-        body: {
-            providerId: "notion",
-        },
-        headers: await headers(),
-    });
+import ColorPickerPopover from "@/components/ui/color-picker-popover";
 
-    return <div>page</div>;
-};
+export default function TestPage() {
+    const [color, setColor] = useState({ r: 255, g: 0, b: 0, a: 1 });
 
-export default page;
+    return (
+        <div className="grid h-full w-full place-content-center">
+            <ColorPickerPopover
+                color={color}
+                setColor={setColor}
+                isSingleColor={true}
+            >
+                <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900"></div>
+            </ColorPickerPopover>
+        </div>
+    );
+}

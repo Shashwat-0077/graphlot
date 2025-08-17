@@ -7,26 +7,37 @@ type returnType =
     | { success: true; client: Client }
     | { success: false; error: string };
 
-export const getNotionClient = async (): Promise<returnType> => {
+export const getNotionClient = async (userId?: string): Promise<returnType> => {
     const sessionResult = await auth.api.getSession({
         headers: await headers(),
     });
 
-    if (!sessionResult) {
-        return { success: false, error: "Session not found" };
+    let access_token = "";
+
+    if (sessionResult) {
+        const { session } = sessionResult;
+
+        const response = await auth.api.getAccessToken({
+            body: {
+                providerId: "notion",
+                userId: session.userId,
+            },
+            headers: await headers(),
+        });
+
+        access_token = response.accessToken;
+    } else if (userId) {
+        const response = await auth.api.getAccessToken({
+            body: {
+                providerId: "notion",
+                userId,
+            },
+        });
+
+        access_token = response.accessToken;
+    } else {
+        return { success: false, error: "No valid session or user ID found" };
     }
-
-    const { session } = sessionResult;
-
-    const response = await auth.api.getAccessToken({
-        body: {
-            providerId: "notion",
-            userId: session.userId,
-        },
-        headers: await headers(),
-    });
-
-    const access_token = response.accessToken;
 
     return {
         success: true,

@@ -931,15 +931,22 @@ export const ${hookName} = () => {
 
                 const hooksCode = this.generateReactQueryHooks(config);
 
-                const outputDir = path.join(path.dirname(configFile), "client");
-                if (!fs.existsSync(outputDir)) {
-                    fs.mkdirSync(outputDir, { recursive: true });
+                // Create the ../api/client directory structure
+                const configDir = path.dirname(configFile);
+                const apiDir = path.resolve(configDir, "..", "api");
+                const clientDir = path.join(apiDir, "client");
+
+                // Ensure the directory exists
+                if (!fs.existsSync(clientDir)) {
+                    fs.mkdirSync(clientDir, { recursive: true });
                 }
 
-                const outputFile = path.join(outputDir, "index.ts");
-                fs.writeFileSync(outputFile, hooksCode);
+                // Write to auto-gen.tsx instead of index.ts
+                const autoGenFile = path.join(clientDir, "auto-gen.tsx");
+                fs.writeFileSync(autoGenFile, hooksCode);
 
-                console.log(`✓ Generated: ${outputFile}`);
+                console.log(`✓ Generated: ${autoGenFile}`);
+                console.log(`✓ Updated: ${path.join(clientDir, "index.tsx")}`);
             } catch (error) {
                 console.error(`✗ Error processing ${configFile}:`, error);
             }

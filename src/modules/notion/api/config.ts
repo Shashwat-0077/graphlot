@@ -5,11 +5,11 @@
 import z from "zod";
 
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
-import { fetchDatabases } from "@/modules/notion/api/helper/fetch-databases";
-import { fetchTableData } from "@/modules/notion/api/helper/fetch-table-data";
-import { defineRoute } from "@/utils/defineRoute";
-import { fetchTableSchema } from "@/modules/notion/api/helper/fetch-table-schema";
-import { fetchTableMetaData } from "@/modules/notion/api/helper/fetch-table-metadata";
+import { fetchNotionDatabases } from "@/modules/notion/api/helper/fetch-databases";
+import { fetchNotionTableData } from "@/modules/notion/api/helper/fetch-table-data";
+import { defineRoute } from "@/utils";
+import { fetchNotionTableSchema } from "@/modules/notion/api/helper/fetch-table-schema";
+import { fetchNotionTableMetaData } from "@/modules/notion/api/helper/fetch-table-metadata";
 
 const notionRoutes = [
     defineRoute({
@@ -19,7 +19,7 @@ const notionRoutes = [
         middlewares: [authMiddleWare],
         validators: {},
         handler: async (c) => {
-            const response = await fetchDatabases();
+            const response = await fetchNotionDatabases();
             if (!response.ok) {
                 return c.json(response.error, 500);
             }
@@ -42,7 +42,7 @@ const notionRoutes = [
         handler: async (c) => {
             const { notionTableId } = c.req.valid("param");
 
-            const response = await fetchTableData({
+            const response = await fetchNotionTableData({
                 databaseId: notionTableId,
             });
 
@@ -69,7 +69,7 @@ const notionRoutes = [
         handler: async (c) => {
             const { notionTableId } = c.req.valid("param");
 
-            const response = await fetchTableSchema({
+            const response = await fetchNotionTableSchema({
                 databaseId: notionTableId,
             });
 
@@ -96,7 +96,7 @@ const notionRoutes = [
         handler: async (c) => {
             const { notionTableId } = c.req.valid("param");
 
-            const response = await fetchTableMetaData({
+            const response = await fetchNotionTableMetaData({
                 databaseId: notionTableId,
             });
 

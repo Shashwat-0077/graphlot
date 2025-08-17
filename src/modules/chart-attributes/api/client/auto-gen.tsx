@@ -3,16 +3,16 @@ import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 
-type GetChartByCollectionParams = {
-  collection_id: string;
+type GetChartByCollectionQuery = {
+  collectionId: string;
 };
 
-export const useGetChartByCollection = ({params}: {params: GetChartByCollectionParams}) => {
+export const useGetChartByCollection = ({query}: {query: GetChartByCollectionQuery}) => {
     return useQuery({
-        queryKey: ["charts", JSON.stringify({ params })],
+        queryKey: ["charts", "all", JSON.stringify({ query })],
         queryFn: async () => {
-            const response = await client.api.v1["charts"][":collection_id"].$get({
-                param: params,
+            const response = await client.api.v1["charts"].$get({
+                query: query,
             });
 
             if (!response.ok) {
@@ -21,7 +21,7 @@ export const useGetChartByCollection = ({params}: {params: GetChartByCollectionP
 
             return await response.json();
         },
-        
+        staleTime: 0,
     });
 };
 
@@ -130,6 +130,60 @@ export const useDeleteChart = () => {
 
             return await response.json();
         },
+    });
+};
+
+type GetChartTableSchemaParams = {
+  id: string;
+};
+
+type GetChartTableSchemaQuery = {
+  userId: string;
+};
+
+export const useGetChartTableSchema = ({params, query}: {params: GetChartTableSchemaParams; query: GetChartTableSchemaQuery}) => {
+    return useQuery({
+        queryKey: ["charts", "table-schema", JSON.stringify({ params, query })],
+        queryFn: async () => {
+            const response = await client.api.v1["charts"][":id"]["table-schema"].$get({
+                param: params,
+                query: query,
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch charts");
+            }
+
+            return await response.json();
+        },
+        
+    });
+};
+
+type GetChartTableDataParams = {
+  id: string;
+};
+
+type GetChartTableDataQuery = {
+  userId: string;
+};
+
+export const useGetChartTableData = ({params, query}: {params: GetChartTableDataParams; query: GetChartTableDataQuery}) => {
+    return useQuery({
+        queryKey: ["charts", "table-data", JSON.stringify({ params, query })],
+        queryFn: async () => {
+            const response = await client.api.v1["charts"][":id"]["table-data"].$get({
+                param: params,
+                query: query,
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch charts");
+            }
+
+            return await response.json();
+        },
+        
     });
 };
 

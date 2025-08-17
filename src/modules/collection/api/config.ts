@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import { defineRoute, defineRouteWithVariables } from "@/utils/defineRoute";
+import { defineRoute, defineRouteWithVariables } from "@/utils";
 import { CollectionSchema } from "@/modules/collection/schema/types";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import {

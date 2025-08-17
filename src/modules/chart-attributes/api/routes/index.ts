@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
-import { fetchChartAttribute, fetchChartMetadata, fetchMetadataByCollection } from "@/modules/chart-attributes/api/handler/read";
+import { fetchChartAttribute, fetchChartData, fetchChartMetadata, fetchChartSchema, fetchMetadataByCollection } from "@/modules/chart-attributes/api/handler/read";
 import { updateChartAttribute, updateChartMetadata } from "@/modules/chart-attributes/api/handler/update";
 import { ChartBoxModelSchema, ChartColorSchema, ChartMetadataSchema, ChartTypographySchema, ChartVisualSchema } from "@/modules/chart-attributes/schema/types";
 import { deleteChart } from "@/modules/chart-attributes/api/handler/delete";
@@ -10,13 +10,13 @@ import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { createChart } from "@/modules/chart-attributes/api/handler/create";
 
 const app = new Hono()
-    .get("/:collection_id",
-        zValidator("param", z.object({
-                collection_id: z.string().nonempty(),
+    .get("/",
+        zValidator("query", z.object({
+                collectionId: z.string().nonempty(),
             })),
         async (c) => {
-        const { collection_id } = c.req.valid("param");
-                    const response = await fetchMetadataByCollection(collection_id);
+        const { collectionId } = c.req.valid("query");
+                    const response = await fetchMetadataByCollection(collectionId);
         
                     if (!response.ok) {
                         return c.json({ error: response.error }, 500);
@@ -79,6 +79,56 @@ const app = new Hono()
                         return c.json({ error: response.error }, 500);
                     }
                     return c.json(response.chartId, 200);
+    }
+    )
+    .get("/:id/table-schema",
+        zValidator("param", z.object({
+                id: z.string().nonempty(),
+            })),
+        zValidator("query", z.object({
+                userId: z.string().nonempty(),
+            })),
+        async (c) => {
+        const { id } = c.req.valid("param");
+                    const { userId } = c.req.valid("query");
+        
+                    const response = await fetchChartSchema({
+                        chartId: id,
+                        userId,
+                    });
+        
+                    if (!response.ok) {
+                        return c.json({ error: response.error }, 500);
+                    }
+        
+                    const { ok: _, ...rest } = response;
+        
+                    return c.json(rest, 200);
+    }
+    )
+    .get("/:id/table-data",
+        zValidator("param", z.object({
+                id: z.string().nonempty(),
+            })),
+        zValidator("query", z.object({
+                userId: z.string().nonempty(),
+            })),
+        async (c) => {
+        const { id } = c.req.valid("param");
+                    const { userId } = c.req.valid("query");
+        
+                    const response = await fetchChartData({
+                        chartId: id,
+                        userId,
+                    });
+        
+                    if (!response.ok) {
+                        return c.json({ error: response.error }, 500);
+                    }
+        
+                    const { data } = response;
+        
+                    return c.json(data, 200);
     }
     )
     .get("/:id/visuals",

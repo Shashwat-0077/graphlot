@@ -1,4 +1,9 @@
-import { AREA_CHART_LINE_STYLE_MONOTONE, AreaChartLineStyle, SORT_NONE, SortType } from '@/constants';
+import {
+    AREA_CHART_LINE_STYLE_MONOTONE,
+    AreaChartLineStyle,
+    SORT_NONE,
+    SortType,
+} from "@/constants";
 
 export type AreaSpecificConfig = {
     yAxisEnabled: boolean;
@@ -18,7 +23,7 @@ export const areaSpecificConfigDefaults: AreaSpecificConfig = {
     yAxisEnabled: true,
     xAxisEnabled: true,
     stackedEnabled: false,
-    lineStyle: AREA_CHART_LINE_STYLE_MONOTONE as AreaChartLineStyle,
+    lineStyle: AREA_CHART_LINE_STYLE_MONOTONE,
     strokeWidth: 1,
     fill: {
         start: 0.05, // default start opacity for gradient fill
@@ -29,8 +34,8 @@ export const areaSpecificConfigDefaults: AreaSpecificConfig = {
 };
 
 export const defaultAreaChartConfig = {
-    xAxisField: '',
-    yAxisField: '',
+    xAxisField: "",
+    yAxisField: "",
     xAxisSortOrder: SORT_NONE as SortType,
     yAxisSortOrder: SORT_NONE as SortType,
     omitZeroValuesEnabled: false,
