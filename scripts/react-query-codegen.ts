@@ -710,14 +710,19 @@ class ReactQueryCodeGenerator {
     return useQuery({
         queryKey: [${queryKey}${queryKeyParams}],
         queryFn: async () => {
-            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(${clientParams ? `${clientParams}` : ""});
+    const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(${clientParams ? `${clientParams}` : ""});
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch ${routeName}");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(\`\${error}\`);
+        } else {
+            throw new Error("Failed to fetch ${routeName}");
+        }
+    }
 
-            return await response.json();
-        },${queryOptionsSpread}
+    return await response.json();
+},${queryOptionsSpread}
         ${route.hasParams || route.queryOptions ? "" : "staleTime: 0,"}
     });
 };
@@ -807,14 +812,19 @@ type ${responseTypeName} = InferResponseType<
 export const ${hookName} = (${functionParams}) => {
     return useMutation<${responseTypeName}, Error, ${requestTypeName}>({
         mutationFn: async (props) => {
-            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
+    const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(\`\${error}\`);
+        } else {
+            throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
+        }
+    }
 
-            return await response.json();
-        },${mutationOptionsSpread}${callbackImplStr}
+    return await response.json();
+},${mutationOptionsSpread}${callbackImplStr}
     });
 };
 
@@ -832,14 +842,19 @@ type ${responseTypeName} = InferResponseType<
 export const ${hookName} = () => {
     return useMutation<${responseTypeName}, Error, ${requestTypeName}>({
         mutationFn: async (props) => {
-            const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
+    const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(\`\${error}\`);
+        } else {
+            throw new Error("Failed to ${route.method.toLowerCase()} ${routeName}");
+        }
+    }
 
-            return await response.json();
-        },${mutationOptionsSpread}
+    return await response.json();
+},${mutationOptionsSpread}
     });
 };
 

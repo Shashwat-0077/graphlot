@@ -396,7 +396,7 @@ function MarginRightInput() {
 
 /* ---------------- MAIN COMPONENT ---------------- */
 
-export const GridAndBoxModelConfig = () => {
+export const GridAndBoxModelSettings = () => {
     return (
         <TooltipProvider>
             <div className="space-y-4">

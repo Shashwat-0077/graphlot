@@ -17,27 +17,27 @@ import {
 import ToggleSwitch from "@/components/ui/toggle-switch";
 import ClearAll from "@/components/ui/clear-all";
 import { SORT_OPTIONS, ColumnType, SortType } from "@/constants";
-import { useAreaChartStore } from "@/modules/chart-types/area/store";
+import { useBarChartStore } from "@/modules/chart-types/bar/store";
 import { useChartColumns } from "@/modules/chart-attributes/api/client";
 
-export function DataSection({
+export function DataSettings({
     chartId,
     userId,
 }: {
     chartId: string;
     userId: string;
 }) {
-    const xAxis = useAreaChartStore((state) => state.xAxisField);
-    const yAxis = useAreaChartStore((state) => state.yAxisField);
-    const sortX = useAreaChartStore((state) => state.xAxisSortOrder);
-    const omitZeroValuesEnabled = useAreaChartStore(
+    const xAxis = useBarChartStore((state) => state.xAxisField);
+    const yAxis = useBarChartStore((state) => state.yAxisField);
+    const sortX = useBarChartStore((state) => state.xAxisSortOrder);
+    const omitZeroValuesEnabled = useBarChartStore(
         (state) => state.omitZeroValuesEnabled
     );
-    const sortY = useAreaChartStore((state) => state.yAxisSortOrder);
-    const cumulativeEnabled = useAreaChartStore(
+    const sortY = useBarChartStore((state) => state.yAxisSortOrder);
+    const cumulativeEnabled = useBarChartStore(
         (state) => state.cumulativeEnabled
     );
-    const setDataConfig = useAreaChartStore((state) => state.setAreaConfig);
+    const setDataConfig = useBarChartStore((state) => state.setBarConfig);
 
     // Fetch chart columns
     const {
@@ -339,6 +339,7 @@ export function DataSection({
             </Card>
 
             {/* Filters */}
+
             <Card className="border shadow-sm">
                 <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">

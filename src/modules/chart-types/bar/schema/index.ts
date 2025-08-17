@@ -43,6 +43,3 @@ export const BarCharts = sqliteTable(BAR_CHARTS_TABLE_NAME, {
 
     // TODO : add custom shapes, refer : https://recharts.org/en-US/examples/CustomShapeBarChart
 });
-
-export const BarChartsInsert = BarCharts.$inferInsert;
-export const BarChartsSelect = BarCharts.$inferSelect;

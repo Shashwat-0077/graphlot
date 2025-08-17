@@ -7,14 +7,19 @@ export const useGetCollections = () => {
     return useQuery({
         queryKey: ["collections", "all"],
         queryFn: async () => {
-            const response = await client.api.v1["collections"]["all"].$get();
+    const response = await client.api.v1["collections"]["all"].$get();
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch collections");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch collections");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         staleTime: 0,
     });
 };
@@ -27,16 +32,21 @@ export const useGetCollection = ({params}: {params: GetCollectionParams}) => {
     return useQuery({
         queryKey: ["collections", JSON.stringify({ params })],
         queryFn: async () => {
-            const response = await client.api.v1["collections"][":id"].$get({
+    const response = await client.api.v1["collections"][":id"].$get({
                 param: params,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch collections");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch collections");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         
     });
 };
@@ -52,14 +62,19 @@ type CreateCollectionResponse = InferResponseType<
 export const useCreateCollection = () => {
     return useMutation<CreateCollectionResponse, Error, CreateCollectionRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["collections"]["create"].$post(props);
+    const response = await client.api.v1["collections"]["create"].$post(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to post collections");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to post collections");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 
@@ -74,14 +89,19 @@ type UpdateCollectionResponse = InferResponseType<
 export const useUpdateCollection = () => {
     return useMutation<UpdateCollectionResponse, Error, UpdateCollectionRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["collections"][":id"].$put(props);
+    const response = await client.api.v1["collections"][":id"].$put(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to put collections");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to put collections");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 
@@ -96,14 +116,19 @@ type DeleteCollectionResponse = InferResponseType<
 export const useDeleteCollection = () => {
     return useMutation<DeleteCollectionResponse, Error, DeleteCollectionRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["collections"][":id"].$delete(props);
+    const response = await client.api.v1["collections"][":id"].$delete(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to delete collections");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to delete collections");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 

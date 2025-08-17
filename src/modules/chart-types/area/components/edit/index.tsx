@@ -9,15 +9,18 @@ import { ChartConfigComponent } from "@/constants";
 import { clientEnv } from "@/lib/env/client-env";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataSection } from "@/modules/chart-types/area/components/edit/data-section";
+import { DataSettings } from "@/modules/chart-types/area/components/edit/data-settings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ColorsConfig } from "@/modules/chart-types/area/components/edit/area-color-config";
+import { ColorsSettings } from "@/modules/chart-types/area/components/edit/color-settings";
 import { CopyButton } from "@/components/ui/copy-button";
-import { GridAndBoxModelConfig } from "@/modules/chart-types/area/components/edit/area-grid-and-box-model-config";
-import { TypographyAndStyleConfig } from "@/modules/chart-types/area/components/edit/typography-and-style-config";
+import { GridAndBoxModelSettings } from "@/modules/chart-types/area/components/edit/grid-and-box-model-settings";
+import { TypographyAndStyleSettings } from "@/modules/chart-types/area/components/edit/typography-and-style-settings";
 import { Button } from "@/components/ui/button";
 
-export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
+export const AreaChartSettings: ChartConfigComponent = ({
+    chartId,
+    userId,
+}) => {
     const path = usePathname();
     const { width } = useWindowSize();
     const isBigScreen = width >= 1280;
@@ -61,7 +64,7 @@ export const AreaChartConfig: ChartConfigComponent = ({ chartId, userId }) => {
                 </Card>
 
                 {/* Data Section */}
-                <DataSection chartId={chartId} userId={userId} />
+                <DataSettings chartId={chartId} userId={userId} />
             </div>
 
             {/* Keyboard shortcut info */}
@@ -107,13 +110,13 @@ function AreaConfigTabs() {
             </TabsList>
             <div className="p-4">
                 <TabsContent value="colors" className="mt-0">
-                    <ColorsConfig />
+                    <ColorsSettings />
                 </TabsContent>
                 <TabsContent value="ui-features" className="mt-0">
-                    <TypographyAndStyleConfig />
+                    <TypographyAndStyleSettings />
                 </TabsContent>
                 <TabsContent value="grid-layout" className="mt-0">
-                    <GridAndBoxModelConfig />
+                    <GridAndBoxModelSettings />
                 </TabsContent>
             </div>
         </Tabs>

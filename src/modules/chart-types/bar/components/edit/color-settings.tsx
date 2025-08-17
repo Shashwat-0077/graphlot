@@ -10,12 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ColorTile } from "@/components/ui/color-tile";
 import ClearAll from "@/components/ui/clear-all";
 import ColorPickerPopover from "@/components/ui/color-picker-popover";
-import { useAreaChartStore } from "@/modules/chart-types/area/store";
+import { useBarChartStore } from "@/modules/chart-types/bar/store";
 import { defaultChartColor } from "@/modules/chart-attributes/default-config";
 
 function BackGroundColor() {
-    const backgroundColor = useAreaChartStore((state) => state.backgroundColor);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const backgroundColor = useBarChartStore((state) => state.backgroundColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -27,8 +27,8 @@ function BackGroundColor() {
 }
 
 function LegendTextColor() {
-    const legendTextColor = useAreaChartStore((state) => state.legendTextColor);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const legendTextColor = useBarChartStore((state) => state.legendTextColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -40,8 +40,8 @@ function LegendTextColor() {
 }
 
 function GridColor() {
-    const gridColor = useAreaChartStore((state) => state.gridColor);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const gridColor = useBarChartStore((state) => state.gridColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -53,8 +53,8 @@ function GridColor() {
 }
 
 function BorderColor() {
-    const borderColor = useAreaChartStore((state) => state.borderColor);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const borderColor = useBarChartStore((state) => state.borderColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -66,8 +66,8 @@ function BorderColor() {
 }
 
 function LabelColor() {
-    const labelColor = useAreaChartStore((state) => state.labelColor);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const labelColor = useBarChartStore((state) => state.labelColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -79,10 +79,10 @@ function LabelColor() {
 }
 
 function TooltipBackgroundColor() {
-    const tooltipBackgroundColor = useAreaChartStore(
+    const tooltipBackgroundColor = useBarChartStore(
         (state) => state.tooltipBackgroundColor
     );
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -94,10 +94,10 @@ function TooltipBackgroundColor() {
 }
 
 function TooltipBorderColor() {
-    const tooltipBorderColor = useAreaChartStore(
+    const tooltipBorderColor = useBarChartStore(
         (state) => state.tooltipBorderColor
     );
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -109,10 +109,10 @@ function TooltipBorderColor() {
 }
 
 function TooltipSeparatorColor() {
-    const tooltipSeparatorColor = useAreaChartStore(
+    const tooltipSeparatorColor = useBarChartStore(
         (state) => state.tooltipSeparatorColor
     );
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -124,10 +124,10 @@ function TooltipSeparatorColor() {
 }
 
 function TooltipTextColor() {
-    const tooltipTextColor = useAreaChartStore(
+    const tooltipTextColor = useBarChartStore(
         (state) => state.tooltipTextColor
     );
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <ColorTile
@@ -139,8 +139,8 @@ function TooltipTextColor() {
 }
 
 function ChartColors() {
-    const colorPalette = useAreaChartStore((state) => state.colorPalette);
-    const setColor = useAreaChartStore((state) => state.setColor);
+    const colorPalette = useBarChartStore((state) => state.colorPalette);
+    const setColor = useBarChartStore((state) => state.setColor);
 
     return (
         <div className="space-y-4">
@@ -229,7 +229,7 @@ function ChartColors() {
     );
 }
 
-export function ColorsConfig() {
+export function ColorsSettings() {
     return (
         <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-2">

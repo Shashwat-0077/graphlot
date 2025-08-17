@@ -435,7 +435,7 @@ function YAxisEnabled() {
 }
 
 /* -------------------- Main Wrapper -------------------- */
-export const TypographyAndStyleConfig = () => {
+export const TypographyAndStyleSettings = () => {
     return (
         <div className="space-y-4">
             {/* Typography */}

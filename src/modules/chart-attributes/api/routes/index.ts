@@ -33,7 +33,7 @@ const app = new Hono()
                     const response = await fetchChartMetadata(id);
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.metadata, 200);
     }
@@ -46,7 +46,7 @@ const app = new Hono()
                     const response = await createChart(data);
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.chart, 200);
     }
@@ -62,7 +62,7 @@ const app = new Hono()
                     const response = await updateChartMetadata(id, data);
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
         
                     return c.json(response.chartId, 200);
@@ -76,7 +76,7 @@ const app = new Hono()
         const { id } = c.req.valid("param");
                     const response = await deleteChart(id);
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.chartId, 200);
     }
@@ -98,7 +98,7 @@ const app = new Hono()
                     });
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
         
                     const { ok: _, ...rest } = response;
@@ -123,7 +123,7 @@ const app = new Hono()
                     });
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
         
                     const { data } = response;
@@ -140,7 +140,7 @@ const app = new Hono()
                     const response = await fetchChartAttribute(id, "visuals");
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
         
                     return c.json(response.data, 200);
@@ -157,7 +157,7 @@ const app = new Hono()
                     const response = await updateChartAttribute(id, "visuals", data);
         
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
         
                     return c.json(response.chartId, 200);
@@ -171,7 +171,7 @@ const app = new Hono()
         const { id } = c.req.valid("param");
                     const response = await fetchChartAttribute(id, "typography");
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.data, 200);
     }
@@ -186,7 +186,7 @@ const app = new Hono()
                     const data = c.req.valid("json");
                     const response = await updateChartAttribute(id, "typography", data);
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.chartId, 200);
     }
@@ -199,7 +199,7 @@ const app = new Hono()
         const { id } = c.req.valid("param");
                     const response = await fetchChartAttribute(id, "boxModel");
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.data, 200);
     }
@@ -214,7 +214,7 @@ const app = new Hono()
                     const data = c.req.valid("json");
                     const response = await updateChartAttribute(id, "boxModel", data);
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.chartId, 200);
     }
@@ -227,7 +227,7 @@ const app = new Hono()
         const { id } = c.req.valid("param");
                     const response = await fetchChartAttribute(id, "colors");
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.data, 200);
     }
@@ -242,7 +242,7 @@ const app = new Hono()
                     const data = c.req.valid("json");
                     const response = await updateChartAttribute(id, "colors", data);
                     if (!response.ok) {
-                        return c.json({ error: response.error }, 500);
+                        return c.json(response.error, 500);
                     }
                     return c.json(response.chartId, 200);
     }

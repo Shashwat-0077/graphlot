@@ -11,16 +11,21 @@ export const useGetRadar = ({params}: {params: GetRadarParams}) => {
     return useQuery({
         queryKey: ["charts.radar", JSON.stringify({ params })],
         queryFn: async () => {
-            const response = await client.api.v1["charts"]["radar"][":id"].$get({
+    const response = await client.api.v1["charts"]["radar"][":id"].$get({
                 param: params,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch charts/radar");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch charts/radar");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         
     });
 };
@@ -36,14 +41,19 @@ type UpdateRadarResponse = InferResponseType<
 export const useUpdateRadar = () => {
     return useMutation<UpdateRadarResponse, Error, UpdateRadarRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["charts"]["radar"][":id"].$put(props);
+    const response = await client.api.v1["charts"]["radar"][":id"].$put(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to put charts/radar");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to put charts/radar");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 

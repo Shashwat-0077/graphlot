@@ -31,7 +31,13 @@ const GridOrientationSelect = ({
                 type="single"
                 value={gridOrientation}
                 onValueChange={(val: GridOrientation) => {
-                    setGridOrientation(val);
+                    if (
+                        val === GRID_ORIENTATION_TYPE_ONE ||
+                        val === GRID_ORIENTATION_TYPE_TWO ||
+                        val === GRID_ORIENTATION_TYPE_THREE
+                    ) {
+                        setGridOrientation(val);
+                    }
                 }}
                 className="flex"
             >
@@ -77,7 +83,13 @@ const GridOrientationSelectForRadar = ({
                 type="single"
                 value={gridOrientation}
                 onValueChange={(val: GridOrientation) => {
-                    setGridOrientation(val);
+                    if (
+                        val === GRID_ORIENTATION_TYPE_ONE ||
+                        val === GRID_ORIENTATION_TYPE_TWO ||
+                        val === GRID_ORIENTATION_TYPE_THREE
+                    ) {
+                        setGridOrientation(val);
+                    }
                 }}
                 className="flex"
             >

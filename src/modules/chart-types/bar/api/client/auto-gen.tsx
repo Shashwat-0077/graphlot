@@ -11,16 +11,21 @@ export const useGetBar = ({params}: {params: GetBarParams}) => {
     return useQuery({
         queryKey: ["charts.bar", JSON.stringify({ params })],
         queryFn: async () => {
-            const response = await client.api.v1["charts"]["bar"][":id"].$get({
+    const response = await client.api.v1["charts"]["bar"][":id"].$get({
                 param: params,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch charts/bar");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch charts/bar");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         
     });
 };
@@ -36,14 +41,19 @@ type UpdateBarResponse = InferResponseType<
 export const useUpdateBar = () => {
     return useMutation<UpdateBarResponse, Error, UpdateBarRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["charts"]["bar"][":id"].$put(props);
+    const response = await client.api.v1["charts"]["bar"][":id"].$put(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to put charts/bar");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to put charts/bar");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 

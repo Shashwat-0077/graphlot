@@ -11,16 +11,21 @@ export const useGetArea = ({params}: {params: GetAreaParams}) => {
     return useQuery({
         queryKey: ["charts.area", JSON.stringify({ params })],
         queryFn: async () => {
-            const response = await client.api.v1["charts"]["area"][":id"].$get({
+    const response = await client.api.v1["charts"]["area"][":id"].$get({
                 param: params,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch charts/area");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch charts/area");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         
     });
 };
@@ -36,14 +41,19 @@ type UpdateAreaResponse = InferResponseType<
 export const useUpdateArea = () => {
     return useMutation<UpdateAreaResponse, Error, UpdateAreaRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["charts"]["area"][":id"].$put(props);
+    const response = await client.api.v1["charts"]["area"][":id"].$put(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to put charts/area");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to put charts/area");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 

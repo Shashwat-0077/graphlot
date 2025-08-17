@@ -212,7 +212,13 @@ export async function createChart(
                 return {
                     ok: false,
                     error: "UNIQUE constraint violation",
-                    details: error.message,
+                    details: error,
+                };
+            } else {
+                return {
+                    ok: false,
+                    error: error.message,
+                    details: error,
                 };
             }
         }

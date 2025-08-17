@@ -11,16 +11,21 @@ export const useGetHeatmap = ({params}: {params: GetHeatmapParams}) => {
     return useQuery({
         queryKey: ["charts.heatmap", JSON.stringify({ params })],
         queryFn: async () => {
-            const response = await client.api.v1["charts"]["heatmap"][":id"].$get({
+    const response = await client.api.v1["charts"]["heatmap"][":id"].$get({
                 param: params,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch charts/heatmap");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to fetch charts/heatmap");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
         
     });
 };
@@ -36,14 +41,19 @@ type UpdateHeatmapResponse = InferResponseType<
 export const useUpdateHeatmap = () => {
     return useMutation<UpdateHeatmapResponse, Error, UpdateHeatmapRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["charts"]["heatmap"][":id"].$put(props);
+    const response = await client.api.v1["charts"]["heatmap"][":id"].$put(props);
 
-            if (!response.ok) {
-                throw new Error("Failed to put charts/heatmap");
-            }
+    if (!response.ok) {
+        const error = await response.json();
+        if (error) {
+            throw new Error(`${error}`);
+        } else {
+            throw new Error("Failed to put charts/heatmap");
+        }
+    }
 
-            return await response.json();
-        },
+    return await response.json();
+},
     });
 };
 

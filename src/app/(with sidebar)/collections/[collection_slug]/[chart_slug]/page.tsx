@@ -6,15 +6,19 @@ import { parseSlug } from "@/utils";
 import { useGetChart } from "@/modules/chart-attributes/api/client";
 import {
     CHART_TYPE_AREA,
+    CHART_TYPE_BAR,
     ChartConfigComponent,
     ChartStateProvider,
     ChartViewComponent,
 } from "@/constants";
 import { authClient } from "@/modules/auth/client";
 import { SimpleLoader } from "@/components/ui/simple-loader";
-import { AreaChartView } from "@/modules/chart-types/area/components/area-chart-view";
-import { AreaChartConfig } from "@/modules/chart-types/area/components/edit/area-config";
+import { AreaChartView } from "@/modules/chart-types/area/components/view";
+import { AreaChartSettings } from "@/modules/chart-types/area/components/edit";
 import { AreaChartStoreProvider } from "@/modules/chart-types/area/store";
+import { BarChartView } from "@/modules/chart-types/bar/components/view";
+import { BarChartSettings } from "@/modules/chart-types/bar/components/edit";
+import { BarChartStoreProvider } from "@/modules/chart-types/bar/store";
 
 export default function ChatConfigs() {
     const { chart_slug, collection_slug } = useParams<{
@@ -74,10 +78,14 @@ export default function ChatConfigs() {
     } = {
         [CHART_TYPE_AREA]: [
             AreaChartView,
-            AreaChartConfig,
+            AreaChartSettings,
             AreaChartStoreProvider,
         ],
-        // [CHART_TYPE_BAR]: [BarChartView, BarChartConfig, BarChartStoreProvider],
+        [CHART_TYPE_BAR]: [
+            BarChartView,
+            BarChartSettings,
+            BarChartStoreProvider,
+        ],
         // [CHART_TYPE_RADAR]: [
         //     RadarChartView,
         //     RadarChartConfig,
