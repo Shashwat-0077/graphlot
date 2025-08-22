@@ -6,3 +6,4 @@ export * from "./sort-data";
 export * from "./colors";
 export * from "./get-label-anchor";
 export * from "./get-grid-style";
+export * from "./dates";

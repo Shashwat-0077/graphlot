@@ -1,8 +1,8 @@
-export const AREA_CHART_LINE_STYLE_LINEAR = 'linear' as const;
-export const AREA_CHART_LINE_STYLE_STEP = 'step' as const;
-export const AREA_CHART_LINE_STYLE_BUMP = 'bump' as const;
-export const AREA_CHART_LINE_STYLE_MONOTONE = 'monotone' as const;
-export const AREA_CHART_LINE_STYLE_NATURAL = 'natural' as const;
+export const AREA_CHART_LINE_STYLE_LINEAR = "linear" as const;
+export const AREA_CHART_LINE_STYLE_STEP = "step" as const;
+export const AREA_CHART_LINE_STYLE_BUMP = "bump" as const;
+export const AREA_CHART_LINE_STYLE_MONOTONE = "monotone" as const;
+export const AREA_CHART_LINE_STYLE_NATURAL = "natural" as const;
 
 export const AREA_CHART_LINE_STYLE_OPTIONS = [
     AREA_CHART_LINE_STYLE_LINEAR,

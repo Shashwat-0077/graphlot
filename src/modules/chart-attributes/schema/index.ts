@@ -152,6 +152,12 @@ export const ChartBoxModel = sqliteTable(CHART_BOX_MODEL_TABLE_NAME, {
     marginRight: real("margin_right")
         .notNull()
         .default(defaultChartBoxModelSettings.marginRight),
+    xOffset: real("x_offset")
+        .notNull()
+        .default(defaultChartBoxModelSettings.xOffset),
+    yOffset: real("y_offset")
+        .notNull()
+        .default(defaultChartBoxModelSettings.yOffset),
     borderWidth: real("border_width")
         .notNull()
         .default(defaultChartBoxModelSettings.borderWidth),

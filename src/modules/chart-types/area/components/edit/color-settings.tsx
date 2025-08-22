@@ -158,71 +158,66 @@ function ChartColors() {
                 />
             </div>
 
-            <ScrollArea className="h-[590px] rounded-md border">
-                <div className="p-3">
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                        {colorPalette.map((color, index) => (
-                            <ColorPickerPopover
-                                key={index}
-                                isSingleColor={false}
-                                color={color}
-                                colorIndex={index}
-                                setColor={(index, color) => {
-                                    setColor(
-                                        "colorPalette",
-                                        colorPalette.map((c, i) =>
-                                            i === index ? color : c
-                                        )
-                                    );
-                                }}
-                                removeColor={(index) => {
-                                    setColor(
-                                        "colorPalette",
-                                        colorPalette.filter(
-                                            (_c, i) => i !== index
-                                        )
-                                    );
-                                }}
-                            >
-                                <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow-md">
+            <ScrollArea className="h-[590px]">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {colorPalette.map((color, index) => (
+                        <ColorPickerPopover
+                            key={index}
+                            isSingleColor={false}
+                            color={color}
+                            colorIndex={index}
+                            setColor={(index, color) => {
+                                setColor(
+                                    "colorPalette",
+                                    colorPalette.map((c, i) =>
+                                        i === index ? color : c
+                                    )
+                                );
+                            }}
+                            removeColor={(index) => {
+                                setColor(
+                                    "colorPalette",
+                                    colorPalette.filter((_c, i) => i !== index)
+                                );
+                            }}
+                        >
+                            <div className="group relative overflow-hidden rounded-md border shadow-sm transition-all hover:shadow-md">
+                                <div
+                                    className="h-16 w-full"
+                                    style={{
+                                        backgroundColor: getRGBAString(color),
+                                    }}
+                                />
+                                <div className="bg-background flex items-center justify-between p-2">
+                                    <span className="text-xs font-medium">
+                                        Color {index + 1}
+                                    </span>
                                     <div
-                                        className="h-16 w-full"
+                                        className="h-4 w-4 rounded-full border"
                                         style={{
                                             backgroundColor:
                                                 getRGBAString(color),
                                         }}
-                                    />
-                                    <div className="bg-background flex items-center justify-between p-2">
-                                        <span className="text-xs font-medium">
-                                            Color {index + 1}
-                                        </span>
-                                        <div
-                                            className="h-4 w-4 rounded-full border"
-                                            style={{
-                                                backgroundColor:
-                                                    getRGBAString(color),
-                                            }}
-                                        ></div>
-                                    </div>
+                                    ></div>
                                 </div>
-                            </ColorPickerPopover>
-                        ))}
+                            </div>
+                        </ColorPickerPopover>
+                    ))}
 
-                        <button
-                            className="bg-background hover:bg-muted/20 flex h-[72px] flex-col items-center justify-center rounded-md border shadow-sm transition-all hover:shadow"
-                            onClick={() => {
-                                setColor("colorPalette", [
-                                    ...colorPalette,
-                                    defaultChartColor,
-                                ]);
-                            }}
-                            type="button"
-                            aria-label="Add color"
-                        >
-                            <Plus className="mb-1 h-5 w-5" />
-                            <span className="text-xs">Add Color</span>
-                        </button>
-                    </div>
+                    <button
+                        className="bg-background hover:bg-muted/20 flex h-[72px] flex-col items-center justify-center rounded-md border shadow-sm transition-all hover:shadow"
+                        onClick={() => {
+                            setColor("colorPalette", [
+                                ...colorPalette,
+                                defaultChartColor,
+                            ]);
+                        }}
+                        type="button"
+                        aria-label="Add color"
+                    >
+                        <Plus className="mb-1 h-5 w-5" />
+                        <span className="text-xs">Add Color</span>
+                    </button>
                 </div>
             </ScrollArea>
         </div>

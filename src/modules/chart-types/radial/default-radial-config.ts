@@ -1,5 +1,5 @@
-import { RGBAColor, SortType } from '@/constants';
-import { SORT_NONE } from '@/constants';
+import { RGBAColor, SortType } from "@/constants";
+import { SORT_NONE } from "@/constants";
 
 //TODO : need to add offset option for full graph
 // add option for rounded corners
@@ -17,10 +17,6 @@ export type RadialSpecificConfig = {
     trackEnabled: boolean; // whether the segments are stacked or not
     borderRadius: number; // border radius for rounded corners in pixels
     trackColor: RGBAColor; // color of the track, if applicable
-    offset: {
-        x: number; // x offset for the radial chart
-        y: number; // y offset for the radial chart
-    };
 };
 
 export const radialSpecificConfigDefaults: RadialSpecificConfig = {
@@ -32,17 +28,13 @@ export const radialSpecificConfigDefaults: RadialSpecificConfig = {
     borderRadius: 0, // default border radius
     trackEnabled: false, // default stacked option
     trackColor: { r: 255, g: 255, b: 255, a: 1 }, // default track color
-    offset: {
-        x: 0, // default x offset
-        y: 0, // default y offset
-    },
 };
 
 // The default config for a Radial chart
 export const defaultRadialChartConfig = {
-    xAxisField: '',
+    xAxisField: "",
     xAxisSortOrder: SORT_NONE as SortType,
-    yAxisField: '', // Assuming yAxisField is same as xAxisField for radial charts
+    yAxisField: "", // Assuming yAxisField is same as xAxisField for radial charts
     yAxisSortOrder: SORT_NONE as SortType, // Assuming yAxisSortOrder is same as xAxisSortOrder for radial charts
     omitZeroValuesEnabled: false,
 };

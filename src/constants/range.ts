@@ -1,10 +1,14 @@
 export const MIN_BORDER_WIDTH = 0;
 export const MAX_BORDER_WIDTH = 5;
 export const MIN_MARGIN = 0;
-export const MAX_MARGIN = 100;
+export const MAX_MARGIN = 1000;
 export const MIN_STROKE_WIDTH = 1;
 export const MAX_STROKE_WIDTH = 5;
 export const MIN_OPACITY = 0;
 export const MAX_OPACITY = 1;
 export const MIN_TEXT_SIZE = 0;
 export const MAX_TEXT_SIZE = 40;
+export const MIN_X_OFFSET = -1000;
+export const MAX_X_OFFSET = 1000;
+export const MIN_Y_OFFSET = -1000;
+export const MAX_Y_OFFSET = 1000;

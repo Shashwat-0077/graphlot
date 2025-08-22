@@ -10,6 +10,7 @@ import {
     MoreHorizontal,
 } from "lucide-react";
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 import {
     Card,
@@ -75,19 +76,23 @@ export function ChartCard({
         Heatmap: HeatmapChartCardHeader,
     }[type];
 
+    const router = useRouter();
+
     const chartUrl = `/collections/${collection_slug}/${getSlug({
         id: chartId,
         name: name,
     })}`;
 
     return (
-        <Card className="group overflow-hidden py-0 transition-all hover:shadow-md">
+        <Card className="group relative overflow-hidden py-0 transition-all hover:shadow-md">
+            <Link href={chartUrl} className="absolute inset-0 z-40" />
+
             <div className="relative">
                 <CardHeader className="overflow-hidden p-0">
                     <div className={`transition-transform duration-300`}>
                         <ChartHeaderComponent />
                     </div>
-                    <div className="absolute top-3 right-3 z-10">
+                    <div className="absolute top-3 right-3 z-50">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -123,7 +128,6 @@ export function ChartCard({
                         </DropdownMenu>
                     </div>
                 </CardHeader>
-                <Link href={chartUrl} className="absolute inset-0 z-0" />
             </div>
             <CardContent className="p-5">
                 <h3 className="mb-1 truncate text-xl font-semibold">
@@ -153,13 +157,13 @@ export function ChartCard({
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 gap-1 text-xs"
-                        asChild
+                        className="z-50 h-7 cursor-pointer gap-1 text-xs"
+                        onClick={() =>
+                            router.push(chartUrl + `/view?user_id=${userId}`)
+                        }
                     >
-                        <Link href={chartUrl + "/view?user_id=" + userId}>
-                            View
-                            <span className="sr-only">View {name}</span>
-                        </Link>
+                        View
+                        <span className="sr-only">View {name}</span>
                     </Button>
                 </div>
             </CardFooter>

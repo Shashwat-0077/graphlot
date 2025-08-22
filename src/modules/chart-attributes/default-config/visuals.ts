@@ -9,7 +9,7 @@ export const defaultChartVisualSettings = {
     gridEnabled: false,
     gridOrientation: GRID_ORIENTATION_TYPE_ONE,
     gridStyle: GRID_STYLE_OPTIONS[0],
-    gridWidth: MIN_BORDER_WIDTH,
+    gridWidth: 2,
     tooltipEnabled: true,
     tooltipStyle: TOOLTIP_STYLE_OPTIONS[0],
     tooltipBorderWidth: MIN_BORDER_WIDTH,

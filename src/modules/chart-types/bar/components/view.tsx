@@ -335,6 +335,34 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                     {config.map((data_label) => {
                         // For non-stacked bars, apply full radius
                         if (!stacked) {
+                            // eslint-disable-next-line
+                            const shape = (props: any) => {
+                                const { x, y, width, height, payload } = props;
+                                const inset = strokeWidth / 2;
+                                const w = Math.max(0, width - strokeWidth);
+                                const h = Math.max(0, height - strokeWidth);
+
+                                const currentValue = payload[data_label];
+                                if (!currentValue || currentValue <= 0) {
+                                    return null;
+                                }
+
+                                return (
+                                    <rect
+                                        x={x + inset}
+                                        y={y + inset}
+                                        width={w}
+                                        height={h}
+                                        rx={barBorderRadius}
+                                        ry={barBorderRadius}
+                                        fill={configData[data_label].color}
+                                        fillOpacity={fillOpacity}
+                                        stroke={configData[data_label].color}
+                                        strokeWidth={strokeWidth}
+                                    />
+                                );
+                            };
+
                             return (
                                 <Bar
                                     key={data_label}
@@ -343,8 +371,8 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                                     fillOpacity={fillOpacity}
                                     stroke={configData[data_label].color}
                                     strokeWidth={strokeWidth}
-                                    radius={barBorderRadius}
-                                    stackId={undefined}
+                                    // @ts-expect-error i don't wanna wrap my head around recharts types, i know this works, if it doesn't work, i'll fix it later hehe
+                                    shape={shape}
                                 />
                             );
                         }
@@ -388,7 +416,7 @@ export const BarChartView: ChartViewComponent = ({ chartId, userId }) => {
                                     strokeWidth={strokeWidth}
                                     // @ts-expect-error i don't wanna wrap my head around recharts types, i know this works, if it doesn't work, i'll fix it later hehe
                                     shape={shape}
-                                    stackId={stacked ? "1" : undefined}
+                                    stackId={"1"}
                                 />
                             );
                         }

@@ -48,21 +48,18 @@ export async function updateAreaChart({
             }
         }
 
-        // Perform all database operations in a transaction
-        await db.transaction(async (tx) => {
-            // Create an array of update operations to perform
-            const updateOperations = [];
-
-            // Only update tables with provided data
-            updateOperations.push(
-                tx
-                    .update(AreaCharts)
-                    .set(data)
-                    .where(eq(AreaCharts.chartId, chartId))
-            );
+        const { chartId: id } = await db.transaction(async (tx) => {
+            return tx
+                .update(AreaCharts)
+                .set(data)
+                .where(eq(AreaCharts.chartId, chartId))
+                .returning({
+                    chartId: AreaCharts.chartId,
+                })
+                .get();
         });
 
-        return { ok: true, chartId };
+        return { ok: true, chartId: id };
     } catch (error) {
         // Provide more specific error messages based on error type
         if (error instanceof Error) {

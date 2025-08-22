@@ -3,8 +3,6 @@
 import { BarChart, Database } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -16,11 +14,11 @@ import {
 } from "@/components/ui/select";
 import ToggleSwitch from "@/components/ui/toggle-switch";
 import ClearAll from "@/components/ui/clear-all";
-import { SORT_OPTIONS, ColumnType, SortType } from "@/constants";
 import { useAreaChartStore } from "@/modules/chart-types/area/store";
 import { useChartColumns } from "@/modules/chart-attributes/api/client";
+import { ColumnType, SORT_OPTIONS, SortType } from "@/constants";
 
-export function DataSettings({
+export function AreaDataSettings({
     chartId,
     userId,
 }: {
@@ -54,41 +52,42 @@ export function DataSettings({
     }
 
     return (
-        <div className="space-y-6">
-            <Card className="border shadow-sm">
-                <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                        <BarChart className="h-5 w-5" />
-                        Axis Configuration
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-6 md:grid-cols-2">
+        <div className="@container flex flex-col gap-4">
+            <div className="grid grid-cols-1 gap-4 @[600px]:grid-cols-2">
+                {/* Axis Configuration Section */}
+                <div className="min-w-0 space-y-4">
+                    <div className="flex items-center gap-2">
+                        <BarChart className="h-4 w-4 flex-shrink-0" />
+                        <h3 className="truncate text-sm font-medium">
+                            Axis Configuration
+                        </h3>
+                    </div>
+
+                    <div className="space-y-6">
                         {/* X Axis */}
-                        <div className="p-4">
-                            <div className="mb-3 flex items-center justify-between">
-                                <Label className="text-sm font-medium">
+                        <div className="space-y-3">
+                            <div className="flex flex-col gap-2 @[400px]:flex-row @[400px]:items-center @[400px]:justify-between">
+                                <Label className="text-xs font-medium">
                                     X Axis
                                 </Label>
                                 {xAxis && (
                                     <Badge
                                         variant="outline"
-                                        className="text-xs"
+                                        className="w-fit max-w-full truncate text-xs"
                                     >
                                         {xAxis}
                                     </Badge>
                                 )}
                             </div>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
-                                    <Label className="text-muted-foreground">
+
+                            <div className="border-muted space-y-3 border-l-2 pl-3">
+                                <div className="space-y-2">
+                                    <Label className="text-muted-foreground text-xs">
                                         Column
                                     </Label>
 
                                     {columnsLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-muted/20 h-10 w-full animate-pulse rounded-md" />
-                                        </div>
+                                        <div className="bg-muted/20 h-9 w-full animate-pulse rounded-md" />
                                     ) : (
                                         <Select
                                             value={xAxis}
@@ -99,14 +98,14 @@ export function DataSettings({
                                                 );
                                             }}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="h-9 w-full">
                                                 <SelectValue
                                                     className="flex items-center justify-center"
                                                     placeholder="Select a Column"
                                                 />
                                             </SelectTrigger>
                                             <SelectContent
-                                                className="bg-popover text-popover-foreground rounded-md border p-1 shadow-md"
+                                                className="bg-popover text-popover-foreground w-full rounded-md border p-1 shadow-md"
                                                 position="popper"
                                                 sideOffset={4}
                                             >
@@ -132,13 +131,13 @@ export function DataSettings({
                                                                                 col
                                                                             }
                                                                         >
-                                                                            <div className="flex items-baseline gap-2">
-                                                                                <p className="block truncate text-left">
+                                                                            <div className="flex min-w-0 items-baseline gap-2">
+                                                                                <p className="block truncate text-left text-xs">
                                                                                     {
                                                                                         col
                                                                                     }
                                                                                 </p>
-                                                                                <p className="text-muted-foreground block truncate text-left text-xs">
+                                                                                <p className="text-muted-foreground block flex-shrink-0 truncate text-left text-xs">
                                                                                     {
                                                                                         key
                                                                                     }
@@ -155,7 +154,8 @@ export function DataSettings({
                                         </Select>
                                     )}
                                 </div>
-                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+
+                                <div className="space-y-2">
                                     <Label className="text-muted-foreground text-xs">
                                         Sort
                                     </Label>
@@ -183,13 +183,14 @@ export function DataSettings({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="bg-muted/10 flex items-center justify-between rounded-md p-2">
-                                    <Label className="text-xs">
+
+                                <div className="bg-muted/10 flex items-center justify-between gap-2 rounded-md p-3">
+                                    <Label className="min-w-0 flex-1 text-xs">
                                         Omit Zero Values
                                     </Label>
                                     <ToggleSwitch
-                                        defaultChecked={omitZeroValuesEnabled}
-                                        toggleFunction={() => {
+                                        checked={omitZeroValuesEnabled}
+                                        onCheckedChange={() => {
                                             setDataConfig(
                                                 "omitZeroValuesEnabled",
                                                 !omitZeroValuesEnabled
@@ -201,29 +202,28 @@ export function DataSettings({
                         </div>
 
                         {/* Y Axis */}
-                        <div className="p-4">
-                            <div className="mb-3 flex items-center justify-between">
-                                <Label className="text-sm font-medium">
+                        <div className="space-y-3">
+                            <div className="flex flex-col gap-2 @[400px]:flex-row @[400px]:items-center @[400px]:justify-between">
+                                <Label className="text-xs font-medium">
                                     Y Axis
                                 </Label>
                                 {yAxis && (
                                     <Badge
                                         variant="outline"
-                                        className="text-xs"
+                                        className="w-fit max-w-full truncate text-xs"
                                     >
                                         {yAxis}
                                     </Badge>
                                 )}
                             </div>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+
+                            <div className="border-muted space-y-3 border-l-2 pl-3">
+                                <div className="space-y-2">
                                     <Label className="text-muted-foreground text-xs">
                                         Column
                                     </Label>
                                     {columnsLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-muted/20 h-10 w-full animate-pulse rounded-md" />
-                                        </div>
+                                        <div className="bg-muted/20 h-9 w-full animate-pulse rounded-md" />
                                     ) : (
                                         <Select
                                             value={yAxis}
@@ -234,14 +234,14 @@ export function DataSettings({
                                                 );
                                             }}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="h-9 w-full">
                                                 <SelectValue
                                                     className="flex items-center justify-center"
                                                     placeholder="Select a Column"
                                                 />
                                             </SelectTrigger>
                                             <SelectContent
-                                                className="bg-popover text-popover-foreground rounded-md border p-1 shadow-md"
+                                                className="bg-popover text-popover-foreground w-full rounded-md border p-1 shadow-md"
                                                 position="popper"
                                                 sideOffset={4}
                                             >
@@ -267,13 +267,13 @@ export function DataSettings({
                                                                                 col
                                                                             }
                                                                         >
-                                                                            <div className="flex items-baseline gap-2">
-                                                                                <p className="block truncate text-left">
+                                                                            <div className="flex min-w-0 items-baseline gap-2">
+                                                                                <p className="block truncate text-left text-xs">
                                                                                     {
                                                                                         col
                                                                                     }
                                                                                 </p>
-                                                                                <p className="text-muted-foreground block truncate text-left text-xs">
+                                                                                <p className="text-muted-foreground block flex-shrink-0 truncate text-left text-xs">
                                                                                     {
                                                                                         key
                                                                                     }
@@ -290,7 +290,8 @@ export function DataSettings({
                                         </Select>
                                     )}
                                 </div>
-                                <div className="grid grid-cols-[80px_1fr] items-center gap-x-3">
+
+                                <div className="space-y-2">
                                     <Label className="text-muted-foreground text-xs">
                                         Sort
                                     </Label>
@@ -318,13 +319,14 @@ export function DataSettings({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="bg-muted/10 flex items-center justify-between rounded-md p-2">
-                                    <Label className="text-xs">
+
+                                <div className="bg-muted/10 flex items-center justify-between gap-2 rounded-md p-3">
+                                    <Label className="min-w-0 flex-1 text-xs">
                                         Cumulative
                                     </Label>
                                     <ToggleSwitch
-                                        defaultChecked={cumulativeEnabled}
-                                        toggleFunction={() => {
+                                        checked={cumulativeEnabled}
+                                        onCheckedChange={() => {
                                             setDataConfig(
                                                 "cumulativeEnabled",
                                                 !cumulativeEnabled
@@ -335,108 +337,34 @@ export function DataSettings({
                             </div>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
 
-            {/* Filters */}
-            <Card className="border shadow-sm">
-                <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                            <Database className="h-5 w-5" />
-                            Filters
-                        </CardTitle>
+                {/* Filters Section */}
+                <div className="h-full min-w-0 space-y-4">
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                            <Database className="h-4 w-4 flex-shrink-0" />
+                            <h3 className="truncate text-sm font-medium">
+                                Filters
+                            </h3>
+                        </div>
                         <ClearAll clearFn={() => {}} />
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <ScrollArea
-                        className="rounded-md border"
-                        style={{ height: "450px" }}
-                    >
-                        {/* <div className="flex flex-col gap-3 p-3">
-                            {filters.length === 0 ? (
-                                <div className="text-muted-foreground flex h-20 flex-col items-center justify-center text-center text-sm">
+
+                    <div className="space-y-3">
+                        <ScrollArea className="bg-muted/5 h-[455px] min-h-[400px] rounded-md border">
+                            <div className="p-3">
+                                <div className="text-muted-foreground flex h-20 flex-col items-center justify-center text-center text-xs">
                                     <p>No filters added yet</p>
                                     <p className="text-xs">
                                         Add a filter to refine your chart data
                                     </p>
                                 </div>
-                            ) : (
-                                filters.map((filter, index) => (
-                                    <div
-                                        className="bg-muted/5 grid grid-cols-[1fr_1fr_1fr_auto] gap-2 rounded-md border p-3"
-                                        key={index}
-                                    >
-                                        <Input
-                                            placeholder="Column"
-                                            value={filter.column}
-                                            onChange={(e) =>
-                                                setFilterColumn(
-                                                    e.target.value,
-                                                    index
-                                                )
-                                            }
-                                            className="h-8 text-xs"
-                                        />
-                                        <Input
-                                            placeholder="Operation"
-                                            value={filter.operation}
-                                            onChange={(e) =>
-                                                setFilterOperation(
-                                                    e.target.value,
-                                                    index
-                                                )
-                                            }
-                                            className="h-8 text-xs"
-                                        />
-                                        <Input
-                                            placeholder="Value"
-                                            value={filter.value}
-                                            onChange={(e) =>
-                                                setFilterValue(
-                                                    e.target.value,
-                                                    index
-                                                )
-                                            }
-                                            className="h-8 text-xs"
-                                        />
-                                        <Button
-                                            onClick={() => removeFilter(index)}
-                                            variant="destructive"
-                                            size="icon"
-                                            className="h-8 w-8"
-                                        >
-                                            <Trash2 className="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                ))
-                            )}
-                            <Button
-                                className="bg-muted/5 hover:bg-muted/20 mt-2 flex w-full items-center justify-center gap-2 rounded-md border py-2 text-xs"
-                                onClick={() => {
-                                    addFilter({
-                                        column: "",
-                                        operation: "",
-                                        value: "",
-                                    });
-                                }}
-                                variant="ghost"
-                            >
-                                <Plus className="h-3 w-3" /> Add Filter
-                            </Button>
-                        </div> */}
-                    </ScrollArea>
-
-                    <Button
-                        type="button"
-                        onClick={() => {}}
-                        className="mt-4 w-full"
-                    >
-                        Apply Changes
-                    </Button>
-                </CardContent>
-            </Card>
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

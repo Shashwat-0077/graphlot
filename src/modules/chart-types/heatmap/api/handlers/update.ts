@@ -44,13 +44,18 @@ export async function updateHeatmap({
             }
         }
 
-        await db.transaction(async (tx) => {
-            tx.update(HeatmapCharts)
+        const { chartId: id } = await db.transaction(async (tx) => {
+            return tx
+                .update(HeatmapCharts)
                 .set(data)
-                .where(eq(HeatmapCharts.chartId, chartId));
+                .where(eq(HeatmapCharts.chartId, chartId))
+                .returning({
+                    chartId: HeatmapCharts.chartId,
+                })
+                .get();
         });
 
-        return { ok: true, chartId };
+        return { ok: true, chartId: id };
     } catch (error) {
         if (error instanceof Error) {
             if (

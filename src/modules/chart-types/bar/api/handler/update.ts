@@ -48,13 +48,18 @@ export async function updateBarChart({
             }
         }
 
-        await db.transaction(async (tx) => {
-            tx.update(BarCharts)
+        const { chartId: id } = await db.transaction(async (tx) => {
+            return tx
+                .update(BarCharts)
                 .set(data)
-                .where(eq(BarCharts.chartId, chartId));
+                .where(eq(BarCharts.chartId, chartId))
+                .returning({
+                    chartId: BarCharts.chartId,
+                })
+                .get();
         });
 
-        return { ok: true, chartId };
+        return { ok: true, chartId: id };
     } catch (error) {
         // Provide more specific error messages based on error type
         if (error instanceof Error) {

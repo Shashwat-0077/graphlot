@@ -74,6 +74,7 @@ export const createVisualSlice = (
         tooltipTotalEnabled:
             initialState?.tooltipTotalEnabled ??
             defaultChartVisualSettings.tooltipTotalEnabled,
+
         setVisuals: (key, value) => {
             set((state: ChartVisuals) => {
                 if (value === undefined) {
@@ -104,6 +105,8 @@ export const createBoxModelSlice = (
             defaultChartBoxModelSettings.marginRight,
         marginTop:
             initialState?.marginTop ?? defaultChartBoxModelSettings.marginTop,
+        xOffset: initialState?.xOffset ?? defaultChartBoxModelSettings.xOffset,
+        yOffset: initialState?.yOffset ?? defaultChartBoxModelSettings.yOffset,
         setBoxModel: (key, value) => {
             set((state: ChartBoxModelSlice) => {
                 if (value === undefined) {

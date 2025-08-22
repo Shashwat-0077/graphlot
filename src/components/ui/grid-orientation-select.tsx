@@ -85,8 +85,7 @@ const GridOrientationSelectForRadar = ({
                 onValueChange={(val: GridOrientation) => {
                     if (
                         val === GRID_ORIENTATION_TYPE_ONE ||
-                        val === GRID_ORIENTATION_TYPE_TWO ||
-                        val === GRID_ORIENTATION_TYPE_THREE
+                        val === GRID_ORIENTATION_TYPE_TWO
                     ) {
                         setGridOrientation(val);
                     }

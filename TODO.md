@@ -1,0 +1,1 @@
+- create a advance tab in color to copy json so that user copy that and paste that in chatgpt or something

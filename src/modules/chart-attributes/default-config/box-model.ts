@@ -4,4 +4,6 @@ export const defaultChartBoxModelSettings = {
     marginLeft: 20,
     marginRight: 20,
     borderWidth: 1,
+    xOffset: 0,
+    yOffset: 0,
 };

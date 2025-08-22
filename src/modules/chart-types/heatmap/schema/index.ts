@@ -86,6 +86,10 @@ export const HeatmapCharts = sqliteTable(HEATMAP_CHARTS_TABLE_NAME, {
         .notNull()
         .default(defaultHeatmapConfig.accent)
         .$type<RGBAColor>(),
+
+    boxBorderRadius: integer("box_border_radius")
+        .notNull()
+        .default(defaultHeatmapConfig.boxBorderRadius),
 });
 
 export const HeatmapChartsInsert = HeatmapCharts.$inferInsert;

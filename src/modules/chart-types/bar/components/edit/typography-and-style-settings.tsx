@@ -266,19 +266,210 @@ function YAxisEnabled() {
     );
 }
 
-/* -------------------- Main Wrapper -------------------- */
-export const TypographyAndStyleSettings = () => {
+function StackedNote() {
     const stacked = useBarChartStore((s) => s.stacked);
+
+    return (
+        stacked && (
+            <div className="border-primary/20 bg-primary/5 rounded-md border p-3">
+                <div className="flex">
+                    <div className="flex-shrink-0">
+                        <svg
+                            className="text-primary h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                    </div>
+                    <div className="ml-2">
+                        <p className="text-primary/80 text-xs">
+                            <strong>Note:</strong> Bar gap settings have no
+                            effect when bars are stacked.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        )
+    );
+}
+
+function BarWidthSettings() {
     const barWidth = useBarChartStore((s) => s.barWidth);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="space-y-2">
+            <Label className="text-sm">Bar Width</Label>
+            <div className="px-1">
+                <Slider
+                    value={[barWidth]}
+                    max={100}
+                    min={1}
+                    step={1}
+                    onValueChange={([value]) => setBarConfig("barWidth", value)}
+                />
+            </div>
+            <div className="text-muted-foreground grid grid-cols-3 text-xs">
+                <span>Thin</span>
+                <span className="text-center">{barWidth}px</span>
+                <span className="text-right">Thick</span>
+            </div>
+        </div>
+    );
+}
+
+function BarGapSettings() {
     const barGap = useBarChartStore((s) => s.barGap);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="space-y-2">
+            <Label className="text-sm">Bar Gap</Label>
+            <div className="px-1">
+                <Slider
+                    value={[barGap]}
+                    max={20}
+                    min={0}
+                    step={1}
+                    onValueChange={([value]) => setBarConfig("barGap", value)}
+                />
+            </div>
+            <div className="text-muted-foreground grid grid-cols-3 text-xs">
+                <span>None</span>
+                <span className="text-center">{barGap}px</span>
+                <span className="text-right">Large</span>
+            </div>
+        </div>
+    );
+}
+
+function BorderRadiusSettings() {
     const barBorderRadius = useBarChartStore((s) => s.barBorderRadius);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="space-y-2">
+            <Label className="text-sm">Border Radius</Label>
+            <div className="px-1">
+                <Slider
+                    value={[barBorderRadius]}
+                    max={20}
+                    min={0}
+                    step={1}
+                    onValueChange={([value]) =>
+                        setBarConfig("barBorderRadius", value)
+                    }
+                />
+            </div>
+            <div className="text-muted-foreground grid grid-cols-3 text-xs">
+                <span>Square</span>
+                <span className="text-center">{barBorderRadius}px</span>
+                <span className="text-right">Rounded</span>
+            </div>
+        </div>
+    );
+}
+
+function FillOpacitySettings() {
     const fillOpacity = useBarChartStore((s) => s.fillOpacity);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="space-y-2">
+            <Label className="text-sm">Fill Opacity</Label>
+            <div className="px-1">
+                <Slider
+                    value={[fillOpacity * 100]}
+                    max={100}
+                    min={0}
+                    step={5}
+                    onValueChange={([value]) =>
+                        setBarConfig("fillOpacity", value / 100)
+                    }
+                />
+            </div>
+            <div className="text-muted-foreground grid grid-cols-3 text-xs">
+                <span>Transparent</span>
+                <span className="text-center">
+                    {Math.round(fillOpacity * 100)}%
+                </span>
+                <span className="text-right">Solid</span>
+            </div>
+        </div>
+    );
+}
+
+function StrokeWidthSettings() {
     const strokeWidth = useBarChartStore((s) => s.strokeWidth);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="space-y-2">
+            <Label className="text-sm">Stroke Width</Label>
+            <div className="px-1">
+                <Slider
+                    value={[strokeWidth]}
+                    max={10}
+                    min={0}
+                    step={1}
+                    onValueChange={([value]) =>
+                        setBarConfig("strokeWidth", value)
+                    }
+                />
+            </div>
+            <div className="text-muted-foreground grid grid-cols-3 text-xs">
+                <span>None</span>
+                <span className="text-center">{strokeWidth}px</span>
+                <span className="text-right">Thick</span>
+            </div>
+        </div>
+    );
+}
+
+function StackedSettings() {
+    const stacked = useBarChartStore((s) => s.stacked);
+    const setBarConfig = useBarChartStore((s) => s.setBarConfig);
+
+    return (
+        <div className="bg-muted/10 flex w-full items-center justify-between rounded-md p-3">
+            <Label className="text-sm">Stacked Bars</Label>
+            <Checkbox
+                checked={stacked}
+                onCheckedChange={() => setBarConfig("stacked", !stacked)}
+            />
+        </div>
+    );
+}
+
+function BorderRadiusBetweenBars() {
     const borderRadiusBetweenBars = useBarChartStore(
         (s) => s.borderRadiusBetweenBars
     );
     const setBarConfig = useBarChartStore((s) => s.setBarConfig);
 
+    return (
+        <div className="bg-muted/10 flex w-full items-center justify-between rounded-md p-3">
+            <Label className="text-sm">Border Radius Between Bars</Label>
+            <Checkbox
+                checked={borderRadiusBetweenBars}
+                onCheckedChange={() =>
+                    setBarConfig(
+                        "borderRadiusBetweenBars",
+                        !borderRadiusBetweenBars
+                    )
+                }
+            />
+        </div>
+    );
+}
+
+/* -------------------- Main Wrapper -------------------- */
+export const TypographyAndStyleSettings = () => {
     return (
         <div className="space-y-4">
             {/* Typography */}
@@ -311,176 +502,19 @@ export const TypographyAndStyleSettings = () => {
                 <CardContent className="space-y-4">
                     {/* Bar Styling */}
                     <div className="space-y-4">
-                        {/* Callout for Stacked Bars */}
-                        {stacked && (
-                            <div className="border-primary/20 bg-primary/5 rounded-md border p-3">
-                                <div className="flex">
-                                    <div className="flex-shrink-0">
-                                        <svg
-                                            className="text-primary h-4 w-4"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-2">
-                                        <p className="text-primary/80 text-xs">
-                                            <strong>Note:</strong> Bar gap
-                                            settings have no effect when bars
-                                            are stacked.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Bar Width */}
-                        <div className="space-y-2">
-                            <Label className="text-sm">Bar Width</Label>
-                            <div className="px-1">
-                                <Slider
-                                    value={[barWidth]}
-                                    max={100}
-                                    min={1}
-                                    step={1}
-                                    onValueChange={([value]) =>
-                                        setBarConfig("barWidth", value)
-                                    }
-                                />
-                            </div>
-                            <div className="text-muted-foreground grid grid-cols-3 text-xs">
-                                <span>Thin</span>
-                                <span className="text-center">
-                                    {barWidth}px
-                                </span>
-                                <span className="text-right">Thick</span>
-                            </div>
-                        </div>
-
-                        {/* Bar Gap */}
-                        <div className="space-y-2">
-                            <Label className="text-sm">Bar Gap</Label>
-                            <div className="px-1">
-                                <Slider
-                                    value={[barGap]}
-                                    max={20}
-                                    min={0}
-                                    step={1}
-                                    onValueChange={([value]) =>
-                                        setBarConfig("barGap", value)
-                                    }
-                                />
-                            </div>
-                            <div className="text-muted-foreground grid grid-cols-3 text-xs">
-                                <span>None</span>
-                                <span className="text-center">{barGap}px</span>
-                                <span className="text-right">Large</span>
-                            </div>
-                        </div>
-
-                        {/* Border Radius */}
-                        <div className="space-y-2">
-                            <Label className="text-sm">Border Radius</Label>
-                            <div className="px-1">
-                                <Slider
-                                    value={[barBorderRadius]}
-                                    max={20}
-                                    min={0}
-                                    step={1}
-                                    onValueChange={([value]) =>
-                                        setBarConfig("barBorderRadius", value)
-                                    }
-                                />
-                            </div>
-                            <div className="text-muted-foreground grid grid-cols-3 text-xs">
-                                <span>Square</span>
-                                <span className="text-center">
-                                    {barBorderRadius}px
-                                </span>
-                                <span className="text-right">Rounded</span>
-                            </div>
-                        </div>
-
-                        {/* Fill Opacity */}
-                        <div className="space-y-2">
-                            <Label className="text-sm">Fill Opacity</Label>
-                            <div className="px-1">
-                                <Slider
-                                    value={[fillOpacity * 100]}
-                                    max={100}
-                                    min={0}
-                                    step={5}
-                                    onValueChange={([value]) =>
-                                        setBarConfig("fillOpacity", value / 100)
-                                    }
-                                />
-                            </div>
-                            <div className="text-muted-foreground grid grid-cols-3 text-xs">
-                                <span>Transparent</span>
-                                <span className="text-center">
-                                    {Math.round(fillOpacity * 100)}%
-                                </span>
-                                <span className="text-right">Solid</span>
-                            </div>
-                        </div>
-
-                        {/* Stroke Width */}
-                        <div className="space-y-2">
-                            <Label className="text-sm">Stroke Width</Label>
-                            <div className="px-1">
-                                <Slider
-                                    value={[strokeWidth]}
-                                    max={10}
-                                    min={0}
-                                    step={1}
-                                    onValueChange={([value]) =>
-                                        setBarConfig("strokeWidth", value)
-                                    }
-                                />
-                            </div>
-                            <div className="text-muted-foreground grid grid-cols-3 text-xs">
-                                <span>None</span>
-                                <span className="text-center">
-                                    {strokeWidth}px
-                                </span>
-                                <span className="text-right">Thick</span>
-                            </div>
-                        </div>
+                        <StackedNote />
+                        <BarWidthSettings />
+                        <BarGapSettings />
+                        <BorderRadiusSettings />
+                        <FillOpacitySettings />
+                        <StrokeWidthSettings />
                     </div>
 
                     {/* Layout Options */}
                     <div className="space-y-4">
                         <h4 className="text-sm font-medium">Layout Options</h4>
-
-                        <div className="bg-muted/10 flex w-full items-center justify-between rounded-md p-3">
-                            <Label className="text-sm">Stacked Bars</Label>
-                            <Checkbox
-                                checked={stacked}
-                                onCheckedChange={() =>
-                                    setBarConfig("stacked", !stacked)
-                                }
-                            />
-                        </div>
-
-                        <div className="bg-muted/10 flex w-full items-center justify-between rounded-md p-3">
-                            <Label className="text-sm">
-                                Border Radius Between Bars
-                            </Label>
-                            <Checkbox
-                                checked={borderRadiusBetweenBars}
-                                onCheckedChange={() =>
-                                    setBarConfig(
-                                        "borderRadiusBetweenBars",
-                                        !borderRadiusBetweenBars
-                                    )
-                                }
-                            />
-                        </div>
+                        <StackedSettings />
+                        <BorderRadiusBetweenBars />
                     </div>
                 </CardContent>
             </Card>

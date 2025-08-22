@@ -44,8 +44,8 @@ export const createBarChartSlice = (
     initialState?: Partial<BarChartState>
 ): BarChartSlice => {
     return {
-        isLoading: true,
-        error: null,
+        isLoading: initialState?.isLoading ?? true,
+        error: initialState?.error ?? null,
         cumulativeEnabled:
             initialState?.cumulativeEnabled ??
             defaultBarChartConfig.cumulativeEnabled,
