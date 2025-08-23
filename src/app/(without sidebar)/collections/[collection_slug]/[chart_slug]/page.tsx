@@ -159,14 +159,14 @@ export default async function ChatConfigs({
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={75}>
                     <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel defaultSize={60}>
+                        <ResizablePanel defaultSize={70}>
                             <ChartView
                                 chartId={chart.chartId}
                                 userId={userId}
                             />
                         </ResizablePanel>
                         <ResizableHandle withHandle />
-                        <ResizablePanel defaultSize={40}>
+                        <ResizablePanel defaultSize={30}>
                             <ScrollArea className="h-full p-5 pb-0">
                                 <DataSettings
                                     chartId={chart.chartId}

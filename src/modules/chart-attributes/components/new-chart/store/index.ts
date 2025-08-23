@@ -1,106 +1,55 @@
 import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 
-import {
-    type ChartType,
-    DATABASE_NOTION,
-    DATABASE_UPLOAD,
-    type DatabaseType,
-} from "@/constants";
-
-type NotionConfig = {
-    chartName: string;
-    chartDescription: string;
-    databaseId: string;
-    databaseTitle: string;
-};
+import { ChartType, DatabaseType } from "@/constants";
 
 interface ChartFormState {
-    // Step 1: Chart Type
+    dataSource: DatabaseType | null;
+    databaseId: string | null;
+    databaseName: string | null;
+
     chartType: ChartType | null;
 
-    // Step 2: Data Source
-    databaseSource: DatabaseType | null;
+    chartName: string;
+    chartDesc: string;
 
-    // Step 3: Configuration (varies by data source)
-    notionConfig: {
-        chartName: string;
-        chartDescription: string;
-        databaseId: string;
-        databaseTitle: string;
-    } | null;
+    setChartFormData: <
+        T extends keyof Omit<ChartFormState, "setChartFormData">,
+    >(
+        key: T,
+        value: ChartFormState[T] | undefined
+    ) => void;
 
-    // Form state
-    currentStep: number;
-
-    // Actions
-    setChartType: (type: ChartType) => void;
-    setDatabaseSource: (source: DatabaseType) => void;
-    setNotionConfig: (config: NotionConfig) => void;
-    nextStep: () => void;
-    prevStep: () => void;
-    resetForm: () => void;
-    getFormData: () =>
-        | ({
-              type: ChartType | null;
-          } & (
-              | {
-                    databaseSource: typeof DATABASE_NOTION;
-                    notionConfig: NotionConfig;
-                }
-              | {
-                    databaseSource: typeof DATABASE_UPLOAD;
-                    uploadConfig: null;
-                }
-          ))
-        | undefined;
+    reset: () => void;
 }
 
-export const useChartFormStore = create<ChartFormState>((set, get) => ({
-    // Initial state
-    chartType: null,
-    databaseSource: null,
-    notionConfig: null,
-    currentStep: 0,
+export const useChartFormStore = create<ChartFormState>()(
+    immer((set) => ({
+        dataSource: null,
+        databaseId: null,
+        databaseName: null,
 
-    // Actions
-    setChartType: (type) => set({ chartType: type }),
-    setDatabaseSource: (source) => set({ databaseSource: source }),
-    setNotionConfig: (config) => set({ notionConfig: config }),
+        chartType: null,
 
-    nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
-    prevStep: () =>
-        set((state) => ({ currentStep: Math.max(0, state.currentStep - 1) })),
+        chartName: "",
+        chartDesc: "",
 
-    resetForm: () =>
-        set({
-            chartType: null,
-            databaseSource: null,
-            notionConfig: null,
-            currentStep: 0,
-        }),
+        setChartFormData: (key, value) =>
+            set((state) => {
+                if (value === undefined) {
+                    return;
+                }
+                state[key] = value;
+            }),
 
-    getFormData: () => {
-        const state = get();
-
-        if (state.databaseSource === DATABASE_NOTION && state.notionConfig) {
-            return {
-                type: state.chartType,
-                databaseSource: DATABASE_NOTION,
-                notionConfig: {
-                    chartName: state.notionConfig.chartName,
-                    chartDescription: state.notionConfig.chartDescription,
-                    databaseId: state.notionConfig.databaseId,
-                    databaseTitle: state.notionConfig.databaseTitle,
-                },
-            };
-        }
-
-        if (state.databaseSource === DATABASE_UPLOAD) {
-            return {
-                type: state.chartType,
-                databaseSource: DATABASE_UPLOAD,
-                uploadConfig: null,
-            };
-        }
-    },
-}));
+        reset: () =>
+            set((state) => {
+                state.dataSource = null;
+                state.databaseId = null;
+                state.databaseName = null;
+                state.chartType = null;
+                state.chartName = "";
+                state.chartDesc = "";
+            }),
+    }))
+);

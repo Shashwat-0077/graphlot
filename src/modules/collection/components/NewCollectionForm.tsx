@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useTransition, useRef, useCallback } from "react";
-import { BookOpen, Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, FolderPlus, Info } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { CollectionSchema } from "@/modules/collection/schema/types";
 import { getSlug } from "@/utils";
 import { useCreateCollection } from "@/modules/collection/api/client";
@@ -78,51 +71,48 @@ export function NewCollectionForm() {
     const isDisabled = isPending || isSubmitting;
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-12">
-            <div className="mb-8 text-center">
-                <div className="bg-primary/10 mb-4 inline-flex rounded-full p-2">
-                    <BookOpen className="text-primary h-6 w-6" />
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight">
+        <div className="mt-10 ml-10 max-w-4xl space-y-8">
+            <div className="space-y-2">
+                <h1 className="text-2xl font-bold tracking-tight">
                     Create New Collection
                 </h1>
-                <p className="text-muted-foreground mt-2">
+                <p className="text-muted-foreground">
                     Organize your charts into collections for better management
                     and visualization
                 </p>
             </div>
 
-            <Card className="bg-card/50 overflow-hidden border-0 backdrop-blur-sm">
-                <CardHeader className="from-primary/10 to-primary/5 bg-gradient-to-r py-8">
-                    <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="text-primary h-5 w-5" />
-                        <span>Collection Details</span>
-                    </CardTitle>
-                    <CardDescription>
-                        Fill in the information below to create your new
-                        collection
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pt-8">
-                    <Form {...form}>
-                        <form
-                            ref={formRef}
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-8"
-                        >
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-base font-semibold">
+                        <FolderPlus className="text-primary h-5 w-5" />
+                        Collection Information
+                    </Label>
+                    <p className="text-muted-foreground text-sm">
+                        Provide basic details about your collection
+                    </p>
+                </div>
+
+                <Form {...form}>
+                    <form
+                        ref={formRef}
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6"
+                    >
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <FormField
                                 disabled={isDisabled}
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base">
+                                        <FormLabel className="text-sm font-medium">
                                             Collection Name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="e.g., Financial Analytics 2025"
-                                                className="border-muted bg-background/50 focus-visible:ring-primary rounded-xl py-6 text-base shadow-sm backdrop-blur-sm"
+                                                className="h-11"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -141,14 +131,14 @@ export function NewCollectionForm() {
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-base">
+                                    <FormItem className="md:col-span-2">
+                                        <FormLabel className="text-sm font-medium">
                                             Collection Description
                                         </FormLabel>
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Describe what this collection will contain and its purpose..."
-                                                className="border-muted bg-background/50 focus-visible:ring-primary min-h-32 rounded-xl text-base shadow-sm backdrop-blur-sm"
+                                                className="min-h-24 resize-none"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -161,32 +151,60 @@ export function NewCollectionForm() {
                                     </FormItem>
                                 )}
                             />
+                        </div>
 
-                            <div className="pt-2">
-                                <Button
-                                    type="submit"
-                                    disabled={isDisabled}
-                                    size="lg"
-                                    className="w-full cursor-pointer rounded-xl py-6 text-base font-medium"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                            Creating Collection...
-                                        </>
-                                    ) : (
-                                        "Create Collection"
-                                    )}
-                                </Button>
+                        <div className="bg-muted/30 border-border/50 rounded-lg border p-4">
+                            <div className="flex items-start gap-3">
+                                <div className="bg-primary/10 mt-0.5 rounded-full p-1.5">
+                                    <Info className="text-primary h-4 w-4" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-sm font-medium">
+                                        What happens next?
+                                    </h4>
+                                    <p className="text-muted-foreground text-sm leading-relaxed">
+                                        After creating your collection,
+                                        you&apos;ll be able to add charts,
+                                        organize your data visualizations, and
+                                        share your insights with others. You can
+                                        edit these details later from the
+                                        collection settings.
+                                    </p>
+                                </div>
                             </div>
-                        </form>
-                    </Form>
-                </CardContent>
-                <CardFooter className="bg-muted/20 text-muted-foreground px-6 py-4 text-center text-sm">
-                    You can edit these details later from the collection
-                    settings
-                </CardFooter>
-            </Card>
+                        </div>
+
+                        <div className="flex justify-end gap-3 border-t pt-6">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={isDisabled}
+                                onClick={() => router.back()}
+                                className="px-6"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isDisabled || !form.formState.isValid}
+                                className="px-6"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="mr-2 h-4 w-4" />
+                                        Create Collection
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </div>
         </div>
     );
 }
