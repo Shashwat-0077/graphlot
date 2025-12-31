@@ -28,9 +28,9 @@ export default async function ChartView({
         chart_slug: string;
         collection_slug: string;
     }>;
-    searchParams: {
+    searchParams: Promise<{
         user_id: string;
-    };
+    }>;
 }) {
     const { chart_slug, collection_slug } = await params;
 
@@ -53,7 +53,7 @@ export default async function ChartView({
 
     const chart = response.metadata;
 
-    const userId = searchParams.user_id;
+    const { user_id } = await searchParams;
 
     const chartComponents: {
         [key: string]: [ChartViewComponent, ChartStateProvider];
@@ -70,7 +70,7 @@ export default async function ChartView({
     return (
         <div className="h-svh overflow-hidden">
             <StoreProvider chartId={chart.chartId}>
-                <ChartView chartId={chart.chartId} userId={userId} />
+                <ChartView chartId={chart.chartId} userId={user_id} />
             </StoreProvider>
         </div>
     );
