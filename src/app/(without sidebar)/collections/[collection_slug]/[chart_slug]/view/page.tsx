@@ -25,11 +25,15 @@ import { HeatmapStoreProvider } from "@/modules/chart-types/heatmap/store";
 
 export default async function ChartView({
     params,
+    searchParams,
 }: {
     params: Promise<{
         chart_slug: string;
         collection_slug: string;
     }>;
+    searchParams: {
+        user_id: string;
+    };
 }) {
     const { chart_slug, collection_slug } = await params;
 
@@ -51,15 +55,8 @@ export default async function ChartView({
     }
 
     const chart = response.metadata;
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
 
-    if (!session?.user) {
-        return <div>Invalid User ID</div>;
-    }
-
-    const userId = session.user.id;
+    const userId = searchParams.user_id;
 
     const chartComponents: {
         [key: string]: [ChartViewComponent, ChartStateProvider];
@@ -74,8 +71,10 @@ export default async function ChartView({
     const [ChartView, StoreProvider] = chartComponents[chart.type];
 
     return (
-        <StoreProvider chartId={chart.chartId}>
-            <ChartView chartId={chart.chartId} userId={userId} />
-        </StoreProvider>
+        <div className="h-svh overflow-hidden">
+            <StoreProvider chartId={chart.chartId}>
+                <ChartView chartId={chart.chartId} userId={userId} />
+            </StoreProvider>
+        </div>
     );
 }
