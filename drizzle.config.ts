@@ -6,6 +6,6 @@ export default defineConfig({
     out: './drizzle/migrations',
     dbCredentials: {
         url: process.env.TURSO_CONNECTION_URL!,
-        // authToken: process.env.TURSO_AUTH_TOKEN!, // TODO : Uncomment this line if you are pushing it to production
+        authToken: process.env.TURSO_AUTH_TOKEN!, // TODO : Uncomment this line if you are pushing it to production
     },
 });

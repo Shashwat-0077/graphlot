@@ -8,7 +8,7 @@ import * as _ from './relations';
 
 const client = createClient({
     url: env.TURSO_CONNECTION_URL,
-    // authToken: env.TURSO_AUTH_TOKEN, // TODO : Uncomment this line if you are pushing it to production
+    authToken: env.TURSO_AUTH_TOKEN, // TODO : Uncomment this line if you are pushing it to production
 });
 
 export const db = drizzle(client, { schema });
