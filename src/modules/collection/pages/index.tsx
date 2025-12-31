@@ -268,7 +268,7 @@ export default function CollectionsPage() {
                     <motion.div variants={item}>
                         <Link
                             href="/collections/new"
-                            className="group border-muted bg-card/50 hover:border-primary/30 hover:bg-card/80 flex h-[280px] flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center shadow-sm transition-all hover:shadow-md"
+                            className="group border-muted bg-card/50 hover:border-primary/30 hover:bg-card/80 flex h-70 flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center shadow-sm transition-all hover:shadow-md"
                         >
                             <div className="bg-primary/10 group-hover:bg-primary/20 mb-4 rounded-full p-4 transition-colors">
                                 <Plus className="text-primary h-8 w-8" />

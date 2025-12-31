@@ -362,7 +362,7 @@ export default function ColorPickerPopover({
             </PopoverTrigger>
             <PopoverContent
                 alignOffset={-50}
-                className="z-[9999] w-64 overflow-hidden p-0 shadow-xl"
+                className="z-9999 w-64 overflow-hidden p-0 shadow-xl"
                 side="right"
                 align="start"
             >
@@ -412,7 +412,7 @@ export default function ColorPickerPopover({
                                     className="flex h-full flex-col gap-5 p-3"
                                 >
                                     <RgbaColorPicker
-                                        className="!w-full shrink-0 grow-0 px-1 pt-1"
+                                        className="w-full! shrink-0 grow-0 px-1 pt-1"
                                         color={color}
                                         onChange={handleColorPickerChange}
                                     />

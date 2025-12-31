@@ -25,7 +25,7 @@ export function ChartViewWrapper({
                 borderWidth: `${borderWidth}px`,
             }}
             className={cn(
-                "relative flex h-full min-h-[300px] w-full flex-col items-center justify-center p-4",
+                "relative flex h-full min-h-75 w-full flex-col items-center justify-center p-4",
                 className
             )}
         >

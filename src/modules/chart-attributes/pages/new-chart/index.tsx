@@ -65,7 +65,7 @@ function SelectTile({
             onClick={onClick}
             className={cn(
                 `hover:border-primary hover:bg-primary/5 relative flex min-w-32 cursor-pointer gap-2 py-7 transition-all duration-200 hover:shadow-md`,
-                isSelected ? "!border-primary/10 !bg-primary/10" : ""
+                isSelected ? "border-primary/10! bg-primary/10!" : ""
             )}
             disabled={disabled}
         >
@@ -950,7 +950,7 @@ function SubmitButton() {
                                         duration: 0.25,
                                         ease: "easeInOut",
                                     }}
-                                    className="flex flex-shrink-0 items-center justify-center"
+                                    className="flex shrink-0 items-center justify-center"
                                     style={{ width: "24px" }}
                                 >
                                     <IconComponent size={24} />

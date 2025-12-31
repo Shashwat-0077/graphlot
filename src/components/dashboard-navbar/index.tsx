@@ -38,7 +38,7 @@ export function DashboardNavbar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
     return (
-        <Sidebar collapsible="icon" {...props} className="!border-0 shadow-sm">
+        <Sidebar collapsible="icon" {...props} className="border-0! shadow-sm">
             <SidebarHeader>
                 <SidebarLogo />
             </SidebarHeader>

@@ -47,7 +47,7 @@ export const CustomTooltipContent = ({
     return (
         <div
             className={cn(
-                "bg-background max-w-[280px] overflow-hidden border p-4 shadow-lg",
+                "bg-background max-w-70 overflow-hidden border p-4 shadow-lg",
                 "animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
                 className
             )}
@@ -57,7 +57,7 @@ export const CustomTooltipContent = ({
             }}
         >
             {indicator === "line" && (
-                <div className="bg-border absolute top-0 -left-px h-full w-[2px]" />
+                <div className="bg-border absolute top-0 -left-px h-full w-0.5" />
             )}
 
             <div className="space-y-3">
@@ -81,7 +81,7 @@ export const CustomTooltipContent = ({
                     />
                 )}
 
-                <div className="custom-scrollbar max-h-[160px] space-y-2 overflow-y-auto pr-1">
+                <div className="custom-scrollbar max-h-40 space-y-2 overflow-y-auto pr-1">
                     {displayPayload.reverse().map(
                         (
                             entry: any, // eslint-disable-line
@@ -94,7 +94,7 @@ export const CustomTooltipContent = ({
                                 <div className="flex min-w-0 items-center gap-2">
                                     <div
                                         className={cn(
-                                            "h-3 w-3 flex-shrink-0",
+                                            "h-3 w-3 shrink-0",
                                             indicator === "line"
                                                 ? "rounded-sm"
                                                 : "rounded-full",

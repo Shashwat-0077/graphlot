@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Settings } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 
 import { useChartFormStore } from "@/modules/chart-attributes/pages/new-chart/store";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,7 @@ export const ColumnConfigureCard = ({ header }: { header: string }) => {
     return (
         <div
             className={cn(
-                "relative min-h-[250px] overflow-hidden rounded-xl",
+                "relative min-h-62.5 overflow-hidden rounded-xl",
                 "shadow-[inset_0_0_0_1px_var(--border)]"
             )}
         >
@@ -159,7 +159,7 @@ export const ColumnConfigureCard = ({ header }: { header: string }) => {
                                         }}
                                         disabled={headerConfig?.skipColumn}
                                     >
-                                        <SelectTrigger className="w-[180px]">
+                                        <SelectTrigger className="w-45">
                                             <SelectValue placeholder="Select a Type" />
                                         </SelectTrigger>
                                         <SelectContent>

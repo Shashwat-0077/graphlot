@@ -29,7 +29,7 @@ export const AreaChartCardHeader = ({ className }: { className?: string }) => {
     return (
         <ChartContainer
             config={AreaChartConfig}
-            className={cn("h-[270px]", className)}
+            className={cn("h-67.5", className)}
         >
             <AreaChart
                 accessibilityLayer

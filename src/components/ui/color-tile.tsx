@@ -25,7 +25,7 @@ export const ColorTile = ({
                     className="relative h-20 w-full"
                     style={{ backgroundColor: getRGBAString(color) }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                 </div>
 
                 {/* Info section */}

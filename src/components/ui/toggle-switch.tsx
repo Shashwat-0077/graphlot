@@ -11,7 +11,7 @@ export default function ToggleSwitch({
     ...props
 }: Props) {
     return (
-        <label className="bg-muted has-[:checked]:bg-primary relative inline-block h-7 w-14 cursor-pointer rounded-full transition [-webkit-tap-highlight-color:_transparent]">
+        <label className="bg-muted has-checked:bg-primary relative inline-block h-7 w-14 cursor-pointer rounded-full transition [-webkit-tap-highlight-color:transparent]">
             <input
                 {...props}
                 className="peer sr-only"

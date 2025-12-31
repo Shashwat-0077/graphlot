@@ -77,7 +77,7 @@ const DotGrid = () => {
                     return (
                         <div
                             key={i}
-                            className={`w-[8px] h-[8px] rounded-full bg-primary/50 dark:bg-primary/20 justify-self-center self-center transition-all duration-500 ${
+                            className={`w-2 h-2 rounded-full bg-primary/50 dark:bg-primary/20 justify-self-center self-center transition-all duration-500 ${
                                 isPulsing
                                     ? 'opacity-100 scale-150 shadow-lg shadow-blue-400/50'
                                     : 'opacity-40 scale-100'

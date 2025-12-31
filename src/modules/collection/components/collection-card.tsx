@@ -13,10 +13,10 @@ export default function CollectionCard({
     return (
         <Link
             href={path}
-            className="group bg-card relative flex h-[280px] flex-col overflow-hidden rounded-2xl shadow-sm"
+            className="group bg-card relative flex h-70 flex-col overflow-hidden rounded-2xl shadow-sm"
         >
             {/* Background gradient */}
-            <div className="from-primary/5 via-primary/10 absolute inset-0 bg-gradient-to-br to-transparent" />
+            <div className="from-primary/5 via-primary/10 absolute inset-0 bg-linear-to-br to-transparent" />
 
             {/* Decorative elements */}
             <div className="bg-primary/5 absolute -top-16 -right-16 h-32 w-32 rounded-full transition-all group-hover:scale-110" />

@@ -48,8 +48,8 @@ export default function DashboardLayout({
     return (
         <SidebarProvider>
             <DashboardNavbar />
-            <SidebarInset className="from-background to-background/95 bg-gradient-to-br">
-                <header className="bg-background/80 flex h-16 shrink-0 items-center gap-2 border-b backdrop-blur-sm transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <SidebarInset className="from-background to-background/95 bg-linear-to-br">
+                <header className="bg-background/80 flex h-16 shrink-0 items-center gap-2 border-b backdrop-blur-sm transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator

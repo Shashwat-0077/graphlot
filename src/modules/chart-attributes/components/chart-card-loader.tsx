@@ -13,7 +13,7 @@ export function ChartCardLoader() {
     return (
         <Card className="overflow-hidden">
             <CardHeader className="p-0">
-                <div className="bg-muted/30 flex h-[180px] items-center justify-center">
+                <div className="bg-muted/30 flex h-45 items-center justify-center">
                     <BarChart2 className="text-muted-foreground/30 h-16 w-16 animate-pulse" />
                 </div>
             </CardHeader>

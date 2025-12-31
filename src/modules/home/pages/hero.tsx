@@ -30,7 +30,7 @@ const Hero = async () => {
                             Customize your charts
                         </span>
                         <br />
-                        <span className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-transparent">
+                        <span className="from-primary to-primary/80 bg-linear-to-r bg-clip-text text-transparent">
                             to the last pixel
                         </span>
                     </h1>

@@ -333,7 +333,7 @@ export function DashboardPage({ username }: { username: string }) {
                     </CardHeader>
                     <CardContent>
                         {collections.length === 0 ? (
-                            <div className="flex h-[300px] flex-col items-center justify-center text-center">
+                            <div className="flex h-75 flex-col items-center justify-center text-center">
                                 <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
                                     <BarChart2 className="text-muted-foreground h-8 w-8" />
                                 </div>
@@ -346,7 +346,7 @@ export function DashboardPage({ username }: { username: string }) {
                                 </p>
                             </div>
                         ) : (
-                            <div className="h-[300px] w-full outline-none">
+                            <div className="h-75 w-full outline-none">
                                 <style jsx global>
                                     {`
                                         div:focus-visible {
@@ -454,7 +454,7 @@ export function DashboardPage({ username }: { username: string }) {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="max-h-[400px] overflow-auto">
+                            <div className="max-h-100 overflow-auto">
                                 <div className="divide-y">
                                     {collections.map((collection) => (
                                         <Link
@@ -507,7 +507,7 @@ export function DashboardPage({ username }: { username: string }) {
                     </CardHeader>
                     <CardContent>
                         {collections.length === 0 ? (
-                            <div className="flex h-[300px] flex-col items-center justify-center text-center">
+                            <div className="flex h-75 flex-col items-center justify-center text-center">
                                 <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
                                     <BarChart2 className="text-muted-foreground h-8 w-8" />
                                 </div>
@@ -519,7 +519,7 @@ export function DashboardPage({ username }: { username: string }) {
                                 </p>
                             </div>
                         ) : (
-                            <div className="h-[300px] w-full">
+                            <div className="h-75 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <RechartsPieChart
                                         margin={{

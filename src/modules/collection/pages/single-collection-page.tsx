@@ -370,7 +370,7 @@ export default function SingleCollectionPage() {
                         ))}
                         <Link
                             href={`/collections/${collection_slug}/new-chart`}
-                            className="block h-full min-h-[270px] w-full"
+                            className="block h-full min-h-67.5 w-full"
                         >
                             <div className="group border-muted-foreground/25 bg-card/50 hover:border-primary/50 hover:bg-muted/50 flex h-full flex-col items-center justify-center rounded-xl border border-dashed p-6 text-center transition-all">
                                 <div className="bg-primary/10 group-hover:bg-primary/20 mb-3 rounded-full p-3 transition-colors">
