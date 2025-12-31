@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-
 import { parseSlug } from "@/utils";
 import {
     CHART_TYPE_AREA,
@@ -13,7 +11,6 @@ import {
 import { AreaChartView } from "@/modules/chart-types/area/components/view";
 import { AreaChartStoreProvider } from "@/modules/chart-types/area/store";
 import { fetchChartMetadata } from "@/modules/chart-attributes/api/handler/read";
-import { auth } from "@/modules/auth";
 import { BarChartView } from "@/modules/chart-types/bar/components/view";
 import { BarChartStoreProvider } from "@/modules/chart-types/bar/store";
 import { RadarChartView } from "@/modules/chart-types/radar/components/view";
