@@ -329,6 +329,7 @@ export const NewChartForm = () => {
                         icon={<Database size={24} />}
                     />
                     <SelectTile
+                        disabled
                         title="Upload File"
                         isSelected={dataSource === DATABASE_UPLOAD}
                         onClick={() => {

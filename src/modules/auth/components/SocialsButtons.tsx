@@ -1,20 +1,21 @@
-'use client';
+"use client";
 
-import { FcGoogle } from 'react-icons/fc';
-import { SiNotion } from 'react-icons/si';
+import { FcGoogle } from "react-icons/fc";
+import { SiNotion } from "react-icons/si";
 
-import { Button } from '@/components/ui/button';
-import { authClient } from '@/modules/auth/client';
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/modules/auth/client";
 
-export function GoogleButton() {
+export function GoogleButton({ disabled }: { disabled?: boolean }) {
     return (
         <Button
-            className="group relative w-full bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white border border-gray-200/50 shadow-md hover:shadow-lg transition-all duration-200 ease-out hover:scale-[1.02] px-4 py-2 h-10 font-medium rounded-lg overflow-hidden text-sm cursor-pointer"
+            className="group relative h-10 w-full cursor-pointer overflow-hidden rounded-lg border border-gray-200/50 bg-white/90 px-4 py-2 text-sm font-medium text-gray-900 shadow-md backdrop-blur-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:bg-white hover:shadow-lg"
             type="button"
+            disabled={disabled}
             onClick={() => {
                 authClient.signIn.social({
-                    provider: 'google',
-                    callbackURL: '/dashboard',
+                    provider: "google",
+                    callbackURL: "/dashboard",
                 });
             }}
         >
@@ -29,12 +30,12 @@ export function GoogleButton() {
 export function NotionButton() {
     return (
         <Button
-            className="group relative w-full bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white border border-gray-200/50 shadow-md hover:shadow-lg transition-all duration-200 ease-out hover:scale-[1.02] px-4 py-2 h-10 font-medium rounded-lg overflow-hidden text-sm cursor-pointer"
+            className="group relative h-10 w-full cursor-pointer overflow-hidden rounded-lg border border-gray-200/50 bg-white/90 px-4 py-2 text-sm font-medium text-gray-900 shadow-md backdrop-blur-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:bg-white hover:shadow-lg"
             type="button"
             onClick={() => {
                 authClient.signIn.oauth2({
-                    providerId: 'notion',
-                    callbackURL: '/dashboard',
+                    providerId: "notion",
+                    callbackURL: "/dashboard",
                 });
             }}
         >

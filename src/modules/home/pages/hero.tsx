@@ -59,7 +59,7 @@ const Hero = async () => {
                             </>
                         ) : (
                             <>
-                                <GoogleButton />
+                                <GoogleButton disabled />
                                 <NotionButton />
                             </>
                         )}
