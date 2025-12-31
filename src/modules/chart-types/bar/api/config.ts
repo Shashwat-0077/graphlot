@@ -9,12 +9,14 @@ import { fetchBarChartById } from "@/modules/chart-types/bar/api/handler/read";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { updateBarChart } from "@/modules/chart-types/bar/api/handler/update";
 import { BarChartSchema } from "@/modules/chart-types/bar/schema/types";
+import { getQueryClient } from "@/lib/query-client";
 
 const barRouteConfigs = [
     defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [],
+        queryKey: ["bar-chart"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -52,6 +54,11 @@ const barRouteConfigs = [
                 return c.json(result.error, 500);
             }
             return c.json(result.chartId, 200);
+        },
+
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: [["bar-chart"]] });
         },
     }),
 ];

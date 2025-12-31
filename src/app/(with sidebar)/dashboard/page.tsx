@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { auth } from "@/modules/auth";
-import { DashboardPage } from "@/page-components/dashboard";
+import { DashboardPage } from "@/modules/dashboard/pages";
 
 export default async function Dashboard() {
     const session = await auth.api.getSession({

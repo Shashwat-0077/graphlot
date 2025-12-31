@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
+import { getQueryClient } from "@/lib/query-client";
 
 type GetAreaParams = {
   id: string;
@@ -9,7 +10,7 @@ type GetAreaParams = {
 
 export const useGetArea = ({params}: {params: GetAreaParams}) => {
     return useQuery({
-        queryKey: ["charts.area", JSON.stringify({ params })],
+        queryKey: ["area-chart", JSON.stringify({ params })],
         queryFn: async () => {
     const response = await client.api.v1["charts"]["area"][":id"].$get({
                 param: params,
@@ -38,7 +39,15 @@ type UpdateAreaResponse = InferResponseType<
     200
 >;
 
-export const useUpdateArea = () => {
+export const useUpdateArea = ({
+onSuccess,
+}: {
+onSuccess?: (
+    data: UpdateAreaResponse,
+    variables: UpdateAreaRequest,
+    context: unknown
+) => void;
+}) => {
     return useMutation<UpdateAreaResponse, Error, UpdateAreaRequest>({
         mutationFn: async (props) => {
     const response = await client.api.v1["charts"]["area"][":id"].$put(props);
@@ -54,6 +63,11 @@ export const useUpdateArea = () => {
 
     return await response.json();
 },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["area-chart"] });
+        },
     });
 };
 

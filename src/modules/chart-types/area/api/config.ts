@@ -9,12 +9,14 @@ import { fetchAreaChartById } from "@/modules/chart-types/area/api/handler/read"
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { updateAreaChart } from "@/modules/chart-types/area/api/handler/update";
 import { AreaChartSchema } from "@/modules/chart-types/area/schema/types";
+import { getQueryClient } from "@/lib/query-client";
 
 const areaRouteConfigs = [
     defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [],
+        queryKey: ["area-chart"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -52,6 +54,11 @@ const areaRouteConfigs = [
                 return c.json(result.error, 500);
             }
             return c.json(result.chartId, 200);
+        },
+
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["area-chart"] });
         },
     }),
 ];

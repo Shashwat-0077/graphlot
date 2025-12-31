@@ -18,27 +18,27 @@ export const BarSaveButton = ({ chartId }: { chartId: string }) => {
         mutate: updateBar,
         isSuccess: isBarUpdated,
         isError: isBarError,
-    } = useUpdateBar();
+    } = useUpdateBar({});
     const {
         mutate: updateChartBoxModel,
         isSuccess: isChartBoxModelUpdated,
         isError: isChartBoxModelError,
-    } = useUpdateChartBoxModel();
+    } = useUpdateChartBoxModel({});
     const {
         mutate: updateChartTypography,
         isSuccess: isChartTypographyUpdated,
         isError: isChartTypographyError,
-    } = useUpdateChartTypography();
+    } = useUpdateChartTypography({});
     const {
         mutate: updateChartColors,
         isSuccess: isChartColorsUpdated,
         isError: isChartColorsError,
-    } = useUpdateChartColors();
+    } = useUpdateChartColors({});
     const {
         mutate: updateChartVisuals,
         isSuccess: isChartVisualsUpdated,
         isError: isChartVisualsError,
-    } = useUpdateChartVisuals();
+    } = useUpdateChartVisuals({});
 
     const config = useBarChartStore((state) => state);
 

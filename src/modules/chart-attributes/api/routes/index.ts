@@ -7,7 +7,7 @@ import { updateChartAttribute, updateChartMetadata } from "@/modules/chart-attri
 import { ChartBoxModelSchema, ChartColorSchema, ChartMetadataSchema, ChartTypographySchema, ChartVisualSchema } from "@/modules/chart-attributes/schema/types";
 import { deleteChart } from "@/modules/chart-attributes/api/handler/delete";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
-import { createChart } from "@/modules/chart-attributes/api/handler/create";
+import { createNotionChart } from "@/modules/chart-attributes/api/handler/create";
 
 const app = new Hono()
     .get("/",
@@ -38,12 +38,12 @@ const app = new Hono()
                     return c.json(response.metadata, 200);
     }
     )
-    .post("/",
+    .post("/notion",
         authMiddleWare,
         zValidator("json", ChartMetadataSchema.Insert),
         async (c) => {
         const data = c.req.valid("json");
-                    const response = await createChart(data);
+                    const response = await createNotionChart(data);
         
                     if (!response.ok) {
                         return c.json(response.error, 500);

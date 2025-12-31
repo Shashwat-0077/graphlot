@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Plus, Search, Grid3X3, SortAsc } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -109,7 +109,7 @@ export default function CollectionsPage() {
     });
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div>
             <div className="bg-background/60 mb-8 rounded-xl border p-6 shadow-sm backdrop-blur-sm">
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>

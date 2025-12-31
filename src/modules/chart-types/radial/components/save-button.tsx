@@ -18,27 +18,27 @@ export const RadialSaveButton = ({ chartId }: { chartId: string }) => {
         mutate: updateRadial,
         isSuccess: isRadialUpdated,
         isError: isRadialError,
-    } = useUpdateRadial();
+    } = useUpdateRadial({});
     const {
         mutate: updateChartBoxModel,
         isSuccess: isChartBoxModelUpdated,
         isError: isChartBoxModelError,
-    } = useUpdateChartBoxModel();
+    } = useUpdateChartBoxModel({});
     const {
         mutate: updateChartTypography,
         isSuccess: isChartTypographyUpdated,
         isError: isChartTypographyError,
-    } = useUpdateChartTypography();
+    } = useUpdateChartTypography({});
     const {
         mutate: updateChartColors,
         isSuccess: isChartColorsUpdated,
         isError: isChartColorsError,
-    } = useUpdateChartColors();
+    } = useUpdateChartColors({});
     const {
         mutate: updateChartVisuals,
         isSuccess: isChartVisualsUpdated,
         isError: isChartVisualsError,
-    } = useUpdateChartVisuals();
+    } = useUpdateChartVisuals({});
 
     const config = useRadialChartStore((state) => state);
 

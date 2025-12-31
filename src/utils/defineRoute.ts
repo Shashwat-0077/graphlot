@@ -52,9 +52,10 @@ export function defineRoute<
         >,
         "mutationFn"
     >;
+    queryKey?: string[];
 
-    includeOnSuccess?: boolean;
-    includeOnError?: boolean;
+    includeOnSuccess?: () => void;
+    includeOnError?: () => void;
 }): RouteConfig<TVariables, TParams, TQuery, TBody, TResponseData> {
     return {
         middlewares: [],
@@ -110,9 +111,10 @@ export function defineRouteWithVariables<
             >,
             "mutationFn"
         >;
+        queryKey?: string[];
 
-        includeOnSuccess?: boolean;
-        includeOnError?: boolean;
+        includeOnSuccess?: () => void;
+        includeOnError?: () => void;
     }): RouteConfig<TVariables, TParams, TQuery, TBody, TResponseData> {
         return {
             middlewares: config.middlewares || [],

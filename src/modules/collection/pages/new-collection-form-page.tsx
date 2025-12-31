@@ -71,7 +71,7 @@ export function NewCollectionForm() {
     const isDisabled = isPending || isSubmitting;
 
     return (
-        <div className="mt-10 ml-10 max-w-4xl space-y-8">
+        <div className="max-w-4xl space-y-8">
             <div className="space-y-2">
                 <h1 className="text-2xl font-bold tracking-tight">
                     Create New Collection

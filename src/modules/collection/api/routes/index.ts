@@ -2,13 +2,13 @@ import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
+import { Variables } from "@/modules/collection/api/variables";
 import { CollectionSchema } from "@/modules/collection/schema/types";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchAllCollections, fetchCollectionById } from "@/modules/collection/api/handlers/read";
 import { createCollection } from "@/modules/collection/api/handlers/create";
 import { updateCollection } from "@/modules/collection/api/handlers/update";
 import { deleteCollection } from "@/modules/collection/api/handlers/delete";
-import { Variables } from "@/modules/collection/api/variables";
 
 const app = new Hono<{ Variables: Variables }>()
     .get("/all",

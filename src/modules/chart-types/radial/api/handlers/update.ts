@@ -45,13 +45,18 @@ export async function updateRadialChart({
             }
         }
 
-        await db.transaction(async (tx) => {
-            tx.update(RadialCharts)
+        const { chartId: id } = await db.transaction(async (tx) => {
+            return tx
+                .update(RadialCharts)
                 .set(data)
-                .where(eq(RadialCharts.chartId, chartId));
+                .where(eq(RadialCharts.chartId, chartId))
+                .returning({
+                    chartId: RadialCharts.chartId,
+                })
+                .get();
         });
 
-        return { ok: true, chartId };
+        return { ok: true, chartId: id };
     } catch (error) {
         if (error instanceof Error) {
             if (

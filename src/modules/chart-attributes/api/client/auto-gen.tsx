@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
+import { getQueryClient } from "@/lib/query-client";
 
 type GetChartByCollectionQuery = {
     collectionId: string;
@@ -40,7 +41,7 @@ type GetChartParams = {
 
 export const useGetChart = ({ params }: { params: GetChartParams }) => {
     return useQuery({
-        queryKey: ["charts", JSON.stringify({ params })],
+        queryKey: ["chart-metadata", JSON.stringify({ params })],
         queryFn: async () => {
             const response = await client.api.v1["charts"][":id"].$get({
                 param: params,
@@ -60,32 +61,33 @@ export const useGetChart = ({ params }: { params: GetChartParams }) => {
     });
 };
 
-type CreateChartRequest = InferRequestType<
-    (typeof client.api.v1)["charts"]["$post"]
+type NotionChartRequest = InferRequestType<
+    (typeof client.api.v1)["charts"]["notion"]["$post"]
 >;
-type CreateChartResponse = InferResponseType<
-    (typeof client.api.v1)["charts"]["$post"],
+type NotionChartResponse = InferResponseType<
+    (typeof client.api.v1)["charts"]["notion"]["$post"],
     200
 >;
 
-export const useCreateChart = ({
+export const useNotionChart = ({
     onSuccess,
     onError,
 }: {
     onSuccess?: (
-        data: CreateChartResponse,
-        variables: CreateChartRequest,
+        data: NotionChartResponse,
+        variables: NotionChartRequest,
         context: unknown
     ) => void;
     onError?: (
         error: Error,
-        variables: CreateChartRequest,
+        variables: NotionChartRequest,
         context: unknown
     ) => void;
 }) => {
-    return useMutation<CreateChartResponse, Error, CreateChartRequest>({
+    return useMutation<NotionChartResponse, Error, NotionChartRequest>({
         mutationFn: async (props) => {
-            const response = await client.api.v1["charts"].$post(props);
+            const response =
+                await client.api.v1["charts"]["notion"].$post(props);
 
             if (!response.ok) {
                 const error = await response.json();
@@ -100,6 +102,8 @@ export const useCreateChart = ({
         },
         onSuccess: (data, variables, context) => {
             onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
         },
         onError: (error, variables, context) => {
             onError?.(error, variables, context);
@@ -115,7 +119,15 @@ type UpdateChartResponse = InferResponseType<
     200
 >;
 
-export const useUpdateChart = () => {
+export const useUpdateChart = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: UpdateChartResponse,
+        variables: UpdateChartRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<UpdateChartResponse, Error, UpdateChartRequest>({
         mutationFn: async (props) => {
             const response = await client.api.v1["charts"][":id"].$put(props);
@@ -131,6 +143,11 @@ export const useUpdateChart = () => {
 
             return await response.json();
         },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
+        },
     });
 };
 
@@ -142,7 +159,15 @@ type DeleteChartResponse = InferResponseType<
     200
 >;
 
-export const useDeleteChart = () => {
+export const useDeleteChart = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: DeleteChartResponse,
+        variables: DeleteChartRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<DeleteChartResponse, Error, DeleteChartRequest>({
         mutationFn: async (props) => {
             const response =
@@ -158,6 +183,11 @@ export const useDeleteChart = () => {
             }
 
             return await response.json();
+        },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
         },
     });
 };
@@ -250,7 +280,7 @@ export const useGetChartVisuals = ({
     params: GetChartVisualsParams;
 }) => {
     return useQuery({
-        queryKey: ["charts", "visuals", JSON.stringify({ params })],
+        queryKey: ["chart-visuals", JSON.stringify({ params })],
         queryFn: async () => {
             const response = await client.api.v1["charts"][":id"][
                 "visuals"
@@ -280,7 +310,15 @@ type UpdateChartVisualsResponse = InferResponseType<
     200
 >;
 
-export const useUpdateChartVisuals = () => {
+export const useUpdateChartVisuals = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: UpdateChartVisualsResponse,
+        variables: UpdateChartVisualsRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<
         UpdateChartVisualsResponse,
         Error,
@@ -301,6 +339,11 @@ export const useUpdateChartVisuals = () => {
 
             return await response.json();
         },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-visuals"] });
+        },
     });
 };
 
@@ -314,7 +357,7 @@ export const useGetChartTypography = ({
     params: GetChartTypographyParams;
 }) => {
     return useQuery({
-        queryKey: ["charts", "typography", JSON.stringify({ params })],
+        queryKey: ["chart-typography", JSON.stringify({ params })],
         queryFn: async () => {
             const response = await client.api.v1["charts"][":id"][
                 "typography"
@@ -344,7 +387,15 @@ type UpdateChartTypographyResponse = InferResponseType<
     200
 >;
 
-export const useUpdateChartTypography = () => {
+export const useUpdateChartTypography = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: UpdateChartTypographyResponse,
+        variables: UpdateChartTypographyRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<
         UpdateChartTypographyResponse,
         Error,
@@ -365,6 +416,11 @@ export const useUpdateChartTypography = () => {
 
             return await response.json();
         },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-typography"] });
+        },
     });
 };
 
@@ -378,7 +434,7 @@ export const useGetChartBoxModel = ({
     params: GetChartBoxModelParams;
 }) => {
     return useQuery({
-        queryKey: ["charts", "box-model", JSON.stringify({ params })],
+        queryKey: ["chart-box-model", JSON.stringify({ params })],
         queryFn: async () => {
             const response = await client.api.v1["charts"][":id"][
                 "box-model"
@@ -408,7 +464,15 @@ type UpdateChartBoxModelResponse = InferResponseType<
     200
 >;
 
-export const useUpdateChartBoxModel = () => {
+export const useUpdateChartBoxModel = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: UpdateChartBoxModelResponse,
+        variables: UpdateChartBoxModelRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<
         UpdateChartBoxModelResponse,
         Error,
@@ -429,6 +493,11 @@ export const useUpdateChartBoxModel = () => {
 
             return await response.json();
         },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-box-model"] });
+        },
     });
 };
 
@@ -442,7 +511,7 @@ export const useGetChartColors = ({
     params: GetChartColorsParams;
 }) => {
     return useQuery({
-        queryKey: ["charts", "colors", JSON.stringify({ params })],
+        queryKey: ["chart-colors", JSON.stringify({ params })],
         queryFn: async () => {
             const response = await client.api.v1["charts"][":id"][
                 "colors"
@@ -472,7 +541,15 @@ type UpdateChartColorsResponse = InferResponseType<
     200
 >;
 
-export const useUpdateChartColors = () => {
+export const useUpdateChartColors = ({
+    onSuccess,
+}: {
+    onSuccess?: (
+        data: UpdateChartColorsResponse,
+        variables: UpdateChartColorsRequest,
+        context: unknown
+    ) => void;
+}) => {
     return useMutation<
         UpdateChartColorsResponse,
         Error,
@@ -492,6 +569,11 @@ export const useUpdateChartColors = () => {
             }
 
             return await response.json();
+        },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-colors"] });
         },
     });
 };

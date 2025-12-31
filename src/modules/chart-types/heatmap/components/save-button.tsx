@@ -12,7 +12,7 @@ export const HeatmapSaveButton = ({ chartId }: { chartId: string }) => {
         mutate: updateHeatmap,
         isSuccess: isHeatmapUpdated,
         isError: isHeatmapError,
-    } = useUpdateHeatmap();
+    } = useUpdateHeatmap({});
 
     const config = useHeatmapStore((state) => state);
 

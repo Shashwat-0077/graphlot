@@ -50,7 +50,7 @@ export interface RouteConfig<
     handler: (
         c: ValidatedContext<TParams, TQuery, TBody, TVariables>
     ) => Promise<Response> | Response;
-
+    queryKey?: string[];
     // TanStack Query options
     queryOptions?: Omit<
         UseQueryOptions<
@@ -72,6 +72,6 @@ export interface RouteConfig<
         "mutationFn"
     >;
 
-    includeOnSuccess?: boolean;
-    includeOnError?: boolean;
+    includeOnSuccess?: () => void;
+    includeOnError?: () => void;
 }

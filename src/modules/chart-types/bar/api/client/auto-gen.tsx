@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
+import { getQueryClient } from "@/lib/query-client";
 
 type GetBarParams = {
   id: string;
@@ -9,7 +10,7 @@ type GetBarParams = {
 
 export const useGetBar = ({params}: {params: GetBarParams}) => {
     return useQuery({
-        queryKey: ["charts.bar", JSON.stringify({ params })],
+        queryKey: ["bar-chart", JSON.stringify({ params })],
         queryFn: async () => {
     const response = await client.api.v1["charts"]["bar"][":id"].$get({
                 param: params,
@@ -38,7 +39,15 @@ type UpdateBarResponse = InferResponseType<
     200
 >;
 
-export const useUpdateBar = () => {
+export const useUpdateBar = ({
+onSuccess,
+}: {
+onSuccess?: (
+    data: UpdateBarResponse,
+    variables: UpdateBarRequest,
+    context: unknown
+) => void;
+}) => {
     return useMutation<UpdateBarResponse, Error, UpdateBarRequest>({
         mutationFn: async (props) => {
     const response = await client.api.v1["charts"]["bar"][":id"].$put(props);
@@ -54,6 +63,11 @@ export const useUpdateBar = () => {
 
     return await response.json();
 },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: [["bar-chart"]] });
+        },
     });
 };
 

@@ -8,6 +8,261 @@ import pluralize, { singular } from "pluralize";
 
 import { convertZodToTypeScript } from "./zod-to-ts-generator";
 
+class SmartUsageAnalyzer {
+    // Parse all imports from the source file
+    parseImportsFromFile(sourceContent: string): Map<string, string> {
+        const importMap = new Map<string, string>(); // identifier -> import statement
+
+        if (!sourceContent) return importMap;
+
+        // Regex to match import statements
+        const importRegex =
+            /^import\s+(?:\*\s+as\s+(\w+)|(?:\{\s*([^}]+)\s*\})|(\w+))\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
+
+        let match;
+        while ((match = importRegex.exec(sourceContent)) !== null) {
+            const fullImport = match[0].trim();
+            const namespaceImport = match[1]; // import * as name
+            const namedImports = match[2]; // import { a, b, c }
+            const defaultImport = match[3]; // import name
+            const modulePath = match[4];
+
+            if (namespaceImport) {
+                // import * as name from "module"
+                importMap.set(namespaceImport, fullImport);
+            } else if (defaultImport) {
+                // import name from "module"
+                importMap.set(defaultImport, fullImport);
+            } else if (namedImports) {
+                // import { a, b, c } from "module"
+                const names = namedImports
+                    .split(",")
+                    .map((name) => name.trim())
+                    .map((name) => name.replace(/\s+as\s+\w+/, "").trim()) // handle "as" aliases
+                    .filter((name) => name);
+
+                names.forEach((name) => {
+                    importMap.set(name, fullImport);
+                });
+            }
+        }
+
+        return importMap;
+    }
+
+    // Extract all identifiers used in a piece of code
+    extractUsedIdentifiers(code: string): Set<string> {
+        const identifiers = new Set<string>();
+
+        if (!code || !code.trim()) return identifiers;
+
+        // Regex to match JavaScript identifiers (variable names, function calls, etc.)
+        // This matches: word characters that are not preceded by . or quoted
+        const identifierRegex = /(?<![.\w'"])([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+
+        let match;
+        while ((match = identifierRegex.exec(code)) !== null) {
+            const identifier = match[1];
+
+            // Skip JavaScript keywords and common built-ins
+            const jsKeywords = new Set([
+                "const",
+                "let",
+                "var",
+                "function",
+                "return",
+                "if",
+                "else",
+                "for",
+                "while",
+                "do",
+                "switch",
+                "case",
+                "break",
+                "continue",
+                "try",
+                "catch",
+                "finally",
+                "throw",
+                "new",
+                "this",
+                "super",
+                "class",
+                "extends",
+                "import",
+                "export",
+                "default",
+                "async",
+                "await",
+                "true",
+                "false",
+                "null",
+                "undefined",
+                "typeof",
+                "instanceof",
+                "in",
+                "of",
+                "delete",
+                "void",
+                "console",
+                "window",
+                "document",
+                "Object",
+                "Array",
+                "String",
+                "Number",
+                "Boolean",
+                "Date",
+                "Math",
+                "JSON",
+                "Promise",
+                "Error",
+                "RegExp",
+            ]);
+
+            if (!jsKeywords.has(identifier)) {
+                identifiers.add(identifier);
+            }
+        }
+
+        return identifiers;
+    }
+
+    // Find which imports are actually needed for a piece of code
+    findNeededImports(
+        code: string,
+        availableImports: Map<string, string>
+    ): string[] {
+        const usedIdentifiers = this.extractUsedIdentifiers(code);
+        const neededImports = new Set<string>();
+
+        // Check which used identifiers have corresponding imports
+        for (const identifier of usedIdentifiers) {
+            if (availableImports.has(identifier)) {
+                neededImports.add(availableImports.get(identifier)!);
+            }
+        }
+
+        return Array.from(neededImports);
+    }
+
+    // Analyze callback functions for needed imports
+    analyzeCallbackImports(
+        callbackCode: string,
+        availableImports: Map<string, string>
+    ): string[] {
+        if (!callbackCode || !callbackCode.trim()) {
+            return [];
+        }
+
+        // Extract function body from various callback formats
+        let functionBody = callbackCode.trim();
+
+        // Handle arrow function: () => { ... }
+        if (functionBody.match(/^\(\)\s*=>\s*\{/)) {
+            functionBody = functionBody
+                .replace(/^\(\)\s*=>\s*\{/, "")
+                .replace(/\}$/, "")
+                .trim();
+        }
+        // Handle arrow function: () => ...
+        else if (functionBody.match(/^\(\)\s*=>/)) {
+            functionBody = functionBody.replace(/^\(\)\s*=>\s*/, "").trim();
+        }
+        // Handle regular function: function() { ... }
+        else if (functionBody.match(/^function\s*\(\)\s*\{/)) {
+            functionBody = functionBody
+                .replace(/^function\s*\(\)\s*\{/, "")
+                .replace(/\}$/, "")
+                .trim();
+        }
+
+        return this.findNeededImports(functionBody, availableImports);
+    }
+
+    // Analyze generated hook file for needed imports
+    analyzeHookFileImports(
+        routes: RouteInfo[],
+        sourceContent: string
+    ): {
+        reactQueryImports: string[];
+        honoImports: string[];
+        clientImports: string[];
+        callbackImports: string[];
+    } {
+        const availableImports = this.parseImportsFromFile(sourceContent);
+
+        const result = {
+            reactQueryImports: [] as string[],
+            honoImports: [] as string[],
+            clientImports: [] as string[],
+            callbackImports: [] as string[],
+        };
+
+        const callbackImportSet = new Set<string>();
+        let needsUseQuery = false;
+        let needsUseMutation = false;
+        let needsInferRequestType = false;
+        let needsInferResponseType = false;
+
+        // Analyze what React Query and Hono imports are needed
+        for (const route of routes) {
+            if (route.method === "GET") {
+                needsUseQuery = true;
+            } else {
+                needsUseMutation = true;
+                needsInferRequestType = true;
+                needsInferResponseType = true;
+            }
+
+            // Analyze callback imports
+            if (route.includeOnSuccess) {
+                const imports = this.analyzeCallbackImports(
+                    route.includeOnSuccess,
+                    availableImports
+                );
+                imports.forEach((imp) => callbackImportSet.add(imp));
+            }
+            if (route.includeOnError) {
+                const imports = this.analyzeCallbackImports(
+                    route.includeOnError,
+                    availableImports
+                );
+                imports.forEach((imp) => callbackImportSet.add(imp));
+            }
+        }
+
+        // Build required imports dynamically
+        const reactQueryParts: string[] = [];
+        if (needsUseQuery) reactQueryParts.push("useQuery");
+        if (needsUseMutation) reactQueryParts.push("useMutation");
+
+        if (reactQueryParts.length > 0) {
+            result.reactQueryImports.push(
+                `import { ${reactQueryParts.join(", ")} } from "@tanstack/react-query";`
+            );
+        }
+
+        const honoParts: string[] = [];
+        if (needsInferRequestType) honoParts.push("InferRequestType");
+        if (needsInferResponseType) honoParts.push("InferResponseType");
+
+        if (honoParts.length > 0) {
+            result.honoImports.push(
+                `import { ${honoParts.join(", ")} } from "hono";`
+            );
+        }
+
+        // Always need client for API calls
+        result.clientImports.push('import { client } from "@/lib/rpc";');
+
+        // Add callback imports
+        result.callbackImports = Array.from(callbackImportSet);
+
+        return result;
+    }
+}
+
 interface RouteInfo {
     path: string;
     method: string;
@@ -20,9 +275,10 @@ interface RouteInfo {
     jsonZodType?: string;
     queryOptions?: string;
     mutationOptions?: string;
-    queryHookName?: string; // New optional field for custom hook names
-    includeOnSuccess?: boolean; // New field for onSuccess callback
-    includeOnError?: boolean; // New field for onError callback
+    queryHookName?: string;
+    includeOnSuccess?: string;
+    includeOnError?: string;
+    customQueryKey?: string[];
 }
 
 interface ConfigInfo {
@@ -37,15 +293,18 @@ interface ImportUsage {
     inferRequestType: boolean;
     inferResponseType: boolean;
     client: boolean;
+    callbackImports?: string[]; // NEW field
 }
 
 class ReactQueryCodeGenerator {
     private project: Project;
+    private usageAnalyzer: SmartUsageAnalyzer;
 
     constructor() {
         this.project = new Project({
             tsConfigFilePath: "./tsconfig.json",
         });
+        this.usageAnalyzer = new SmartUsageAnalyzer();
     }
 
     findConfigFiles(dir: string): string[] {
@@ -242,8 +501,9 @@ class ReactQueryCodeGenerator {
         let queryOptions: string | undefined;
         let mutationOptions: string | undefined;
         let queryHookName: string | undefined; // New field for custom hook name
-        let includeOnSuccess = false; // New field for onSuccess callback
-        let includeOnError = false; // New field for onError callback
+        let includeOnSuccess = ""; // New field for onSuccess callback
+        let includeOnError = ""; // New field for onError callback
+        let customQueryKey: string[] = [];
 
         // Extract Zod types from RouteConfig generic type parameters
         if (typeNode && typeNode.getKind() === SyntaxKind.TypeReference) {
@@ -278,13 +538,9 @@ class ReactQueryCodeGenerator {
                     // Parse the custom hook name
                     queryHookName = value.getText().replace(/['"]/g, "");
                 } else if (name === "includeOnSuccess" && value) {
-                    // Parse includeOnSuccess boolean
-                    const valueText = value.getText();
-                    includeOnSuccess = valueText === "true";
+                    includeOnSuccess = value.getText();
                 } else if (name === "includeOnError" && value) {
-                    // Parse includeOnError boolean
-                    const valueText = value.getText();
-                    includeOnError = valueText === "true";
+                    includeOnError = value.getText();
                 } else if (name === "queryOptions" && value) {
                     queryOptions = this.extractObjectLiteralAsString(value);
                 } else if (name === "mutationOptions" && value) {
@@ -330,6 +586,19 @@ class ReactQueryCodeGenerator {
                             }
                         }
                     }
+                } else if (name === "queryKey" && value) {
+                    // Parse the custom queryKey array
+                    if (value.getKind() === SyntaxKind.ArrayLiteralExpression) {
+                        const arrayLiteral = value.asKindOrThrow(
+                            SyntaxKind.ArrayLiteralExpression
+                        );
+
+                        customQueryKey = arrayLiteral
+                            .getElements()
+                            .map((element: { getText(): string }) =>
+                                element.getText().replace(/['"]/g, "")
+                            );
+                    }
                 }
             }
         }
@@ -367,6 +636,7 @@ class ReactQueryCodeGenerator {
                 queryHookName, // Include the custom hook name
                 includeOnSuccess, // Include the onSuccess flag
                 includeOnError, // Include the onError flag
+                customQueryKey, // Include the custom queryKey
             };
         }
 
@@ -535,77 +805,24 @@ class ReactQueryCodeGenerator {
         return `${baseName}${suffix}`;
     }
 
-    // NEW: Analyze import usage across all routes
-    private analyzeImportUsage(routes: RouteInfo[]): ImportUsage {
-        const usage: ImportUsage = {
-            useQuery: false,
-            useMutation: false,
-            inferRequestType: false,
-            inferResponseType: false,
-            client: true, // Always needed for API calls
-        };
-
-        for (const route of routes) {
-            if (route.method === "GET") {
-                usage.useQuery = true;
-            } else {
-                usage.useMutation = true;
-                usage.inferRequestType = true;
-                usage.inferResponseType = true;
-            }
-
-            // If we already found all imports are needed, no need to continue
-            if (
-                usage.useQuery &&
-                usage.useMutation &&
-                usage.inferRequestType &&
-                usage.inferResponseType
-            ) {
-                break;
-            }
-        }
-
-        return usage;
-    }
-
-    // NEW: Generate optimized imports based on usage
-    private generateOptimizedImports(usage: ImportUsage): string {
-        const imports: string[] = [];
-
-        // React Query imports
-        const reactQueryImports: string[] = [];
-        if (usage.useQuery) reactQueryImports.push("useQuery");
-        if (usage.useMutation) reactQueryImports.push("useMutation");
-
-        if (reactQueryImports.length > 0) {
-            imports.push(
-                `import { ${reactQueryImports.join(", ")} } from "@tanstack/react-query";`
-            );
-        }
-
-        // Hono type imports
-        const honoImports: string[] = [];
-        if (usage.inferRequestType) honoImports.push("InferRequestType");
-        if (usage.inferResponseType) honoImports.push("InferResponseType");
-
-        if (honoImports.length > 0) {
-            imports.push(`import { ${honoImports.join(", ")} } from "hono";`);
-        }
-
-        // Client import (always needed)
-        if (usage.client) {
-            imports.push(`import { client } from "@/lib/rpc";`);
-        }
-
-        return imports.join("\n") + (imports.length > 0 ? "\n\n" : "");
-    }
-
-    generateReactQueryHooks(config: ConfigInfo): string {
+    generateReactQueryHooks(config: ConfigInfo, sourceContent: string): string {
         const { routeName, routes } = config;
 
-        // Analyze which imports are actually needed
-        const importUsage = this.analyzeImportUsage(routes);
-        const imports = this.generateOptimizedImports(importUsage);
+        // Use smart import analysis based on actual usage
+        const importAnalysis = this.usageAnalyzer.analyzeHookFileImports(
+            routes,
+            sourceContent
+        );
+
+        const allImports = [
+            ...importAnalysis.reactQueryImports,
+            ...importAnalysis.honoImports,
+            ...importAnalysis.clientImports,
+            ...importAnalysis.callbackImports,
+        ];
+
+        const imports =
+            allImports.length > 0 ? allImports.join("\n") + "\n\n" : "";
 
         let hooks = "";
 
@@ -624,7 +841,15 @@ class ReactQueryCodeGenerator {
     private generateQueryHook(route: RouteInfo, routeName: string): string {
         const hookName = this.generateSemanticHookName(route, routeName);
         const clientPath = this.generateClientPath(route);
-        const queryKey = this.generateQueryKey(route, routeName);
+        let baseQueryKey: string;
+        if (route.customQueryKey && route.customQueryKey.length > 0) {
+            baseQueryKey = route.customQueryKey
+                .map((key) => `"${key}"`)
+                .join(", ");
+        } else {
+            baseQueryKey = this.generateQueryKey(route, routeName);
+        }
+
         const routeNamePath = this.convertRouteNameToClientPath(routeName);
 
         let functionParams = "()";
@@ -708,7 +933,7 @@ class ReactQueryCodeGenerator {
 
         return `${typeDefinitions}export const ${hookName} = ${functionParams} => {
     return useQuery({
-        queryKey: [${queryKey}${queryKeyParams}],
+        queryKey: [${baseQueryKey}${queryKeyParams}],
         queryFn: async () => {
     const response = await client.api.v1${routeNamePath}${clientPath}.${methodCall}(${clientParams ? `${clientParams}` : ""});
 
@@ -769,8 +994,13 @@ class ReactQueryCodeGenerator {
     context: unknown
 ) => void`);
                 callbackParams.push("onSuccess");
+                const functionBody = route.includeOnSuccess
+                    .replace(/^\(\)\s*=>\s*\{/, "")
+                    .replace(/\}$/, "")
+                    .trim();
                 callbackImplementations.push(`onSuccess: (data, variables, context) => {
             onSuccess?.(data, variables, context);
+            ${functionBody}
         }`);
             }
 
@@ -781,8 +1011,13 @@ class ReactQueryCodeGenerator {
     context: unknown
 ) => void`);
                 callbackParams.push("onError");
+                const functionBody = route.includeOnError
+                    .replace(/^\(\)\s*=>\s*\{/, "")
+                    .replace(/\}$/, "")
+                    .trim();
                 callbackImplementations.push(`onError: (error, variables, context) => {
             onError?.(error, variables, context);
+            ${functionBody}
         }`);
             }
 
@@ -944,7 +1179,8 @@ export const ${hookName} = () => {
                     routes,
                 };
 
-                const hooksCode = this.generateReactQueryHooks(config);
+                // Pass the source content for smart import analysis
+                const hooksCode = this.generateReactQueryHooks(config, content);
 
                 // Create the ../api/client directory structure
                 const configDir = path.dirname(configFile);
@@ -956,12 +1192,11 @@ export const ${hookName} = () => {
                     fs.mkdirSync(clientDir, { recursive: true });
                 }
 
-                // Write to auto-gen.tsx instead of index.ts
+                // Write to auto-gen.tsx
                 const autoGenFile = path.join(clientDir, "auto-gen.tsx");
                 fs.writeFileSync(autoGenFile, hooksCode);
 
                 console.log(`✓ Generated: ${autoGenFile}`);
-                console.log(`✓ Updated: ${path.join(clientDir, "index.tsx")}`);
             } catch (error) {
                 console.error(`✗ Error processing ${configFile}:`, error);
             }

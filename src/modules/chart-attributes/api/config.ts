@@ -25,7 +25,8 @@ import {
 } from "@/modules/chart-attributes/schema/types";
 import { deleteChart } from "@/modules/chart-attributes/api/handler/delete";
 import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
-import { createChart } from "@/modules/chart-attributes/api/handler/create";
+import { createNotionChart } from "@/modules/chart-attributes/api/handler/create";
+import { getQueryClient } from "@/lib/query-client";
 
 const chartRouteConfig = [
     // chart metadata
@@ -52,6 +53,7 @@ const chartRouteConfig = [
     defineRoute({
         path: "/:id",
         method: "GET",
+        queryKey: ["chart-metadata"],
         middlewares: [],
         validators: {
             params: z.object({
@@ -69,7 +71,7 @@ const chartRouteConfig = [
         },
     }),
     defineRoute({
-        path: "/",
+        path: "/notion",
         method: "POST",
         middlewares: [authMiddleWare],
         validators: {
@@ -77,15 +79,40 @@ const chartRouteConfig = [
         },
         handler: async (c) => {
             const data = c.req.valid("json");
-            const response = await createChart(data);
+            const response = await createNotionChart(data);
 
             if (!response.ok) {
                 return c.json(response.error, 500);
             }
             return c.json(response.chart, 200);
         },
-        includeOnSuccess: true,
-        includeOnError: true,
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
+        },
+        includeOnError: () => {},
+    }),
+    defineRoute({
+        path: "/upload",
+        method: "POST",
+        middlewares: [authMiddleWare],
+        validators: {
+            json: ChartMetadataSchema.Insert,
+        },
+        handler: async (c) => {
+            const data = c.req.valid("json");
+            const response = await createNotionChart(data);
+
+            if (!response.ok) {
+                return c.json(response.error, 500);
+            }
+            return c.json(response.chart, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
+        },
+        includeOnError: () => {},
     }),
     defineRoute({
         path: "/:id",
@@ -108,6 +135,10 @@ const chartRouteConfig = [
 
             return c.json(response.chartId, 200);
         },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
+        },
     }),
     defineRoute({
         path: "/:id",
@@ -125,6 +156,10 @@ const chartRouteConfig = [
                 return c.json(response.error, 500);
             }
             return c.json(response.chartId, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-metadata"] });
         },
     }),
     defineRoute({
@@ -157,6 +192,7 @@ const chartRouteConfig = [
             return c.json(rest, 200);
         },
     }),
+
     defineRoute({
         path: "/:id/table-data",
         method: "GET",
@@ -192,6 +228,7 @@ const chartRouteConfig = [
     defineRoute({
         path: "/:id/visuals",
         method: "GET",
+        queryKey: ["chart-visuals"],
         middlewares: [],
         validators: {
             params: z.object({
@@ -230,6 +267,10 @@ const chartRouteConfig = [
 
             return c.json(response.chartId, 200);
         },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-visuals"] });
+        },
     }),
 
     // chart typography
@@ -237,6 +278,7 @@ const chartRouteConfig = [
         path: "/:id/typography",
         method: "GET",
         middlewares: [],
+        queryKey: ["chart-typography"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -270,6 +312,10 @@ const chartRouteConfig = [
             }
             return c.json(response.chartId, 200);
         },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-typography"] });
+        },
     }),
 
     // chart box model
@@ -277,6 +323,7 @@ const chartRouteConfig = [
         path: "/:id/box-model",
         method: "GET",
         middlewares: [],
+        queryKey: ["chart-box-model"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -310,6 +357,10 @@ const chartRouteConfig = [
             }
             return c.json(response.chartId, 200);
         },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-box-model"] });
+        },
     }),
 
     // chart colors
@@ -317,6 +368,7 @@ const chartRouteConfig = [
         path: "/:id/colors",
         method: "GET",
         middlewares: [],
+        queryKey: ["chart-colors"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -349,6 +401,10 @@ const chartRouteConfig = [
                 return c.json(response.error, 500);
             }
             return c.json(response.chartId, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({ queryKey: ["chart-colors"] });
         },
     }),
 ];

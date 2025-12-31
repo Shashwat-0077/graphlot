@@ -9,12 +9,14 @@ import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchHeatmapById } from "@/modules/chart-types/heatmap/api/handlers/read";
 import { updateHeatmap } from "@/modules/chart-types/heatmap/api/handlers/update";
 import { HeatmapSchema } from "@/modules/chart-types/heatmap/schema/types";
+import { getQueryClient } from "@/lib/query-client";
 
 const heatmapRouteConfigs = [
     defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [],
+        queryKey: ["heatmap-chart"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -52,6 +54,12 @@ const heatmapRouteConfigs = [
                 return c.json(result.error, 500);
             }
             return c.json(result.chartId, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["heatmap-chart"],
+            });
         },
     }),
 ];

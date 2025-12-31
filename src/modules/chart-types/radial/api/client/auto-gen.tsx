@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
+import { getQueryClient } from "@/lib/query-client";
 
 type GetRadialParams = {
   id: string;
@@ -9,7 +10,7 @@ type GetRadialParams = {
 
 export const useGetRadial = ({params}: {params: GetRadialParams}) => {
     return useQuery({
-        queryKey: ["charts.radial", JSON.stringify({ params })],
+        queryKey: ["radial-chart", JSON.stringify({ params })],
         queryFn: async () => {
     const response = await client.api.v1["charts"]["radial"][":id"].$get({
                 param: params,
@@ -38,7 +39,15 @@ type UpdateRadialResponse = InferResponseType<
     200
 >;
 
-export const useUpdateRadial = () => {
+export const useUpdateRadial = ({
+onSuccess,
+}: {
+onSuccess?: (
+    data: UpdateRadialResponse,
+    variables: UpdateRadialRequest,
+    context: unknown
+) => void;
+}) => {
     return useMutation<UpdateRadialResponse, Error, UpdateRadialRequest>({
         mutationFn: async (props) => {
     const response = await client.api.v1["charts"]["radial"][":id"].$put(props);
@@ -54,6 +63,13 @@ export const useUpdateRadial = () => {
 
     return await response.json();
 },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["radial-chart"],
+            });
+        },
     });
 };
 

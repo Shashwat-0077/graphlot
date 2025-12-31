@@ -42,13 +42,15 @@ class HonoGenerator {
         routes: ParsedRoute[];
         imports: Set<string>;
         variables: string | null;
+        variablesImport: string | null; // NEW: Track the Variables import separately
     } {
         const sourceFile = this.project.addSourceFileAtPath(filePath);
         const routes: ParsedRoute[] = [];
         const imports = new Set<string>();
         let variables: string | null = null;
+        let variablesImport: string | null = null; // NEW: Track Variables import
 
-        // Find the route config array (could be named differently now)
+        // Find the route config array
         const variableDeclarations = sourceFile.getVariableDeclarations();
         const routeConfigDeclaration = variableDeclarations.find((decl) => {
             const declText = decl.getText();
@@ -71,29 +73,26 @@ class HonoGenerator {
             throw new Error(`Invalid route config array in ${filePath}`);
         }
 
-        // Parse each route config - get array elements properly
+        // Parse each route config
         const arrayElements = initializer
             .asKindOrThrow(SyntaxKind.ArrayLiteralExpression)
             .getElements();
 
         arrayElements.forEach((element) => {
-            // Handle defineRoute() call expressions
             if (element.getKind() === SyntaxKind.CallExpression) {
                 const callExpr = element as import("ts-morph").CallExpression;
                 const route = this.parseCallExpression(callExpr, imports);
                 if (route) {
                     routes.push(route);
                 }
-            }
-            // Handle direct object literals (legacy support)
-            else if (element.getKind() === SyntaxKind.ObjectLiteralExpression) {
+            } else if (
+                element.getKind() === SyntaxKind.ObjectLiteralExpression
+            ) {
                 const route = this.parseRouteObject(element, imports);
                 if (route) {
                     routes.push(route);
                 }
-            }
-            // Handle type assertions (as RouteConfig<...>)
-            else if (element.getKind() === SyntaxKind.AsExpression) {
+            } else if (element.getKind() === SyntaxKind.AsExpression) {
                 const asExpr = element as import("ts-morph").AsExpression;
                 const expression = asExpr.getExpression();
                 if (
@@ -107,7 +106,9 @@ class HonoGenerator {
             }
         });
 
-        // Extract imports from the source file and check for Variables import
+        // SMART IMPORT ANALYSIS - Only include imports that are actually used
+        const usedIdentifiers = this.analyzeUsedIdentifiers(routes);
+
         sourceFile.getImportDeclarations().forEach((importDecl) => {
             const moduleSpecifier = importDecl.getModuleSpecifierValue();
             const namedImports = importDecl
@@ -117,31 +118,141 @@ class HonoGenerator {
                     (name) =>
                         name !== "RouteConfig" &&
                         name !== "defineRoute" &&
-                        name !== "defineRouteWithVariables"
+                        name !== "defineRouteWithVariables" &&
+                        usedIdentifiers.has(name) // Only include if actually used
                 );
             const defaultImport = importDecl.getDefaultImport()?.getText();
 
-            // Check if Variables is imported
+            // Check if Variables is imported - FIXED VERSION
             const originalNamedImports = importDecl
                 .getNamedImports()
                 .map((ni) => ni.getName());
+
             if (originalNamedImports.includes("Variables")) {
                 variables = "Variables";
+                // NEW: Store the Variables import separately
+                variablesImport = `import { Variables } from "${moduleSpecifier}";`;
             }
 
+            // Only add imports that are actually used
             if (namedImports.length > 0) {
                 imports.add(
                     `import { ${namedImports.join(", ")} } from "${moduleSpecifier}";`
                 );
             }
-            if (defaultImport) {
+            if (defaultImport && usedIdentifiers.has(defaultImport)) {
                 imports.add(
                     `import ${defaultImport} from "${moduleSpecifier}";`
                 );
             }
         });
 
-        return { routes, imports, variables };
+        return { routes, imports, variables, variablesImport }; // Return the Variables import
+    }
+
+    // Helper to extract identifiers from code
+    private extractIdentifiers(code: string, identifiers: Set<string>): void {
+        if (!code || !code.trim()) return;
+
+        // Simple regex to find identifiers (can be made more sophisticated)
+        const identifierRegex = /(?<![.\w'"])([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+
+        let match;
+        while ((match = identifierRegex.exec(code)) !== null) {
+            const identifier = match[1];
+
+            // Skip JavaScript keywords and common built-ins
+            const jsKeywords = new Set([
+                "const",
+                "let",
+                "var",
+                "function",
+                "return",
+                "if",
+                "else",
+                "for",
+                "while",
+                "do",
+                "switch",
+                "case",
+                "break",
+                "continue",
+                "try",
+                "catch",
+                "finally",
+                "throw",
+                "new",
+                "this",
+                "super",
+                "class",
+                "extends",
+                "import",
+                "export",
+                "default",
+                "async",
+                "await",
+                "true",
+                "false",
+                "null",
+                "undefined",
+                "typeof",
+                "instanceof",
+                "in",
+                "of",
+                "delete",
+                "void",
+                "console",
+                "window",
+                "document",
+                "Object",
+                "Array",
+                "String",
+                "Number",
+                "Boolean",
+                "Date",
+                "Math",
+                "JSON",
+                "Promise",
+                "Error",
+                "RegExp",
+                "c",
+                "result",
+                "data",
+                "error",
+                "response",
+            ]);
+
+            if (!jsKeywords.has(identifier)) {
+                identifiers.add(identifier);
+            }
+        }
+    }
+
+    // NEW: Analyze which identifiers are actually used in route definitions
+    private analyzeUsedIdentifiers(routes: ParsedRoute[]): Set<string> {
+        const usedIdentifiers = new Set<string>();
+
+        for (const route of routes) {
+            // Analyze handler body
+            this.extractIdentifiers(route.handlerBody, usedIdentifiers);
+
+            // Analyze middlewares
+            route.middlewares.forEach((middleware) => {
+                this.extractIdentifiers(middleware, usedIdentifiers);
+            });
+
+            // Analyze validators (but skip callback functions)
+            Object.values(route.validators).forEach((validator) => {
+                if (typeof validator === "string") {
+                    this.extractIdentifiers(validator, usedIdentifiers);
+                }
+            });
+
+            // DON'T analyze callback functions like includeOnSuccess, includeOnError
+            // They're not part of the Hono route definition
+        }
+
+        return usedIdentifiers;
     }
 
     private parseCallExpression(
@@ -320,20 +431,33 @@ class HonoGenerator {
     generateHonoCode(
         routes: ParsedRoute[],
         imports: Set<string>,
-        variables: string | null
+        variables: string | null,
+        variablesImport: string | null // NEW: Accept Variables import
     ): string {
-        const importStatements = [
+        let importStatements = [
             'import { z } from "zod";',
             'import { Hono } from "hono";',
             'import { zValidator } from "@hono/zod-validator";',
             "",
-            ...Array.from(imports).filter(
-                (imp) =>
-                    !imp.includes('"zod"') &&
-                    !imp.includes('"hono"') &&
-                    !imp.includes('"@hono/zod-validator"')
-            ),
-        ].join("\n");
+        ];
+
+        // Add Variables import if it exists - FIXED
+        if (variablesImport) {
+            importStatements.push(variablesImport);
+        }
+
+        // Add other imports
+        const otherImports = Array.from(imports).filter(
+            (imp) =>
+                !imp.includes('"zod"') &&
+                !imp.includes('"hono"') &&
+                !imp.includes('"@hono/zod-validator"') &&
+                !imp.includes("{ Variables }") // Exclude Variables since we handle it separately
+        );
+
+        importStatements.push(...otherImports);
+
+        const importSection = importStatements.join("\n");
 
         let honoChain = variables
             ? `const app = new Hono<{ Variables: ${variables} }>()`
@@ -345,7 +469,7 @@ class HonoGenerator {
 
         honoChain += ";";
 
-        return `${importStatements}\n\n${honoChain}\n\nexport default app;\n`;
+        return `${importSection}\n\n${honoChain}\n\nexport default app;\n`;
     }
 
     private generateRouteMethod(route: ParsedRoute): string {
@@ -383,9 +507,14 @@ class HonoGenerator {
         try {
             console.log(`Processing: ${configPath}`);
 
-            const { routes, imports, variables } =
+            const { routes, imports, variables, variablesImport } =
                 this.parseConfigFile(configPath);
-            const honoCode = this.generateHonoCode(routes, imports, variables);
+            const honoCode = this.generateHonoCode(
+                routes,
+                imports,
+                variables,
+                variablesImport
+            );
 
             // Determine output path
             const configDir = path.dirname(configPath);

@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
+import { getQueryClient } from "@/lib/query-client";
 
 type GetRadarParams = {
   id: string;
@@ -9,7 +10,7 @@ type GetRadarParams = {
 
 export const useGetRadar = ({params}: {params: GetRadarParams}) => {
     return useQuery({
-        queryKey: ["charts.radar", JSON.stringify({ params })],
+        queryKey: ["radar-chart", JSON.stringify({ params })],
         queryFn: async () => {
     const response = await client.api.v1["charts"]["radar"][":id"].$get({
                 param: params,
@@ -38,7 +39,15 @@ type UpdateRadarResponse = InferResponseType<
     200
 >;
 
-export const useUpdateRadar = () => {
+export const useUpdateRadar = ({
+onSuccess,
+}: {
+onSuccess?: (
+    data: UpdateRadarResponse,
+    variables: UpdateRadarRequest,
+    context: unknown
+) => void;
+}) => {
     return useMutation<UpdateRadarResponse, Error, UpdateRadarRequest>({
         mutationFn: async (props) => {
     const response = await client.api.v1["charts"]["radar"][":id"].$put(props);
@@ -54,6 +63,13 @@ export const useUpdateRadar = () => {
 
     return await response.json();
 },
+        onSuccess: (data, variables, context) => {
+            onSuccess?.(data, variables, context);
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["radar-chart"],
+            });
+        },
     });
 };
 

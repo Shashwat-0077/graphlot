@@ -25,7 +25,7 @@ export const useProcessData = ({
     const error = useRef<Error | null>(null);
 
     const {
-        data: chartSchema,
+        data: tableSchema,
         isLoading: schemaLoading,
         error: schemaError,
     } = useGetChartTableSchema({
@@ -42,13 +42,13 @@ export const useProcessData = ({
     });
 
     const { config, data } = useMemo(() => {
-        if (!chartSchema || !yAxis || !xAxis || !tableData) {
+        if (!tableSchema || !yAxis || !xAxis || !tableData) {
             return { config: [], data: [] };
         }
 
-        switch (chartSchema.databaseProvider) {
+        switch (tableSchema.databaseProvider) {
             case DATABASE_NOTION:
-                return processNotionData(chartSchema.schema, tableData, {
+                return processNotionData(tableSchema.schema, tableData, {
                     xAxis: xAxis,
                     yAxis: yAxis,
                 });
@@ -59,7 +59,7 @@ export const useProcessData = ({
                 error.current = new Error(`Unsupported database`);
                 return { config: [], data: [] };
         }
-    }, [chartSchema, yAxis, xAxis, tableData]);
+    }, [tableSchema, yAxis, xAxis, tableData]);
 
     const { sortedData, sortedConfig } = useMemo(() => {
         return sortDataAndConfig(config, data, sortX, sortY);

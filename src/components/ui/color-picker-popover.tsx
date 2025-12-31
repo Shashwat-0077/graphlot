@@ -4,7 +4,7 @@ import React from "react";
 import { RgbaColorPicker } from "react-colorful";
 import { Trash2, ChevronDown, Clock } from "lucide-react";
 import { useState, useRef, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useLocalStorage } from "react-use";
 
 import { cn } from "@/utils";

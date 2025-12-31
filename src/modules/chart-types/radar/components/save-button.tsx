@@ -18,27 +18,27 @@ export const RadarSaveButton = ({ chartId }: { chartId: string }) => {
         mutate: updateRadar,
         isSuccess: isRadarUpdated,
         isError: isRadarError,
-    } = useUpdateRadar();
+    } = useUpdateRadar({});
     const {
         mutate: updateChartBoxModel,
         isSuccess: isChartBoxModelUpdated,
         isError: isChartBoxModelError,
-    } = useUpdateChartBoxModel();
+    } = useUpdateChartBoxModel({});
     const {
         mutate: updateChartTypography,
         isSuccess: isChartTypographyUpdated,
         isError: isChartTypographyError,
-    } = useUpdateChartTypography();
+    } = useUpdateChartTypography({});
     const {
         mutate: updateChartColors,
         isSuccess: isChartColorsUpdated,
         isError: isChartColorsError,
-    } = useUpdateChartColors();
+    } = useUpdateChartColors({});
     const {
         mutate: updateChartVisuals,
         isSuccess: isChartVisualsUpdated,
         isError: isChartVisualsError,
-    } = useUpdateChartVisuals();
+    } = useUpdateChartVisuals({});
 
     const config = useRadarChartStore((state) => state);
 

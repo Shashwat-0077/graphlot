@@ -9,12 +9,14 @@ import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchRadarChartById } from "@/modules/chart-types/radar/api/handlers/read";
 import { RadarChartSchema } from "@/modules/chart-types/radar/schema/types";
 import { updateRadarChart } from "@/modules/chart-types/radar/api/handlers/update";
+import { getQueryClient } from "@/lib/query-client";
 
 const radarRouteConfigs = [
     defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [],
+        queryKey: ["radar-chart"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -52,6 +54,12 @@ const radarRouteConfigs = [
                 return c.json(result.error, 500);
             }
             return c.json(result.chartId, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["radar-chart"],
+            });
         },
     }),
 ];

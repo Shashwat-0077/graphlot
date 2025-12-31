@@ -40,7 +40,7 @@ type CreateChartResponse = Promise<
       }
 >;
 
-export async function createChart(
+export async function createNotionChart(
     data: ChartMetadataInsert,
     extras?: {
         chartId?: string;
@@ -208,19 +208,22 @@ export async function createChart(
         };
     } catch (error) {
         if (error instanceof Error) {
-            if (error.message.includes("UNIQUE")) {
+            // eslint-disable-next-line
+            const causeMessage = (error as any).cause?.message ?? error.message;
+
+            if (causeMessage.includes("UNIQUE constraint failed")) {
                 return {
                     ok: false,
-                    error: "UNIQUE constraint violation",
-                    details: error,
-                };
-            } else {
-                return {
-                    ok: false,
-                    error: error.message,
-                    details: error,
+                    error: "A chart with this name already exists in this collection.",
+                    details: causeMessage,
                 };
             }
+
+            return {
+                ok: false,
+                error: error.message,
+                details: error,
+            };
         }
 
         return {

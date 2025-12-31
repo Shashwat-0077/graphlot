@@ -9,12 +9,14 @@ import { authMiddleWare } from "@/modules/auth/middlewares/auth-middleware";
 import { fetchRadialChartById } from "@/modules/chart-types/radial/api/handlers/read";
 import { RadialChartSchema } from "@/modules/chart-types/radial/schema/types";
 import { updateRadialChart } from "@/modules/chart-types/radial/api/handlers/update";
+import { getQueryClient } from "@/lib/query-client";
 
 const radialRouteConfigs = [
     defineRoute({
         path: "/:id",
         method: "GET",
         middlewares: [],
+        queryKey: ["radial-chart"],
         validators: {
             params: z.object({
                 id: z.string().nonempty(),
@@ -52,6 +54,12 @@ const radialRouteConfigs = [
                 return c.json(result.error, 500);
             }
             return c.json(result.chartId, 200);
+        },
+        includeOnSuccess: () => {
+            const queryClient = getQueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["radial-chart"],
+            });
         },
     }),
 ];

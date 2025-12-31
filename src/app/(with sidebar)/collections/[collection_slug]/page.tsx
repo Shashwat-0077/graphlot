@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/modules/auth";
-import SingleCollectionPage from "@/page-components/collections/SingleCollectionPage";
+import SingleCollectionPage from "@/modules/collection/pages/single-collection-page";
 
 export default async function CollectionPage() {
     const session = await auth.api.getSession({
